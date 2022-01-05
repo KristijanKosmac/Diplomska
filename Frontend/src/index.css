@@ -1,0 +1,65 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
+
+.errorMessage {
+  color: #f84737;
+  border: 1px solid #f84737;
+  height: min-content;
+  padding: 5px 25px;
+  border-radius: 5px;
+  width: fit-content;
+  align-self: center;
+  margin: 20px auto 0;
+  font-weight: bold;
+  font-size: 1.3em;
+}
+
+.successMessage {
+  color: #67be68;
+  border: 1px solid #67be68;
+  border-radius: 5px;
+  height: min-content;
+  padding: 5px 25px;
+  width: fit-content;
+  align-self: center;
+  margin: 20px auto 0;
+  font-weight: bold;
+  font-size: 1.3em;
+}
+
+.warningMessage {
+  border: 1px solid #ffcc00;
+  color: #ffcc00;
+  height: min-content;
+  border-radius: 5px;
+  padding: 5px 25px;
+  width: fit-content;
+  align-self: center;
+  margin: 20px auto 0;
+  font-weight: bold;
+  font-size: 1.3em;
+}
+
+.informMessage {
+  border: 1px solid gray;
+  color: gray;
+  height: min-content;
+  border-radius: 5px;
+  padding: 5px 25px;
+  width: fit-content;
+  align-self: center;
+  margin: 20px auto 0;
+  font-weight: bold;
+  font-size: 1.3em;
+}
