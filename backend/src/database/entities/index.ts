@@ -1,2 +1,2 @@
-export { PatientEntity, PatientTable } from "./patient"
-export { ExaminationTable, ExaminationEntity } from "./examination"
+export { Patient, PatientInteface } from "./patient"
+export { Doctor, DoctorInteface } from "./doctor"

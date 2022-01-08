@@ -1,4 +1,4 @@
-import awsServerlessExpressMiddleware from "aws-serverless-express/middleware";
+require("./database/mongoose")
 import bodyParser from "body-parser";
 import express from "express";
 import fs from "fs";
@@ -11,7 +11,6 @@ const router = express.Router();
 
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
-router.use(awsServerlessExpressMiddleware.eventContext());
 
 
 const routesFolder = path.join(__dirname, "/routes");

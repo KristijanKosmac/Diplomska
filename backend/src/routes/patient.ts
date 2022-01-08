@@ -8,16 +8,8 @@ const app = express();
 app.get(
   "/:id",
   errorHandler.wrap(async (req) => {
-    
     const { id } = req.params as any;
     return new PatientManager().getPatient(id);
-  })
-);
-app.get(
-  "/",
-  errorHandler.wrap(async () => {
-    console.log("Get all patients");
-    return new PatientManager().getAllPatients();
   })
 );
 app.post(
@@ -27,6 +19,15 @@ app.post(
     return new PatientManager().addPatient(req.body);
   })
 );
+
+app.get(
+  "/",
+  errorHandler.wrap(async (req) => {
+    const { doctorId } = req.query
+    return new PatientManager().getAllPatientsForDoctor(doctorId as string);
+  })
+);
+
 app.delete(
   "/:id",
   errorHandler.wrap(async (req) => {
@@ -39,7 +40,7 @@ app.put(
   bodyParser.json(),
   errorHandler.wrap(async (req) => {
     const { id } = req.params as any;
-    return new PatientManager().updatePatientDetails(id, req.body);
+    return new PatientManager().updatePatient(id, req.body);
   })
 );
 

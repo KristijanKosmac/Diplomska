@@ -1,7 +1,9 @@
 import mongoose from "mongoose"
 import validator from "validator"
+import { PatientInteface } from "."
 
-export interface PatientInteface {
+export interface DoctorInteface {
+    id: string;
     firstName: string;
     lastName: string;
     EMBG: number;
@@ -9,16 +11,19 @@ export interface PatientInteface {
     email: string;
     address?: string;
     telephoneNumber?: number
-    height?: number;
-    weight?: number;
-    sex?: "Male" | "Female";
+    institution?: string
     country?: string;
     city?: string;
     nationality?: string;
-    familyDoctor: string
+    patients?: PatientInteface[]
 }
 
-const patientSchema = new mongoose.Schema({
+const doctorSchema = new mongoose.Schema({
+    id: {
+        type: String,
+        required: true,
+        unique: true
+    },
     firstName: {
         type: String,
         trim: true,
@@ -46,21 +51,11 @@ const patientSchema = new mongoose.Schema({
             }
         }
     },
-    address: {
-        type: String
-    },
     telephoneNumber: {
         type: Number,
     },
-    height: {
-        type: Number
-    },
-    weight: {
-        type: Number
-    },
-    sex: {
-        type: String,
-        enum: ["Male", "Female"]
+    institution: {
+        type: String
     },
     country: {
         type: String
@@ -70,25 +65,16 @@ const patientSchema = new mongoose.Schema({
     },
     nationality: {
         type: String
-    },
-    familyDoctor: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: true,
-        ref: 'Doctor'
     }
 }, {
     timestamps: true
 })
 
-patientSchema.virtual('id').get(function(){
-    return this._id.toHexString();
-});
-
 // Ensure virtual fields are serialised.
-patientSchema.set('toJSON', {
+doctorSchema.set('toJSON', {
     virtuals: true
 });
 
-const Patient = mongoose.model<PatientInteface>("Patient", patientSchema)
+const Doctor = mongoose.model<DoctorInteface>("Doctor", doctorSchema)
 
-export { Patient }
+export { Doctor }

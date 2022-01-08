@@ -11,8 +11,3 @@ export interface MulterFiles {
     files?: Express.Multer.File[] | { [fieldname: string]: Express.Multer.File[]};
 }
 
-export interface Document extends AWS.S3.Object { 
-    url: string;
-}
-
-

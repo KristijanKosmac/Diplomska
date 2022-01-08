@@ -1,101 +1,55 @@
 import { DoneResult } from "../types";
-import { PatientTable, PatientEntity, ExaminationTable } from "../database/entities";
+import { Patient, PatientInteface } from "../database/entities";
 import { codedError } from "../lib/coded-error";
 import HTTP from "http-status-codes";
-import { v4 as uuid} from "uuid";
 
 export class PatientManager {
 
-    /**
-     *
-     *
-     * @param {Patient} data
-     * @return {*}  {(Promise<DoneResult & { id: string }>)}
-     * @memberof PatientManager
-     */
-    async addPatient(data: PatientEntity): Promise<DoneResult & { id: string }> {
-        data.id = uuid();
-        const patient: PatientEntity = await PatientTable.create(data);
+    async addPatient(data: PatientInteface): Promise<DoneResult & { id: string }> {
+        const patient = new Patient(data);
 
+        try {
+            await patient.save()
+        } catch (e) {
+            throw e
+        }
+
+        // TODO CHECK IF patient.id work if it doenst change it with patient._id
         return { done: true, id: patient.id };
     }
 
-    /**
-     *
-     *
-     * @param {Patient} updatedData
-     * @return {*}  {Promise<DoneResult>}
-     * @memberof PatientManager
-     */
-    async updatePatientDetails(id: string, updatedData: Partial<PatientEntity>): Promise<DoneResult> {
-        await PatientTable.update(updatedData, {
-            where: {
-                id
-            }
-        });
+    async updatePatient(id: string, updatedData: PatientInteface): Promise<DoneResult> {
+        try {
+            await Patient.findByIdAndUpdate(id, updatedData, { new: true, runValidators: true })
+        } catch (e) {
+            throw e
+        }
 
         return { done: true };
     }
 
-    /**
-     *
-     *
-     * @param {string} id
-     * @return {*}  {Promise<DoneResult>}
-     * @memberof PatientManager
-     */
     async deletePatient(id: string): Promise<DoneResult> {
         try {
-            await this.getPatient(id);
+            await Patient.findByIdAndRemove(id)
         } catch (e) {
             throw codedError(HTTP.BAD_REQUEST, "Can't be deleted patient that doesn't exists!")
         }
 
-        await ExaminationTable.destroy({
-            where: {
-                patientId: id
-            }
-        })
-        await PatientTable.destroy({
-            where: {
-                id
-            }
-        })
-
         return { done: true };
     }
 
-    /**
-     *
-     *
-     * @param {string} patientId
-     * @return {*}  {Promise<Patient>}
-     * @memberof PatientManager
-     */
-    async getPatient(patientId: string): Promise<PatientEntity> {
-        const patient = await PatientTable.findOne({
-            where: {
-                id: patientId,
-            },
-            raw: true
-        });
+    async getPatient(id: string): Promise<PatientInteface> {
+        const patient = await Patient.findById(id)
 
-        if (!patient || !patientId) {
+        if (!patient || !id) {
             throw codedError(HTTP.NOT_FOUND, `Patient does not exist`);
         }
 
         return patient;
     }
 
-    /**
-     *
-     *
-     * @return {*}  {Promise<Patient[]>}
-     * @memberof PatientManager
-     */
-    async getAllPatients(): Promise<PatientEntity[]> {
-        console.log("get all in manager");
-        const patients = await PatientTable.findAll({ raw: true });
+    async getAllPatientsForDoctor(doctorId: string): Promise<PatientInteface[]> {
+        const patients = await Patient.find({ familyDoctor: doctorId })
         if (!patients) {
             throw codedError(HTTP.NO_CONTENT, "There are no patients in the system")
         }
