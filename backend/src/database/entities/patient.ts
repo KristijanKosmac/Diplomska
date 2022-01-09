@@ -72,7 +72,7 @@ const patientSchema = new mongoose.Schema({
         type: String
     },
     familyDoctor: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: String,
         required: true,
         ref: 'Doctor'
     }

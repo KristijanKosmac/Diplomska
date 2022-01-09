@@ -75,6 +75,12 @@ doctorSchema.set('toJSON', {
     virtuals: true
 });
 
+doctorSchema.virtual('patients', {
+    ref: 'Patient',
+    localField: 'id',
+    foreignField: 'familyDoctor'
+})
+
 const Doctor = mongoose.model<DoctorInteface>("Doctor", doctorSchema)
 
 export { Doctor }
