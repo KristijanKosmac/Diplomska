@@ -11,3 +11,7 @@ export interface MulterFiles {
     files?: Express.Multer.File[] | { [fieldname: string]: Express.Multer.File[]};
 }
 
+export interface File {
+    filename: string;
+    content: string;
+}   

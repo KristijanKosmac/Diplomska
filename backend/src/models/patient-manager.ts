@@ -1,7 +1,8 @@
-import { DoneResult } from "../types";
+import HTTP from "http-status-codes";
+import fs from "fs"
+import { DoneResult, File } from "../types";
 import { Patient, PatientInteface } from "../database/entities";
 import { codedError } from "../lib/coded-error";
-import HTTP from "http-status-codes";
 
 export class PatientManager {
 
@@ -54,6 +55,25 @@ export class PatientManager {
             throw codedError(HTTP.NO_CONTENT, "There are no patients in the system")
         }
         return patients;
+    }
+
+    async uploadFiles(files: any): Promise<DoneResult> {
+        if (!files || files!.length === 0) {
+            throw codedError(HTTP.NO_CONTENT, "There are no files")
+        }
+        return { done: true };
+    }
+
+    async getAllFiles(patientId: string): Promise<File[]> {
+        const path = `src/documents/${patientId}/`
+        const filenames = fs.readdirSync(path)
+        const files: File[] = filenames.map(function(filename) {
+            const content = fs.readFileSync(path + filename, {encoding: "utf8"})
+
+            return { filename, content }
+          });
+    
+        return files
     }
 
 }

@@ -2,6 +2,7 @@ import * as bodyParser from "body-parser";
 import express from "express";
 import * as errorHandler from "../lib/async-response-handler";
 import { PatientManager } from "../models/patient-manager";
+import { upload } from "../utils/multerStorage";
 
 const app = express();
 
@@ -35,12 +36,30 @@ app.delete(
     return new PatientManager().deletePatient(id);
   })
 );
+
 app.put(
   "/:id",
   bodyParser.json(),
   errorHandler.wrap(async (req) => {
     const { id } = req.params as any;
     return new PatientManager().updatePatient(id, req.body);
+  })
+);
+
+app.post(
+  "/:id/documents",
+  upload.array("file"),
+  errorHandler.wrap(async (req) => {
+    return new PatientManager().uploadFiles(req.files);
+  })
+);
+
+app.get(
+  "/:id/documents",
+  errorHandler.wrap(async (req) => {
+    const { id } = req.params as any;
+
+    return new PatientManager().getAllFiles(id);
   })
 );
 
