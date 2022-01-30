@@ -5,7 +5,7 @@ export default function Copyright() {
   return (
     <Typography variant="body2" color="textPrimary" align="center">
       <Link color="inherit" href="/">
-        УИ ПЕТ
+        Diplomska
       </Link>{" "}
       {new Date().getFullYear()}©{" "}
       Сите права се задржани

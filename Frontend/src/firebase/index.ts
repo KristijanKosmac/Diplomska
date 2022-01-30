@@ -68,7 +68,6 @@ export const signIn = async (email: string, password: string) => {
             throw "Verify your email"
         }
 
-        console.log(user)
         return {
             accessToken: user.multiFactor.user.accessToken,
             profile: {
@@ -78,7 +77,7 @@ export const signIn = async (email: string, password: string) => {
             refreshToken:  user.multiFactor.user.stsTokenManager.refreshToken
         }
     } catch (err : any) {
-        throw err
+        throw err.message
     }
 }
 

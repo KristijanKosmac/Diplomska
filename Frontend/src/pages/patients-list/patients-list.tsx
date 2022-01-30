@@ -36,23 +36,24 @@ const PatientsListPage = (
   const classes = useStyles();
 
   const columns: PatientColumn[] = [
-    { id: "petId", label: "ПЕТ број" },
-    { id: "name", label: "Име" },
-    { id: "surname", label: "Презиме" },
-    { id: "telephoneNumber", label: "Телефонски број" },
-    { id: "dateOfBirth", label: "Датум на раѓање"}
+    { id: "firstName", label: "First Name" },
+    { id: "lastName", label: "Last Name" },
+    { id: "EMBG", label: "EMBG"},
+    { id: "dateOfBirth", label: "Date Of Birth"},
+    { id: "email", label: "Email"},
+    { id: "telephoneNumber", label: "Telephone Number" }
   ];
 
   const dispatch = useDispatch();
 
-  const { patients, isLoading } = useSelector((state: GlobalState) => state.patients);
+  const { patients: {patients, isLoading} , user: { profile } } = useSelector((state: GlobalState) => state);
 
   useEffect(() => {
     setSearchedPatients(patients);
   }, [patients]);
 
   const fetch = async () => {
-    dispatch(getAllPatients())
+    dispatch(getAllPatients(profile.id))
   };
 
   const handleDelete = async (id: string) => {
@@ -91,8 +92,7 @@ const PatientsListPage = (
       setSearchedPatients(
         patients.filter(
           (patient) =>
-            patient.petId.toString().toLocaleLowerCase().includes(search) ||
-            patient.EMBG!.toLowerCase().includes(search) ||
+            patient.EMBG!.toString().toLowerCase().includes(search) ||
             (getValue("date", patient.dateOfBirth!) as string).includes(search)
         )
       );
@@ -141,23 +141,23 @@ const PatientsListPage = (
                   state: {
                     patient: {
                       ...patient,
-                      dateOfBirth: patient.dateOfBirth ? new Date(patient.dateOfBirth).toISOString() : undefined
+                      dateOfBirth: new Date(patient.dateOfBirth).toISOString()
                     }
                   },
                 });
                 event.stopPropagation();
               }}
             >
-              Промени
+              Edit
             </Button>,
             <CustomModal
-              buttonName="Избриши"
+              buttonName="Delete"
               onClick={() => {
-                handleDelete(patient.petId);
+                handleDelete(patient.id!);
               }}
-              title="Избриши пациент"
-              content={`Дали сте сигурни дека сакаде да ги избришете пациентот ${patient["name"]} ${patient["surname"]}?`}
-              id={patient["petId"]!}
+              title="Delete Patient"
+              content={`Are you sure you want to delete ${patient["firstName"]} ${patient["lastName"]}?`}
+              id={patient["id"]!}
             />,
           ]}
         />
@@ -179,7 +179,7 @@ const PatientsListPage = (
           {errorMessage}
         </div>
       )}
-      <h1>Сите Пациенти</h1>
+      <h1>All Patients</h1>
       <div className={classes.btnContainer}>
         <Button
           variant="outlined"
@@ -187,17 +187,17 @@ const PatientsListPage = (
           className={classes.btn}
           onClick={() => props.history.push("/patients/add")}
         >
-          Додади Пациент
+          Add Patient
         </Button>
         <Search
           handleSearch={handleSearchPatients}
-          placeholder="пребарувај по датум, ПЕТ број и матичен број"
+          placeholder="search by date, EMBG"
         />
       </div>
       {!isLoading ? (
         <Paper className={classes.root} elevation={3}>
           {searchedPatients && searchedPatients.length === 0 ? (
-            <h2 className={classes.noPatients}>Нема пациенти!</h2>
+            <h2 className={classes.noPatients}>There are no patients</h2>
           ) : (
             <CustomTable
               columns={columns}
@@ -206,7 +206,7 @@ const PatientsListPage = (
                   elements: mapElements(patient),
                   onClick: function () {
                     props.history.push({
-                      pathname: `/patients/${patient.petId}`,
+                      pathname: `/patients/${patient.id}`,
                       state: { patient },
                     });
                   },

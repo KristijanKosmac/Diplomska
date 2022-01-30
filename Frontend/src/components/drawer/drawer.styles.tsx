@@ -24,17 +24,20 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   links: {
-    width: "19%",
+    width: "20%",
     justifyContent: "flex-end",
     display: "flex",
     "& a": {
       cursor: "pointer",
-      marginRight: "15%",
       fontWeight: "bold",
       display: "flex",
 
       "&:hover": {
         opacity: "70%"
+      },
+
+      "&:nth-of-type(1)": {
+        marginRight: "15%"
       }
     }
   },
@@ -87,7 +90,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     alignItems: "center",
     justifyContent: "flex-end",
-    padding: theme.spacing(0, 1),
+    // padding: theme.spacing(0, 1),
     // necessary for content to be below app bar
     ...theme.mixins.toolbar,
   },

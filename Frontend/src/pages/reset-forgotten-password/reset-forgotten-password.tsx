@@ -17,10 +17,6 @@ import Copyright from "../../components/copyright-footer/copyright-footer.compon
 import { getUserManagementAPI } from "../../api";
 import { useDispatch, useSelector } from "react-redux";
 import forgotPasswordValidation from "../../utils/validations/forgot-password-validation";
-import {
-  ResetPasswordRequest,
-  ResetPasswordRequestEmailLanguageEnum,
-} from "pet-user-management-sdk";
 
 const ResetForgottenPasswordPage = (props: RouteComponentProps) => {
   const classes = useStyles();
@@ -46,10 +42,10 @@ const ResetForgottenPasswordPage = (props: RouteComponentProps) => {
       if (email) {
         const { data: { username } } = await getUserManagementAPI().getUserByEmail(email);
 
-        await getUserManagementAPI().resetPassword({
-          username,
-          emailLanguage: ResetPasswordRequestEmailLanguageEnum.En,
-        } as ResetPasswordRequest);
+        // await getUserManagementAPI().resetPassword({
+        //   username,
+        //   emailLanguage: ResetPasswordRequestEmailLanguageEnum.En,
+        // } as ResetPasswordRequest);
 
         setShow(true);
         setSuccessMessage("Верификацискиот код е успешно испратен на вашата емаил адреса");

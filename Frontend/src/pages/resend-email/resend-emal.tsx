@@ -1,6 +1,5 @@
 import { useState } from "react";
 import SumbitEmail from "../../components/submit-email/submit-email.component";
-import { ResendAccountConfirmationEmailRequest, ResendAccountConfirmationEmailRequestEmailLanguageEnum } from 'pet-user-management-sdk'
 import { getUserManagementAPI } from "../../api";
 
 const ResendEmailPage = () => {
@@ -15,9 +14,9 @@ const ResendEmailPage = () => {
 
   const handleSubmit = async () => {
     try {
-      await getUserManagementAPI().resendAccountConfirmationEmail(
-        { email: email, emailLanguage: ResendAccountConfirmationEmailRequestEmailLanguageEnum.En} as ResendAccountConfirmationEmailRequest
-      );
+      // await getUserManagementAPI().resendAccountConfirmationEmail(
+      //   { email: email, emailLanguage: ResendAccountConfirmationEmailRequestEmailLanguageEnum.En} as ResendAccountConfirmationEmailRequest
+      // );
 
       setSuccessMessage("Успешно испратена порака за валидација на емаил")
     } catch (error: any) {

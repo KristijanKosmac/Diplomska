@@ -1,5 +1,5 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
-import { RefreshTokenResponse } from "pet-user-management-sdk";
+// import { RefreshTokenResponse } from "pet-user-management-sdk";
 import { getUserManagementAPI, getAccessToken } from ".";
 import { signOutUser } from "../actions/index";
 type Subscriber = (accessToken: string) => void;
@@ -9,6 +9,7 @@ let isAlreadyFetchingAccessToken = false;
 // This is the list of waiting requests that will retry after the JWT refresh complete
 let subscribers = [] as Subscriber[];
 
+// eslint-disable-next-line import/no-anonymous-default-export
 export default {
     registerRequestInterceptor: (store: any) => {
         // const instace = axios.create();
@@ -45,6 +46,13 @@ export default {
                 })
             }
         );
+
+        axios.interceptors.request.use(
+            config => {
+                config.headers['Access-Control-Allow-Origin'] = '*'
+                return config
+            }
+        )
     }
 }
 
@@ -70,7 +78,7 @@ function getResetToken(): string | null {
     return localStorage.getItem("refreshToken");
 }
 
-function refreshLocalStorage(response: RefreshTokenResponse): void {
+function refreshLocalStorage(response: any): void {
     localStorage.setItem("accessToken", response.accessToken!);
     localStorage.setItem("expirationDate", new Date(
         new Date().getTime() + response.expiresIn! * 1000
@@ -102,7 +110,8 @@ async function resetTokenAndReattemptRequest(error: AxiosError, store: any) {
         });
         if (!isAlreadyFetchingAccessToken) {
             isAlreadyFetchingAccessToken = true;
-            const response = await getUserManagementAPI().refreshToken({ refreshToken });
+            // const response = await getUserManagementAPI().refreshToken({ refreshToken });
+            const response: any = {} // remove this the commented row is correct
             if (!response.data) {
                 store.dispatch(signOutUser());
                 return Promise.reject(error);

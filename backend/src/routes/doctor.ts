@@ -3,17 +3,17 @@ import express from "express";
 import * as errorHandler from "../lib/async-response-handler";
 import { DoctorManager } from "../models/doctor-manager";
 
-const app = express();
+const app = express.Router();
 
 app.get(
-  "/:id",
+  "/doctor/:id",
   errorHandler.wrap(async (req) => {
     const { id } = req.params as any;
     return new DoctorManager().getDoctor(id);
   })
 );
 app.post(
-  "/",
+  "/doctor",
   bodyParser.json(),
   errorHandler.wrap(async (req) => {
     return new DoctorManager().addDoctor(req.body);
@@ -21,14 +21,14 @@ app.post(
 );
 
 app.delete(
-  "/:id",
+  "/doctor/:id",
   errorHandler.wrap(async (req) => {
     const { id } = req.params as any;
     return new DoctorManager().deleteDoctor(id);
   })
 );
 app.put(
-  "/:id",
+  "/doctor/:id",
   bodyParser.json(),
   errorHandler.wrap(async (req) => {
     const { id } = req.params as any;
@@ -37,4 +37,4 @@ app.put(
 );
 
 // Export your express server so you can import it in the lambda function.
-export const route = app;
+export const doctorRouter = app;

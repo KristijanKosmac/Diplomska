@@ -1,9 +1,7 @@
 export const citizenships = [
-    "Македонија",
-    "Косово",
-    "Албанија",
-    "Србија",
-    "Црна Гора",
-    "БИХ",
-    "друго"
+    "Macedonian",
+    "Serbian",
+    "Albanian",
+    "Croatina",
+    "Other"
 ] 

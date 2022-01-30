@@ -64,6 +64,18 @@ export class PatientManager {
         return { done: true };
     }
 
+    async deleteFile(patientId: string, fileName: string): Promise<DoneResult> {
+        const path = `src/documents/${patientId}/${fileName}`
+
+        fs.unlink(path, (err) => {
+            if (err) throw err
+
+            console.log("File deleted")
+        })
+
+        return { done: true };
+    }
+
     async getAllFiles(patientId: string): Promise<File[]> {
         const path = `src/documents/${patientId}/`
         const filenames = fs.readdirSync(path)
@@ -77,3 +89,4 @@ export class PatientManager {
     }
 
 }
+ 

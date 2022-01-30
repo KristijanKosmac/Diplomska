@@ -27,7 +27,7 @@ const SignInPage = (props: RouteComponentProps) => {
       {errorMessage && <div className="errorMessage">{errorMessage}</div>}
 
       <Authentication
-        title={"Најави се"}
+        title={"Sign in"}
         links={[
           { href: "/reset-forgotten-password", content: "forgot password?" },
           { href: "/sign-up", content: "Sign up" },

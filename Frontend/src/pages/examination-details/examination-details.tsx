@@ -5,13 +5,12 @@ import axios from "axios";
 
 import { AppBar, Tab, Tabs, CircularProgress } from "@material-ui/core";
 
-import { getPetBackendAPI, WindowConfig } from "../../api";
+import { getPetBackendAPI } from "../../api";
 
 import {
   Document,
   Examination,
-  File,
-  Patient
+  File
 } from "../../types";
 
 import AddEditExamination from "../add-edit-examination/add-edit-examination"
@@ -21,7 +20,6 @@ import Documents from "../../components/documents/documents.component";
 import useStyles from "./examination-details.styles";
 import { saveByteArray } from "../../utils/saveByteArray";
 import { base64ToArrayBuffer } from "../../utils/base64ToArrayBuffer";
-import { GetPatientResponse } from "pet-backend-sdk";
 
 const ExaminationDetails = (props: RouteComponentProps<
   {},
@@ -38,7 +36,7 @@ const ExaminationDetails = (props: RouteComponentProps<
     examinationType: "",
     patientId: ""
   });
-  const [patient, setPatient] = useState<GetPatientResponse>();
+  const [patient, setPatient] = useState<any>();
   const [documents, setDocuments] = useState<Document[]>([]);
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -93,7 +91,7 @@ const ExaminationDetails = (props: RouteComponentProps<
       setIsBusy(true);
       await axios
         .post(
-          `${process.env.REACT_APP_BACKEND_ENDPOINT || (window as unknown as WindowConfig).env.BACKEND_ENDPOINT}/examination/${examinationId}/documents`,
+          ``,
           files,
           {
             headers: {

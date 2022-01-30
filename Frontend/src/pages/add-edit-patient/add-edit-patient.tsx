@@ -13,14 +13,12 @@ import {
 } from "@material-ui/core";
 import { AccountBoxOutlined as AccountBoxOutlinedIcon } from "@material-ui/icons";
 import useStyles from "./add-edit-patient.styles";
-import patientValidation from "../../utils/validations/patient-validation";
-import { getPetBackendAPI } from "../../api";
-import { Patient } from "../../types";
-import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
-import { MaterialUiPickersDate } from "@material-ui/pickers/typings/date";
-import DateFnsUtils from "@date-io/date-fns";
 import CustomSelect from "../../components/select/select";
-import { citizenships } from "../../constants/citizenship"
+import DatePicker from "../../components/date-picker/date-picker.component";
+import patientValidation from "../../utils/validations/patient-validation";
+import { patientAPI } from "../../api";
+import { Patient } from "../../types";
+import { citizenships } from "../../constants/citizenship";
 
 export default function AddEditPatient(
   props: RouteComponentProps<
@@ -34,23 +32,22 @@ export default function AddEditPatient(
 ) {
   const classes = useStyles();
 
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [petId, setPetId] = useState<number>();
-  const [telephoneNumber, setTelephoneNumber] = useState("");
-  const [secondTelephoneNumber, setSecondTelephoneNumber] = useState("");
-  const [email, setEmail] = useState("");
-  const [dateOfBirth, setDateOfBirth] = useState<string>();
-  const [EMBG, setEMBG] = useState("");
-  const [address, setAddress] = useState("");
-  const [citizenship, setCitizenship] = useState("");
-  const [sex, setSex] = useState<"male" | "female">();
+  const [patient, setPatient] = useState<Patient>({
+    EMBG: 0,
+    dateOfBirth: "",
+    email: "",
+    familyDoctor: "",
+    firstName: "",
+    lastName: "",
+  });
 
   const [errors, setErrors] = useState({
     firstName: "",
     lastName: "",
-    PET: "",
-    telephoneNumber: "",
+    EMBG: "",
+    dateOfBirth: "",
+    email: "",
+    familyDoctor: ""
   });
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -61,63 +58,20 @@ export default function AddEditPatient(
   useEffect(() => {
     if (props.location.state) {
       const patient = props.location.state.patient;
-      setFirstName(patient.name);
-      setLastName(patient.surname);
-      setPetId(patient.petId as unknown as number);
-      setEmail(patient.email!);
-      setTelephoneNumber(patient.telephoneNumber)
-      setSecondTelephoneNumber(patient.secondTelephoneNumber || "")
-      setDateOfBirth(patient.dateOfBirth)
-      setEMBG(patient.EMBG || "")
-      setAddress(patient.address || "")
-      setCitizenship(patient.citizenship || "")
-      setSex(patient.sex)
+      setPatient(patient);
     }
   }, []);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const { errors, valid } = patientValidation({
-      firstName,
-      lastName,
-      PET: petId!,
-      telephoneNumber,
-    });
-
+    const { errors, valid } = patientValidation(patient);
+  
     if (valid) {
       try {
         if (isUpdate) {
-          await getPetBackendAPI().updatePatientDetails(
-            props.location.state.patient.petId,
-            {
-              createdAt: props.location.state.patient.createdAt,
-              name: firstName,
-              surname: lastName,
-              petId: petId!.toString(),
-              telephoneNumber,
-              EMBG, 
-              address,
-              citizenship,
-              dateOfBirth: dateOfBirth ? Date.parse(dateOfBirth): undefined ,
-              secondTelephoneNumber,
-              sex: sex as any,
-              email,
-            }
-          );
+          await patientAPI.updatePatient(props.location.state.patient.id!, patient ).catch(err => {throw err})
         } else {
-          await getPetBackendAPI().addPatient({
-            name: firstName,
-            surname: lastName,
-            petId: petId!.toString(),
-            telephoneNumber,
-            EMBG, 
-            address,
-            citizenship,
-            dateOfBirth: dateOfBirth ? Date.parse(dateOfBirth): undefined ,
-            secondTelephoneNumber,
-            sex: sex as any,
-            email,
-          });
+          await patientAPI.createPatient(patient).catch(err => {throw err})
         }
 
         props.history.push({
@@ -126,30 +80,21 @@ export default function AddEditPatient(
             successMessage: `Successfully ${
               isUpdate ? "edited" : "added"
             } patient!`,
-            patient: {
-              surname: lastName,
-              name: firstName,
-              petId: petId!.toString(),
-              telephoneNumber,
-              secondTelephoneNumber,
-              email,
-              createdAt: new Date().getTime(),
-              EMBG,
-              address,
-              citizenship,
-              dateOfBirth,
-              sex,
-            },
+            patient
           },
         });
       } catch (error: any) {
-        console.log(error)
+        console.log(error);
         setErrorMessage(error.response.data.message);
       }
     } else {
       setErrors(errors);
     }
   }
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setPatient({ ...patient, [event.target.name]: event.target.value });
+  };
 
   return (
     <Container component="main" maxWidth="lg">
@@ -164,7 +109,7 @@ export default function AddEditPatient(
           <AccountBoxOutlinedIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
-          {isUpdate ? "Промени податоци за пациент" : "Креирај Пациент"}
+          {isUpdate ? "Update Patient Info" : "Create Patient"}
         </Typography>
         <form className={classes.form} onSubmit={handleSubmit}>
           <Grid container spacing={5}>
@@ -174,30 +119,14 @@ export default function AddEditPatient(
                 margin="normal"
                 required
                 fullWidth
-                id="petId"
-                label="ПЕТ број"
-                disabled={isUpdate}
-                type="number"
-                name="petId"
-                autoComplete="petId"
-                value={petId}
-                onChange={(event) => setPetId(+event.target.value)}
-                error={!!errors.PET}
-                helperText={errors.PET}
-              />
-              <TextField
-                variant="outlined"
-                margin="normal"
-                required
-                fullWidth
                 id="firstName"
-                label="Име"
+                label="First Name"
                 type="text"
                 name="firstName"
                 autoComplete="firstName"
                 autoFocus
-                value={firstName}
-                onChange={(event) => setFirstName(event.target.value)}
+                value={patient.firstName}
+                onChange={handleChange}
                 error={!!errors.firstName}
                 helperText={errors.firstName}
               />
@@ -207,56 +136,73 @@ export default function AddEditPatient(
                 required
                 fullWidth
                 id="lastName"
-                label="Презиме"
+                label="Last Name"
                 type="text"
                 name="lastName"
                 autoComplete="lastName"
-                value={lastName}
-                onChange={(event) => setLastName(event.target.value)}
+                value={patient.lastName}
+                onChange={handleChange}
                 error={!!errors.lastName}
                 helperText={errors.lastName}
               />
               <TextField
                 variant="outlined"
                 margin="normal"
+                fullWidth
                 required
-                fullWidth
-                id="telephoneNumber"
-                label="Телефонски број"
-                type="telephoneNumber"
-                name="telephoneNumber"
-                autoComplete="telephoneNumber"
-                value={telephoneNumber}
-                onChange={(event) => setTelephoneNumber(event.target.value)}
-                error={!!errors.telephoneNumber}
-                helperText={errors.telephoneNumber}
-              />
-              <TextField
-                variant="outlined"
-                margin="normal"
-                fullWidth
-                id="secondTelephoneNumber"
-                label="Втор телефонски број"
-                type="text"
-                name="secondTelephoneNumber"
-                autoComplete="secondTelephoneNumber"
-                autoFocus
-                value={secondTelephoneNumber}
-                onChange={(event) =>
-                  setSecondTelephoneNumber(event.target.value)
-                }
-              />
-              <TextField
-                variant="outlined"
-                margin="normal"
-                fullWidth
                 id="email"
-                label="Емаил"
+                label="Email"
                 type="email"
                 name="email"
                 autoComplete="email"
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
+                value={patient.email}
+                onChange={handleChange}
+                error={!!errors.email}
+                helperText={errors.email}
+              />
+              <TextField
+                variant="outlined"
+                margin="normal"
+                fullWidth
+                required
+                id="EMBG"
+                label="EMBG"
+                type="text"
+                name="EMBG"
+                autoComplete="EMBG"
+                value={patient.EMBG}
+                onChange={handleChange}
+                error={!!errors.EMBG}
+                helperText={errors.EMBG}
+              />
+              <DatePicker
+                name="dateOfBirth"
+                onChange={(dateOfBirth) => {
+                  setPatient({ ...patient, dateOfBirth });
+                }}
+                value={patient.dateOfBirth!}
+              />
+              <CustomSelect
+                value={patient.sex || ""}
+                items={["Doktor1", "doktor2"]}
+                errorMessage=""
+                required
+                name="Family Doctor"
+                onChange={(familyDoctor) => {
+                  setPatient({ ...patient, familyDoctor });
+                }}
+              />
+              <TextField
+                variant="outlined"
+                margin="normal"
+                fullWidth
+                id="telephoneNumber"
+                label="Telephone Number"
+                type="telephoneNumber"
+                name="telephoneNumber"
+                autoComplete="telephoneNumber"
+                value={patient.telephoneNumber}
+                onChange={handleChange}
               />
             </Grid>
             <Grid item xs={6}>
@@ -264,76 +210,92 @@ export default function AddEditPatient(
                 variant="outlined"
                 margin="normal"
                 fullWidth
-                id="EMBG"
-                label="ЕМБГ"
+                id="address"
+                label="Address"
                 type="text"
-                name="EMBG"
-                autoComplete="EMBG"
-                value={EMBG}
-                onChange={(event) => setEMBG(event.target.value)}
+                name="address"
+                autoComplete="address"
+                value={patient.address}
+                onChange={handleChange}
               />
-              <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                <Grid container justifyContent="space-around">
-                  <DatePicker
-                    defaultValue={null}
-                    inputVariant="outlined"
-                    disableFuture
-                    margin="normal"
-                    fullWidth
-                    id="datePicker"
-                    name="dateOfBirth"
-                    cancelLabel="Cancel"
-                    label="Датум на раѓање"
-                    format="dd-MM-yyyy"
-                    value={!dateOfBirth ? null : new Date(dateOfBirth)}
-                    onChange={(date: MaterialUiPickersDate) =>
-                      setDateOfBirth(new Date(date!).toISOString())
-                    }
-                  />
-                </Grid>
-              </MuiPickersUtilsProvider>
               <TextField
                 variant="outlined"
                 margin="normal"
                 fullWidth
-                id="address"
-                label="Адреса"
+                id="country"
+                label="country"
                 type="text"
-                name="address"
-                autoComplete="address"
-                value={address}
-                onChange={(event) => setAddress(event.target.value)}
+                name="country"
+                autoComplete="country"
+                value={patient.country}
+                onChange={handleChange}
               />
-              <CustomSelect
-                value={citizenship}
+              <TextField
+                variant="outlined"
+                margin="normal"
+                fullWidth
+                id="city"
+                label="city"
+                type="text"
+                name="city"
+                autoComplete="city"
+                value={patient.city}
+                onChange={handleChange}
+              />
+               <CustomSelect
+                value={patient.nationality || ""}
                 items={citizenships}
                 errorMessage=""
-                name="Државјанство"
-                onChange={(value) => {
-                  setCitizenship(value);
+                name="Nationality"
+                onChange={(nationality) => {
+                  setPatient({ ...patient, nationality });
                 }}
               />
+              <TextField
+                variant="outlined"
+                margin="normal"
+                fullWidth
+                id="height"
+                label="Height"
+                type="number"
+                name="height"
+                autoComplete="height"
+                value={patient.height}
+                onChange={handleChange}
+              />
+              <TextField
+                variant="outlined"
+                margin="normal"
+                fullWidth
+                id="weight"
+                label="weight"
+                type="number"
+                name="weight"
+                autoComplete="weight"
+                value={patient.weight}
+                onChange={handleChange}
+              />
               <CustomSelect
-                value={sex || ""}
-                items={["male", "female"]}
+                value={patient.sex || ""}
+                items={["Male", "Female"]}
                 errorMessage=""
-                name="Пол"
-                onChange={(value) => {
-                  setSex(value);
+                name="Sex"
+                onChange={(sex) => {
+                  setPatient({ ...patient, sex });
                 }}
               />
             </Grid>
           </Grid>
-          <div className={classes.btnContainer}> 
+          <div className={classes.btnContainer}>
             <Button
               variant="contained"
               className={classes.submit}
               color="primary"
               onClick={() => {
-                props.history.push("/patients")
+                props.history.push("/patients");
               }}
             >
-              Откажи
+              Cancel
             </Button>
             <Button
               type="submit"
@@ -341,7 +303,7 @@ export default function AddEditPatient(
               className={classes.submit}
               color="primary"
             >
-              {isUpdate ? "Промени" : "Креирај"}
+              {isUpdate ? "Edit" : "Create"}
             </Button>
           </div>
         </form>

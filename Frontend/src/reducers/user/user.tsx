@@ -1,4 +1,4 @@
-import { UserRole, UserState } from "../../types";
+import { UserState } from "../../types";
 import { UserActionTypes } from "../../constants/index";
 
 const INITIAL_STATE: UserState = {
@@ -9,14 +9,6 @@ const INITIAL_STATE: UserState = {
     lastName: "",
     userAttributes: {},
   },
-  users: [{
-    id: "",
-    firstName: "",
-    lastName: "",
-    email: "",
-    role: UserRole.Nurse,
-    institution: "",
-  }],
   accessToken: "",
   sessionToken: "",
   filledDetails: null,

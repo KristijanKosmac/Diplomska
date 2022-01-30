@@ -42,11 +42,11 @@ const PatientDetails = (props: RouteComponentProps<{}, StaticContext, {}>) => {
   const [informMessage, setInformMessage] = useState("");
 
   const [patient, setPatient] = React.useState<Patient>({
-    name: "",
-    petId: "",
-    surname: "",
-    telephoneNumber: "",
-    createdAt: 0,
+    firstName: "",
+    lastName: "",
+    EMBG: 0,
+    dateOfBirth: "",
+    familyDoctor: "",
     email: "",
   });
 
@@ -74,9 +74,9 @@ const PatientDetails = (props: RouteComponentProps<{}, StaticContext, {}>) => {
 
   const fetchExaminations = async () => {
     try {
-      if (patient.petId) {
+      if (patient.id) {
         const { data } = await getPetBackendAPI().getAllExaminationForPatient(
-          patient.petId
+          patient.id
         );
         setExaminations(data as unknown as Examination[]);
       }
@@ -89,8 +89,8 @@ const PatientDetails = (props: RouteComponentProps<{}, StaticContext, {}>) => {
 
   const fetchStudies = async () => {
     try {
-      if (patient.petId) {
-        const { data } = await getPetBackendAPI().getAllStudies(patient.petId);
+      if (patient.id) {
+        const { data } = await getPetBackendAPI().getAllStudies(patient.id);
 
         const studiesData = data as unknown as StudiesResponse[];
 
@@ -118,9 +118,9 @@ const PatientDetails = (props: RouteComponentProps<{}, StaticContext, {}>) => {
   };
 
   const fetchDocuments = async () => {
-    if (patient.petId) {
+    if (patient.id) {
       try {
-        const response = await getPetBackendAPI().getDocuments(patient.petId);
+        const response = await getPetBackendAPI().getDocuments(patient.id);
         const data = response.data as unknown as File[];
 
         const docs = data.sort((a, b) =>
@@ -180,7 +180,7 @@ const PatientDetails = (props: RouteComponentProps<{}, StaticContext, {}>) => {
 
   const handleDeleteDocument = async (documentId: string) => {
     try {
-      await getPetBackendAPI().deleteDocument(patient.petId, documentId);
+      await getPetBackendAPI().deleteDocument(patient.id, documentId);
       setSuccessMessage("Документот е успешно избришан");
 
       setTimeout(() => {
@@ -208,10 +208,7 @@ const PatientDetails = (props: RouteComponentProps<{}, StaticContext, {}>) => {
       setIsBusy(true);
       await axios
         .post(
-          `${
-            process.env.REACT_APP_BACKEND_ENDPOINT ||
-            (window as unknown as WindowConfig).env.BACKEND_ENDPOINT
-          }/patient/${patient.petId}/documents`,
+          ``,
           files,
           {
             headers: {
@@ -241,7 +238,7 @@ const PatientDetails = (props: RouteComponentProps<{}, StaticContext, {}>) => {
       const response = await axios(`/series/${studyUid}/media`, {
         responseType: "arraybuffer",
       });
-      saveByteArray(`${patient.petId}/${studyId}.zip`, response.data);
+      saveByteArray(`${patient.id}/${studyId}.zip`, response.data);
 
       // const { data } = await getPetBackendAPI().downloadStudy(studyUid);
       // const bufferArray = base64ToArrayBuffer(data.blob);
@@ -271,7 +268,7 @@ const PatientDetails = (props: RouteComponentProps<{}, StaticContext, {}>) => {
         }),
       });
       const bufferArray = base64ToArrayBuffer(data.data.blob);
-      saveByteArray(`${patient.petId}.zip`, bufferArray);
+      saveByteArray(`${patient.id}.zip`, bufferArray);
     } catch (err: any) {
       console.log(err);
     }
@@ -330,7 +327,7 @@ const PatientDetails = (props: RouteComponentProps<{}, StaticContext, {}>) => {
         </div>
       )}
       <h1>
-        Пациент: {patient.name} {patient.surname}
+        Пациент: {patient.firstName} {patient.lastName}
       </h1>
       <AppBar position="static" className={classes.appBar}>
         <Tabs
@@ -359,7 +356,7 @@ const PatientDetails = (props: RouteComponentProps<{}, StaticContext, {}>) => {
         <ExaminationList
           examinations={examinations}
           handleDelete={handleDeleteExamination}
-          patientId={patientId ? patientId : patient.petId}
+          patientId={patientId ? patientId : patient.id!}
           isBusy={isBusy}
         />
       ) : tab === 2 ? (

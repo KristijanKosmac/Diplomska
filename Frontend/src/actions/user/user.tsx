@@ -2,7 +2,6 @@ import { getUserManagementAPI } from "../../api";
 import { UserActionTypes } from "../../constants/index";
 import { History } from "history";
 import { UserState, User } from "../../types";
-import { GetAllUsersResponseUsers, GetUserResponse, SetPasswordResponse } from "pet-user-management-sdk";
 import { signUp, signIn } from "../../firebase/index"
 
 export const signUpUser =
@@ -64,7 +63,7 @@ export const signInUser =
       dispatch({
         type: UserActionTypes.SIGN_IN_USER_FAIL,
         payload: {
-          errorMessage: error.response.data.message,
+          errorMessage: error || error.response.data.message,
         },
       });
     }
@@ -136,7 +135,7 @@ export const createUser =
 export const getUser =
   () =>
   async (
-    dispatch: (arg0: { type: string; payload: GetUserResponse }) => void
+    dispatch: (arg0: { type: string; payload: any }) => void
   ) => {
     const response = await getUserManagementAPI().getUser();
     localStorage.removeItem("profile");
@@ -159,8 +158,8 @@ export const getAllUsers =
     const profileId  = JSON.parse(localStorage.getItem("profile")!).id;
     
     try{
-      const { data } = await getUserManagementAPI().getAllUsers();
-      const usersData = data as GetAllUsersResponseUsers[];
+      // const { data } = await getUserManagementAPI().getAllUsers();
+      const usersData = [{}] as any[];
 
       const users: User[] =  usersData.map((user) => {
         const { email, role, institution } = JSON.parse(

@@ -133,7 +133,7 @@ const Documents = (props: DocumentComponentProps) => {
         {["pdf", "jpeg", "jpg", "png"].includes(
           document.name.split(".").pop() || ""
         ) ? (
-          <a href={document.url} target="_blank">
+          <a href={document.url} target="_blank" rel="noreferrer">
             <Button variant="outlined" color="primary" className={classes.btn}>
               Види документ
             </Button>
@@ -251,7 +251,7 @@ const Documents = (props: DocumentComponentProps) => {
             onChange={(data) => {
               const formdata = new FormData();
               props.patient &&
-                formdata.append("directory", props.patient.petId);
+                formdata.append("directory", props.patient.id!);
               props.examination &&
                 formdata.append("directory", props.examination.id);
               data.forEach((d) => {

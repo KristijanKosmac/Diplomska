@@ -1,4 +1,3 @@
-import { GetAllUsersResponseUsers } from "pet-user-management-sdk";
 import { MouseEventHandler } from "react";
 import { RouteComponentProps } from "react-router-dom";
 
@@ -93,10 +92,12 @@ export interface StudiesResponse {
 }
 
 export interface PatientValidationProps {
-  PET: number;
   firstName: string;
   lastName: string;
-  telephoneNumber: string;
+  EMBG: number;
+  dateOfBirth: string;
+  email: string;
+  familyDoctor: string
 }
 
 export interface ExaminationValidationProps {
@@ -105,20 +106,38 @@ export interface ExaminationValidationProps {
 }
 
 export interface Patient {
-  name: string;
-  surname: string;
-  petId: string;
-  telephoneNumber: string;
-  createdAt: number;
-  updatedAt?: number;
-  secondTelephoneNumber?: string;
-  email?: string;
-  EMBG?: string;
+  id?: string;
+  firstName: string;
+  lastName: string;
+  EMBG: number;
+  dateOfBirth: string;
+  email: string;
+  familyDoctor: string
   address?: string;
-  citizenship?: string;
-  dateOfBirth?: string;
-  sex?: "male" | "female";
+  telephoneNumber?: number
+  height?: number;
+  weight?: number;
+  sex?: "Male" | "Female";
+  country?: string;
+  city?: string;
+  nationality?: string;
 }
+
+// export interface Patient {
+//   name: string;
+//   surname: string;
+//   petId: string;
+//   telephoneNumber: string;
+//   createdAt: number;
+//   updatedAt?: number;
+//   secondTelephoneNumber?: string;
+//   email?: string;
+//   EMBG?: string;
+//   address?: string;
+//   citizenship?: string;
+//   dateOfBirth?: string;
+//   sex?: "male" | "female";
+// }
 
 export interface Examination {
   id: string;
@@ -173,6 +192,14 @@ export interface Examination {
   updatedAt?: number;
 }
 
+export interface DoctorValidation {
+  id: string,
+  EMBG: number,
+  dateOfBirth: string,
+  email: string,
+  firstName: string,
+  lastName: string,
+}
 export interface Document {
   id: string;
   name: string;
@@ -198,6 +225,8 @@ interface Column {
   align?: "right" | "left";
   format?: (value: number) => string;
 }
+
+
 
 //CUSTOM COMPONENTS
 
@@ -237,6 +266,12 @@ export interface SelectProps {
   disabled?: boolean;
   objectParametars?: string[];
   errorMessage?: string;
+}
+
+export interface DatePickerProps {
+  name: string;
+  value: string;
+  onChange: (value: string) => void;
 }
 
 export interface DropdownMenuActionsProps {
@@ -293,17 +328,14 @@ export interface RadioButtonProps {
 
 export interface PatientColumn {
   id:
-  | "createdAt"
-  | "name"
-  | "surname"
+  | "firstName"
+  | "lastName"
   | "email"
-  | "petId"
   | "EMBG"
   | "address"
-  | "citizenship"
+  | "nationality"
   | "dateOfBirth"
   | "telephoneNumber"
-  | "secondTelephoneNumber"
   | "sex";
   label: string;
   minWidth?: string;
@@ -354,11 +386,11 @@ export interface ExaminationColumn {
 
 // VALIDATION
 
-export interface UserFormProps extends MessagesState {
+export interface DoctorFormProps extends MessagesState {
   title: string;
   isUpdate: boolean;
-  user?: User;
-  onSubmit: (value: User) => void;
+  doctor?: Doctor;
+  onSubmit: (value: Doctor) => void;
 }
 
 // REDUCER STATE
@@ -372,7 +404,6 @@ export interface UserState extends MessagesState {
       [key: string]: any;
     };
   };
-  users: User[];
   accessToken: string;
   sessionToken: string;
   filledDetails: boolean | null;
@@ -438,4 +469,23 @@ export interface UnassignedStudiesPayload {
   studies?: UnassignesStudies[];
   errorMessage?: string;
   successMessage?: string;
+}
+
+
+/// *********** NEW TYPES ************
+
+export interface Doctor {
+  id: string;
+  firstName: string;
+  lastName: string;
+  EMBG: number;
+  dateOfBirth: string;
+  email: string;
+  address?: string;
+  telephoneNumber?: number
+  institution?: string
+  country?: string;
+  city?: string;
+  nationality?: string;
+  // patients?: PatientInteface[]
 }

@@ -19,7 +19,7 @@ import { deleteUser, getAllUsers, resetMessages } from "../../actions";
 const UsersListPage = (props: RouteComponentProps) => {
   const [searchedUsers, setSearchedUsers] = useState<User[]>([]);
 
-  const { users, isLoading, successMessage, errorMessage } = useSelector((state: GlobalState) => state.user);
+  const { isLoading, successMessage, errorMessage } = useSelector((state: GlobalState) => state.user);
 
   const classes = useStyles();
   const dispatch = useDispatch();
@@ -32,9 +32,9 @@ const UsersListPage = (props: RouteComponentProps) => {
     { id: "institution", label: "Институција" },
   ];
 
-  useEffect(() => {
-    setSearchedUsers(users);
-  }, [users]);
+  // useEffect(() => {
+  //   setSearchedUsers(users);
+  // }, [users]);
 
   const fetch = async () => {
     dispatch(getAllUsers())
@@ -63,18 +63,18 @@ const UsersListPage = (props: RouteComponentProps) => {
 
   const handleSearchUsers = (search: string) => {
     search = search.toLowerCase().trim();
-    if (search === "") {
-      setSearchedUsers(users);
-    } else {
-      setSearchedUsers(
-        users.filter(
-          (user) =>
-            user.role.toString().toLocaleLowerCase().includes(search) ||
-            user.firstName.toLowerCase().includes(search) ||
-            user.lastName.toLowerCase().includes(search)
-        )
-      );
-    }
+    // if (search === "") {
+    //   setSearchedUsers(users);
+    // } else {
+    //   // setSearchedUsers(
+    //   //   // users.filter(
+    //   //   //   (user) =>
+    //   //   //     user.role.toString().toLocaleLowerCase().includes(search) ||
+    //   //   //     user.firstName.toLowerCase().includes(search) ||
+    //   //   //     user.lastName.toLowerCase().includes(search)
+    //   //   // )
+    //   // );
+    // }
   };
 
   const mapElements = (user: User) => {

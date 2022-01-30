@@ -12,67 +12,51 @@ import {
 import { AccountBoxOutlined as AccountBoxOutlinedIcon } from "@material-ui/icons";
 
 import CustomSelect from "../../components/select/select";
-
+import DatePicker from "../date-picker/date-picker.component"
 import useStyles from "./user-form.styles";
-
-import { UserRole, UserFormProps } from "../../types";
-
-import UserValidation from "../../utils/validations/user-role.validation";
-
-export default function UserForm(props: UserFormProps) {
+import { DoctorFormProps, Doctor } from "../../types";
+import doctorValidation from "../../utils/validations/doctor.validation";
+import { institutions } from "../../constants/institutions";
+export default function UserForm(props: DoctorFormProps) {
   const classes = useStyles();
 
-  const [id, setId] = useState("");
-  const [institution, setInstitution] = useState("");
-  const [role, setRole] = useState(
-    props.user ? props.user.role : UserRole.Nurse
-  );
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
+  const [doctor, setDoctor] = useState<Doctor>({
+    id: "",
+    EMBG: 0,
+    dateOfBirth: "",
+    email: "",
+    firstName: "",
+    lastName: "",
+  });
 
   const [errors, setErrors] = useState({
     firstName: "",
     lastName: "",
     email: "",
-    institution: "",
-    role: "",
+    EMBG: "",
+    dateOfBirth: "",
   });
-  const [institutions, setInstitutions] = useState([
-    "УИ ПЕТ"
-  ]);
-  const roles = Object.values(UserRole)
 
   useEffect(() => {
-    if (props.user) {
-      const { email, firstName, id, institution, lastName, role } = props.user;
-
-      setEmail(email);
-      setInstitution(institution);
-      setFirstName(firstName);
-      setLastName(lastName);
-      setRole(role);
-      setId(id);
+    if (props.doctor) {
+      setDoctor(props.doctor);
     }
   }, []);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const { errors, valid } = UserValidation({
-      firstName,
-      lastName,
-      email,
-      institution,
-      role,
-      id: "asda",
-    });
+    const { errors, valid } = doctorValidation(doctor);
     setErrors(errors);
-
     if (valid) {
-      props.onSubmit({ id, email, firstName, institution, lastName, role });
+      // props.onSubmit({ id, email, firstName, institution, lastName, dateOfBirth : "sdasd", EMBG: 123 });
     }
   }
+  // keyof Doctor
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setDoctor({ ...doctor, [event.target.name]: event.target.value });
+  };
 
+  console.log(doctor);
   return (
     <Container component="main" maxWidth="md">
       {props.successMessage && (
@@ -95,72 +79,154 @@ export default function UserForm(props: UserFormProps) {
         </Typography>
         <form className={classes.form} onSubmit={handleSubmit}>
           <Grid container spacing={5}>
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              id="firstName"
-              label="Име"
-              type="text"
-              name="firstName"
-              autoComplete="firstName"
-              autoFocus
-              value={firstName}
-              onChange={(event) => setFirstName(event.target.value)}
-              error={!!errors.firstName}
-              helperText={errors.firstName}
-            />
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              id="lastName"
-              label="Презиме"
-              type="text"
-              name="lastName"
-              autoComplete="lastName"
-              autoFocus
-              value={lastName}
-              onChange={(event) => setLastName(event.target.value)}
-              error={!!errors.lastName}
-              helperText={errors.lastName}
-            />
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              id="email"
-              label="Емаил"
-              type="text"
-              name="email"
-              disabled
-              autoComplete="email"
-              autoFocus
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              error={!!errors.email}
-              helperText={errors.email}
-            />
-            <CustomSelect
-              required
-              items={institutions}
-              errorMessage={errors.institution}
-              name="Институција"
-              onChange={(value) => setInstitution(value)}
-              value={institution}
-            />
-            <CustomSelect
-              disabled={!!props.user!.role}
-              required
-              items={roles}
-              errorMessage={errors.role}
-              name="Улога"
-              onChange={(value) => setRole(UserRole[value as UserRole])}
-              value={role}
-            />
+            <Grid item xs={6} spacing={5}>
+              <TextField
+                variant="outlined"
+                margin="normal"
+                required
+                fullWidth
+                id="firstName"
+                label="First Name"
+                type="text"
+                name="firstName"
+                autoComplete="firstName"
+                autoFocus
+                value={doctor.firstName}
+                onChange={handleChange}
+                error={!!errors.firstName}
+                helperText={errors.firstName}
+              />
+              <TextField
+                variant="outlined"
+                margin="normal"
+                required
+                fullWidth
+                id="lastName"
+                label="Last Name"
+                type="text"
+                name="lastName"
+                autoComplete="lastName"
+                autoFocus
+                value={doctor.lastName}
+                onChange={handleChange}
+                error={!!errors.lastName}
+                helperText={errors.lastName}
+              />
+              <TextField
+                variant="outlined"
+                margin="normal"
+                required
+                fullWidth
+                id="email"
+                label="Email"
+                type="text"
+                name="email"
+                disabled
+                autoComplete="email"
+                autoFocus
+                value={doctor.email}
+                onChange={handleChange}
+                error={!!errors.email}
+                helperText={errors.email}
+              />
+              <TextField
+                variant="outlined"
+                margin="normal"
+                required
+                fullWidth
+                id="EMBG"
+                label="EMBG"
+                type="text"
+                name="EMBG"
+                autoComplete="EMBG"
+                autoFocus
+                value={doctor.EMBG}
+                onChange={handleChange}
+                error={!!errors.EMBG}
+                helperText={errors.EMBG}
+              />
+              <TextField
+                variant="outlined"
+                margin="normal"
+                required
+                fullWidth
+                id="telephoneNumber"
+                label="Telephone Number"
+                type="text"
+                name="telephoneNumber"
+                autoComplete="telephoneNumber"
+                autoFocus
+                value={doctor.telephoneNumber}
+                onChange={handleChange}
+              />
+              <DatePicker 
+                name="Date of Birth"
+                onChange={(dateOfBirth) => setDoctor({ ...doctor, dateOfBirth })}
+                value={doctor.dateOfBirth}
+                />
+            </Grid>
+            <Grid item xs={6} spacing={5}>
+              <TextField
+                variant="outlined"
+                margin="normal"
+                fullWidth
+                id="nationality"
+                label="Nationality"
+                type="text"
+                name="nationality"
+                autoComplete="nationality"
+                autoFocus
+                value={doctor.nationality}
+                onChange={handleChange}
+              />
+              <TextField
+                variant="outlined"
+                margin="normal"
+                fullWidth
+                id="address"
+                label="address"
+                type="text"
+                name="Address"
+                autoComplete="address"
+                autoFocus
+                value={doctor.address}
+                onChange={handleChange}
+              />
+              <TextField
+                variant="outlined"
+                margin="normal"
+                fullWidth
+                id="country"
+                label="Country"
+                type="text"
+                name="country"
+                autoComplete="country"
+                autoFocus
+                value={doctor.country}
+                onChange={handleChange}
+              />
+              <TextField
+                variant="outlined"
+                margin="normal"
+                fullWidth
+                id="city"
+                label="City"
+                type="text"
+                name="city"
+                autoComplete="city"
+                autoFocus
+                value={doctor.city}
+                onChange={handleChange}
+              />
+              <CustomSelect
+                items={institutions}
+                name="Institutions"
+                onChange={(value) => {
+                  setDoctor({ ...doctor, institution: value });
+                }}
+                value={doctor.institution}
+              />
+            </Grid>
           </Grid>
           <Button
             type="submit"
@@ -168,7 +234,7 @@ export default function UserForm(props: UserFormProps) {
             className={classes.submit}
             color="primary"
           >
-            {props.isUpdate ? "Промени" : "Креирај"}
+            {props.isUpdate ? "Edit" : "Create"}
           </Button>
         </form>
       </div>

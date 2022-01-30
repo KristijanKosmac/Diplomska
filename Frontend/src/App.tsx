@@ -13,8 +13,6 @@ import ForgotPasswordPage from "./pages/forgot-password/forgot-password";
 import ActivateUserPage from "./pages/activate-user/activate-user";
 import ResetPasswordPage from "./pages/reset-password/reset-password";
 import PatientsListPage from "./pages/patients-list/patients-list";
-import UnassignedStudiesPage from "./pages/unassigned-studies/unassigned-studies";
-import UploadDicomPage from "./pages/upload-dicom/upload-dicom";
 import AddEditPatient from "./pages/add-edit-patient/add-edit-patient";
 import PatientDetails from "./pages/patient-details/patient-details";
 import UsersListPage from "./pages/users-list/users-list";
@@ -67,9 +65,6 @@ const App = () => {
           <Route path="/patients/add" component={AddEditPatient} />
           <Route path="/patients/edit" component={AddEditPatient} />
           <Route path="/patients/:id" component={PatientDetails} />
-
-          <Route path="/studies/unassigned" component={UnassignedStudiesPage} />
-          <Route path="/studies/upload" component={UploadDicomPage} />
 
           <Route exact path="/users" component={UsersListPage} />
           <Route path="/users/add" component={AddEditUser} />

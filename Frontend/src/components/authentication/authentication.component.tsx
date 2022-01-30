@@ -65,7 +65,7 @@ export default function Authentication({
                 required
                 fullWidth
                 id="email"
-                label="емаил"
+                label="email"
                 type="email"
                 name="email"
                 autoComplete="email"
@@ -82,7 +82,7 @@ export default function Authentication({
                 required
                 fullWidth
                 name="password"
-                label="лозинка"
+                label="password"
                 type="password"
                 id="password"
                 autoComplete="current-password"

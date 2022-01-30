@@ -1,11 +1,11 @@
 import { PatientsActionTypes } from "../../constants/index";
 import { Patient, PatientPayload } from "../../types";
-import { getPetBackendAPI } from "../../api";
+import { patientAPI } from "../../api";
 import { useSelector } from "react-redux";
 import { GlobalState } from "../../reducers";
 
 export const getAllPatients =
-  () =>
+  (doctorId: string) =>
   async (
     dispatch: (arg0: { type: string; payload: PatientPayload }) => void
   ) => {
@@ -15,12 +15,8 @@ export const getAllPatients =
     });
 
     try {
-      const { data } = await getPetBackendAPI().getAllPatients();
-      const patientsData = data as unknown as Patient[];
-
-      const patients = patientsData.sort((a, b) =>
-        new Date(a.createdAt).getTime() < new Date(b.createdAt).getTime() ? 1 : -1
-      );
+      const { data } = await patientAPI.getAllPatients(doctorId);
+      const patients = data as unknown as Patient[];
 
       dispatch({
         type: PatientsActionTypes.FETCH_PATIENTS_SUCCESS,
@@ -40,38 +36,14 @@ export const getAllPatients =
   };
 
 export const addPatient =
-  ({
-    name,
-    petId,
-    surname,
-    telephoneNumber,
-    EMBG,
-    address,
-    citizenship,
-    dateOfBirth,
-    email,
-    secondTelephoneNumber,
-    sex,
-  }: Patient) =>
+  ( patient: Patient) =>
   async (
     dispatch: (arg0: { type: string; payload: PatientPayload }) => void
   ) => {
     try {
-      await getPetBackendAPI().addPatient({
-        name,
-        surname,
-        petId: petId!.toString(),
-        telephoneNumber,
-        EMBG: EMBG!.toString(), 
-        address,
-        citizenship,
-        dateOfBirth: parseInt(dateOfBirth!),
-        secondTelephoneNumber,
-        sex: sex as any,
-        email,
-      });
+      await patientAPI.createPatient(patient);
 
-      const { data } = await getPetBackendAPI().getAllPatients();
+      const { data } = await patientAPI.getAllPatients(patient.familyDoctor);
       const patients = data as unknown as Patient[];
 
       dispatch({
@@ -92,40 +64,14 @@ export const addPatient =
   };
 
 export const updatePatient =
-  ({
-    name,
-    petId,
-    surname,
-    telephoneNumber,
-    EMBG,
-    address,
-    citizenship,
-    dateOfBirth,
-    email,
-    secondTelephoneNumber,
-    sex,
-    createdAt
-  }: Patient) =>
+  (patient : Patient) =>
   async (
     dispatch: (arg0: { type: string; payload: PatientPayload }) => void
   ) => {
     try {
-      await getPetBackendAPI().updatePatientDetails(petId, {
-        name,
-        surname,
-        petId: petId!.toString(),
-        telephoneNumber,
-        EMBG: EMBG!.toString(), 
-        address,
-        citizenship,
-        dateOfBirth: parseInt(dateOfBirth!),
-        secondTelephoneNumber,
-        sex: sex as any,
-        email,
-        createdAt
-      });
+      await patientAPI.updatePatient(patient.id!, patient);
 
-      const { data } = await getPetBackendAPI().getAllPatients();
+      const { data } = await patientAPI.getAllPatients(patient.familyDoctor);
       const patients = data as unknown as Patient[];
 
       dispatch({
@@ -146,12 +92,12 @@ export const updatePatient =
   };
 
 export const deletePatinet =
-  (petId: string) =>
+  (patientId: string) =>
   async (
     dispatch: (arg0: { type: string; payload: PatientPayload }) => void
   ) => {
     try {
-      await getPetBackendAPI().deletePatient(petId);
+      await patientAPI.deletePatient(patientId);
 
       const { patients } = useSelector((state: GlobalState) => state.patients);
 
@@ -159,7 +105,7 @@ export const deletePatinet =
         type: PatientsActionTypes.DELETE_PATIENT_SUCCESS,
         payload: {
           successMessage: "Successfully deleted patient",
-          patients: patients.filter((patient) => patient.petId !== petId),
+          patients: patients.filter((patient) => patient.id !== patientId),
         },
       });
     } catch (error: any) {

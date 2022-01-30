@@ -4,17 +4,16 @@ import * as errorHandler from "../lib/async-response-handler";
 import { PatientManager } from "../models/patient-manager";
 import { upload } from "../utils/multerStorage";
 
-const app = express();
-
+const app = express.Router();
 app.get(
-  "/:id",
+  "/patient/:id",
   errorHandler.wrap(async (req) => {
     const { id } = req.params as any;
     return new PatientManager().getPatient(id);
   })
 );
 app.post(
-  "/",
+  "/patient",
   bodyParser.json(),
   errorHandler.wrap(async (req) => {
     return new PatientManager().addPatient(req.body);
@@ -22,7 +21,7 @@ app.post(
 );
 
 app.get(
-  "/",
+  "/patient",
   errorHandler.wrap(async (req) => {
     const { doctorId } = req.query
     return new PatientManager().getAllPatientsForDoctor(doctorId as string);
@@ -30,7 +29,7 @@ app.get(
 );
 
 app.delete(
-  "/:id",
+  "/patient/:id",
   errorHandler.wrap(async (req) => {
     const { id } = req.params as any;
     return new PatientManager().deletePatient(id);
@@ -38,7 +37,7 @@ app.delete(
 );
 
 app.put(
-  "/:id",
+  "/patient/:id",
   bodyParser.json(),
   errorHandler.wrap(async (req) => {
     const { id } = req.params as any;
@@ -47,15 +46,26 @@ app.put(
 );
 
 app.post(
-  "/:id/documents",
+  "/patient/:id/documents",
   upload.array("file"),
   errorHandler.wrap(async (req) => {
     return new PatientManager().uploadFiles(req.files);
   })
 );
 
+app.delete(
+  "/patient/:id/documents",
+  errorHandler.wrap(async (req) => {
+    const { id } = req.params as any;
+    const { fileName } = req.query as any;
+
+    return new PatientManager().deleteFile(id, fileName);
+  })
+);
+
+
 app.get(
-  "/:id/documents",
+  "/patient/:id/documents",
   errorHandler.wrap(async (req) => {
     const { id } = req.params as any;
 
@@ -64,4 +74,4 @@ app.get(
 );
 
 // Export your express server so you can import it in the lambda function.
-export const route = app;
+export const patientRouter = app;

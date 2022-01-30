@@ -29,7 +29,7 @@ import {
 import SupervisedUserCircleIcon from "@material-ui/icons/SupervisedUserCircle";
 import DocumentScannerIcon from '@material-ui/icons/Scanner';
 import UploadDicomIcon from '@material-ui/icons/CloudUpload';
-import logo from "../../assets/PET_Logo.png";
+import logo from "../../assets/logo.png";
 import { signOutUser } from "../../actions/index";
 import { useDispatch } from "react-redux";
 
@@ -40,25 +40,15 @@ function MiniDrawer({ history }: RouteComponentProps) {
   const dispatch = useDispatch();
   const itemsList = [
     {
-      text: "Пациенти",
+      text: "Patients",
       icon: <PeopleAltOutlinedIcon />,
       onClick: () => history.push("/patients"),
     },
     {
-      text: "Корисници",
+      text: "Users",
       icon: <SupervisedUserCircleIcon />,
       onClick: () => history.push("/users"),
-    },
-    {
-      text: "Недоделени Студии",
-      icon: <DocumentScannerIcon />,
-      onClick: () => history.push("/studies/unassigned"),
-    },
-    {
-      text: "Прикачи DICOM",
-      icon: <UploadDicomIcon />,
-      onClick: () => history.push("/studies/upload"),
-    },
+    }
   ];
 
   const handleDrawerOpen = () => {
@@ -78,7 +68,7 @@ function MiniDrawer({ history }: RouteComponentProps) {
           [classes.appBarShift]: open,
         })}
       >
-        <Toolbar>
+        <Toolbar >
           <IconButton
             color="inherit"
             aria-label="open drawer"
@@ -91,8 +81,8 @@ function MiniDrawer({ history }: RouteComponentProps) {
             <MenuIcon />
           </IconButton>
           <Typography noWrap className={classes.logoWrapper}>
-            <a href="https://uipet.mk">
-              <img src={logo} alt="pet" className={classes.logo} />
+            <a href="/">
+              <img src={logo} alt="logo" className={classes.logo} />
             </a>
           </Typography>
           <Typography variant="button" className={classes.links}>
@@ -102,7 +92,7 @@ function MiniDrawer({ history }: RouteComponentProps) {
               underline="none"
             >
               <PersonOutline />
-              Профил
+              Profile
             </Link>
             <Link
               onClick={() => dispatch(signOutUser(history))}
@@ -110,7 +100,7 @@ function MiniDrawer({ history }: RouteComponentProps) {
               underline="none"
             >
               <ExitToApp />
-              Одјави Се
+              Sign out
             </Link>
           </Typography>
         </Toolbar>
