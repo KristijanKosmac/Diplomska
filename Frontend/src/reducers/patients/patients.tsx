@@ -61,6 +61,12 @@ const patientsReducer = (state = INITIAL_STATE, action: any) => {
         ...state,
         errorMessage: action.payload.errorMessage
       }
+    case PatientsActionTypes.RESET_MESSAGES:
+      return {
+        ...state,
+        successMessage: "",
+        errorMessage: ""
+      }
     default:
       return state;
   }

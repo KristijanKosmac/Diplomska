@@ -7,7 +7,8 @@ const INITIAL_STATE: UserState = {
     email: "",
     firstName: "",
     lastName: "",
-    userAttributes: {},
+    EMBG: 0,
+    dateOfBirth: ""
   },
   accessToken: "",
   sessionToken: "",
@@ -41,8 +42,8 @@ const userReducer = (state = INITIAL_STATE, action: any) => {
           !!profile.firstName &&
           !!profile.lastName &&
           !!profile.email &&
-          !!profile.userAttributes.institution &&
-          !!profile.userAttributes.role,
+          !!profile.EMBG &&
+          !!profile.dateOfBirth ,
         accessToken: accessToken,
         profile: profile,
       };
@@ -74,13 +75,13 @@ const userReducer = (state = INITIAL_STATE, action: any) => {
     case UserActionTypes.GET_USER:
       return {
         ...state,
-        profile: action.payload,
+        profile: action.payload.profile,
         filledDetails:
-          !!action.payload.firstName &&
-          !!action.payload.lastName &&
-          !!action.payload.email &&
-          !!action.payload.userAttributes.institution &&
-          !!action.payload.userAttributes.role
+          !!action.payload.profile.firstName &&
+          !!action.payload.profile.lastName &&
+          !!action.payload.profile.email &&
+          !!action.payload.profile.EMBG &&
+          !!action.payload.profile.dateOfBirth
       };
     case UserActionTypes.CREATE_USER:
       return {
@@ -134,6 +135,16 @@ const userReducer = (state = INITIAL_STATE, action: any) => {
       return { 
           ...state,
           successMessage: action.payload.errorMessage
+      }
+    case UserActionTypes.UPDATE_DOCTOR_INFO:
+      return { 
+          ...state,
+          successMessage: action.payload.errorMessage
+      }
+    case UserActionTypes.UPDATE_DOCTOR_INFO_FAIL:
+      return { 
+          ...state,
+          errorMessage: action.payload.errorMessage
       }
     default:
       return state;

@@ -71,9 +71,9 @@ export const signIn = async (email: string, password: string) => {
         return {
             accessToken: user.multiFactor.user.accessToken,
             profile: {
-                email:user.multiFactor.user.email 
+                id: user.multiFactor.user.uid,
+                email: user.multiFactor.user.email
             },
-            id: user.multiFactor.user.uid,
             refreshToken:  user.multiFactor.user.stsTokenManager.refreshToken
         }
     } catch (err : any) {

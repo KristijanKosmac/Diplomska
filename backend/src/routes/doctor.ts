@@ -20,6 +20,13 @@ app.post(
   })
 );
 
+app.get(
+  "/doctor",
+  errorHandler.wrap(async () => {
+    return new DoctorManager().getAllDoctors();
+  })
+);
+
 app.delete(
   "/doctor/:id",
   errorHandler.wrap(async (req) => {

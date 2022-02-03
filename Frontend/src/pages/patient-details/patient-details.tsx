@@ -17,23 +17,17 @@ import {
   Patient,
   Document,
   File,
-  Study,
-  StudiesResponse,
-  Examination,
 } from "../../types";
 
 import Documents from "../../components/documents/documents.component";
-import StudiesList from "../../components/studies-list/studies-list.component";
-import ExaminationList from "../examination-list/examination-list";
 
-import { getPetBackendAPI, WindowConfig } from "../../api";
+import { getPetBackendAPI } from "../../api";
 import { getValue } from "../../utils/getValue";
 import { mapPatientKeys } from "../../utils/mapPatientKeys";
 
 import useStyles from "./patient-details.styles";
 import { base64ToArrayBuffer } from "../../utils/base64ToArrayBuffer";
 import { saveByteArray } from "../../utils/saveByteArray";
-import moment from "moment";
 
 const PatientDetails = (props: RouteComponentProps<{}, StaticContext, {}>) => {
   const [documents, setDocuments] = useState<Document[]>([]);
@@ -50,11 +44,7 @@ const PatientDetails = (props: RouteComponentProps<{}, StaticContext, {}>) => {
     email: "",
   });
 
-  const [studies, setStudies] = useState<Study[]>([]);
-
-  const [examinations, setExaminations] = useState<Examination[]>([]);
-
-  const [isBusy, setIsBusy] = useState(true);
+  const [isBusy, setIsBusy] = useState(false); // set to true
   const [tab, setTab] = useState(0);
 
   const patientId = window.location.pathname.split("/").reverse()[0];
@@ -69,51 +59,6 @@ const PatientDetails = (props: RouteComponentProps<{}, StaticContext, {}>) => {
       setErrorMessage(
         "Настана грешка при превземање на информациите за пациентот. Обидете се повторно."
       );
-    }
-  };
-
-  const fetchExaminations = async () => {
-    try {
-      if (patient.id) {
-        const { data } = await getPetBackendAPI().getAllExaminationForPatient(
-          patient.id
-        );
-        setExaminations(data as unknown as Examination[]);
-      }
-    } catch (error: any) {
-      console.log(error);
-      // setErrorMessage("Something went wrong while getting studies");
-    }
-    setIsBusy(false);
-  };
-
-  const fetchStudies = async () => {
-    try {
-      if (patient.id) {
-        const { data } = await getPetBackendAPI().getAllStudies(patient.id);
-
-        const studiesData = data as unknown as StudiesResponse[];
-
-        const studies = studiesData.sort((a, b) =>
-          moment(a.mainDicomTags.studyDate) < moment(b.mainDicomTags.studyDate)
-            ? 1
-            : -1
-        );
-
-        setStudies(
-          studies.map((study) => {
-            return {
-              ...study,
-              ...study.mainDicomTags,
-              ...(study as any).patientMainDicomTags,
-            };
-          })
-        );
-        setIsBusy(false);
-      }
-    } catch (error: any) {
-      console.log(error);
-      // setErrorMessage("Something went wrong while getting studies");
     }
   };
 
@@ -142,6 +87,8 @@ const PatientDetails = (props: RouteComponentProps<{}, StaticContext, {}>) => {
             };
           }) as Document[]
         );
+
+        setIsBusy(false);
       } catch (error: any) {
         setErrorMessage(error.response.data.message);
       }
@@ -163,13 +110,8 @@ const PatientDetails = (props: RouteComponentProps<{}, StaticContext, {}>) => {
   }, []);
 
   useEffect(() => {
-    fetchStudies();
-    fetchExaminations();
-  }, [patient]);
-
-  useEffect(() => {
     fetchDocuments();
-  }, [tab === 2]);
+  }, []);
 
   useEffect(() => {
     setTimeout(() => {
@@ -188,18 +130,6 @@ const PatientDetails = (props: RouteComponentProps<{}, StaticContext, {}>) => {
       }, 500);
     } catch (error: any) {
       setErrorMessage(error.response.data.message);
-    }
-  };
-
-  const handleDeleteExamination = async (id: string) => {
-    try {
-      await getPetBackendAPI().deleteExamination(id);
-      setTimeout(() => {
-        fetchExaminations();
-      }, 500);
-      setSuccessMessage("Прегледот е успешно избришан");
-    } catch (error: any) {
-      console.log(error.response.data.message);
     }
   };
 
@@ -229,35 +159,6 @@ const PatientDetails = (props: RouteComponentProps<{}, StaticContext, {}>) => {
       setIsBusy(false);
       setErrorMessage(error.response.data.message);
     }
-  };
-
-  const downloadStudy = async (studyUid: string, studyId: string) => {
-    setInformMessage("File is prepairing for download, please wait");
-    try {
-      // Download directly from the PACS!!! Fix this
-      const response = await axios(`/series/${studyUid}/media`, {
-        responseType: "arraybuffer",
-      });
-      saveByteArray(`${patient.id}/${studyId}.zip`, response.data);
-
-      // const { data } = await getPetBackendAPI().downloadStudy(studyUid);
-      // const bufferArray = base64ToArrayBuffer(data.blob);
-      // saveByteArray(`${patient.petId}/${studyId}.zip`, bufferArray);
-
-      setSuccessMessage("Документот е успешно превземен");
-    } catch (error: any) {
-      setErrorMessage(
-        "Настана грешка при превземање на документот. Обидете се повторно"
-      );
-    }
-    setInformMessage("");
-    // await axios
-    //   .get(`http://localhost:80/dicom/${studyId}/download`)
-    //   .then((res: { data: { blob: string } }) => {
-    //     const bufferArray = base64ToArrayBuffer(res.data.blob);
-    //     saveByteArray("dicom.zip", bufferArray);
-    //   })
-    //   .catch((err) => setErrorMessage(err.response.data.message));
   };
 
   const handleMultipleDownload = async (fileKeys: string[]) => {
@@ -337,8 +238,6 @@ const PatientDetails = (props: RouteComponentProps<{}, StaticContext, {}>) => {
           variant="fullWidth"
           centered
         >
-          <Tab label={<h3>Студии</h3>} style={{ width: "100%" }} />
-          <Tab label={<h3>Прегледи</h3>} style={{ width: "100%" }} />
           <Tab label={<h3>Документи</h3>} style={{ width: "100%" }} />
           <Tab
             label={<h3>Информации за пациентот</h3>}
@@ -347,19 +246,6 @@ const PatientDetails = (props: RouteComponentProps<{}, StaticContext, {}>) => {
         </Tabs>
       </AppBar>
       {tab === 0 ? (
-        <StudiesList
-          studies={studies}
-          isBusy={isBusy}
-          downloadStudy={downloadStudy}
-        />
-      ) : tab === 1 ? (
-        <ExaminationList
-          examinations={examinations}
-          handleDelete={handleDeleteExamination}
-          patientId={patientId ? patientId : patient.id!}
-          isBusy={isBusy}
-        />
-      ) : tab === 2 ? (
         <Documents
           documents={documents}
           handleSubmit={handleSubmit}
@@ -400,7 +286,9 @@ const PatientDetails = (props: RouteComponentProps<{}, StaticContext, {}>) => {
                   (entry, index) =>
                     entry[0] !== "createdAt" &&
                     entry[0] !== "updatedAt" &&
-                    entry[0] !== "id" && (
+                    entry[0] !== "id" &&
+                    entry[0] !== "_id" &&
+                    entry[0] !== "__v" && (
                       <Grid item xs={4} key={index}>
                         <h3>{mapPatientKeys(entry[0])}</h3>
                         <div>{getValue(entry[0], entry[1])}</div>

@@ -16,9 +16,12 @@ import useStyles from "./add-edit-patient.styles";
 import CustomSelect from "../../components/select/select";
 import DatePicker from "../../components/date-picker/date-picker.component";
 import patientValidation from "../../utils/validations/patient-validation";
-import { patientAPI } from "../../api";
-import { Patient } from "../../types";
+import { patientAPI, doctorAPI } from "../../api";
+import { Doctor, Patient } from "../../types";
 import { citizenships } from "../../constants/citizenship";
+import { useDispatch, useSelector } from "react-redux";
+import { GlobalState } from "../../reducers";
+import { getUser } from "../../actions/user/user";
 
 export default function AddEditPatient(
   props: RouteComponentProps<
@@ -31,12 +34,17 @@ export default function AddEditPatient(
   >
 ) {
   const classes = useStyles();
+  const dispatch = useDispatch();
+  
+  const { profile } = useSelector(
+    (state: GlobalState) => state.user
+  );
 
   const [patient, setPatient] = useState<Patient>({
     EMBG: 0,
     dateOfBirth: "",
     email: "",
-    familyDoctor: "",
+    familyDoctor: profile.id,
     firstName: "",
     lastName: "",
   });
@@ -55,12 +63,26 @@ export default function AddEditPatient(
     window.location.href.split("/").reverse()[0] === "edit" ? true : false
   );
 
+  const [doctors, setDoctors] = useState<Doctor[]>([])
+
   useEffect(() => {
     if (props.location.state) {
       const patient = props.location.state.patient;
       setPatient(patient);
     }
+    dispatch(getUser());
+    fetchDoctors()
   }, []);
+
+  const fetchDoctors = async () => {
+    try {
+      const { data } = await doctorAPI.getAllDoctors();
+
+      setDoctors(data as Doctor[])
+    } catch (err: any) {
+      setErrorMessage(err)
+    }
+  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -183,10 +205,11 @@ export default function AddEditPatient(
                 value={patient.dateOfBirth!}
               />
               <CustomSelect
-                value={patient.sex || ""}
-                items={["Doktor1", "doktor2"]}
+                value={patient.familyDoctor || ""}
+                items={doctors}
                 errorMessage=""
                 required
+                objectParametars={["firstName", "lastName"]}
                 name="Family Doctor"
                 onChange={(familyDoctor) => {
                   setPatient({ ...patient, familyDoctor });

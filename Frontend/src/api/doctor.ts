@@ -14,6 +14,10 @@ class DoctorAPI {
         return axios.get(`${this.endpoint}/${id}`)
     }
 
+    getAllDoctors() {
+        return axios.get(`${this.endpoint}`)
+    }
+ 
     createDoctor(doctor: Doctor) {
         return axios.post(`${this.endpoint}`, doctor)
     }

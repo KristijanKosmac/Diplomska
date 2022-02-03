@@ -100,11 +100,6 @@ export interface PatientValidationProps {
   familyDoctor: string
 }
 
-export interface ExaminationValidationProps {
-  patientId: string;
-  examinationType: string;
-}
-
 export interface Patient {
   id?: string;
   firstName: string;
@@ -138,59 +133,6 @@ export interface Patient {
 //   dateOfBirth?: string;
 //   sex?: "male" | "female";
 // }
-
-export interface Examination {
-  id: string;
-  patientId: string;
-  examinationType: string;
-  date?: number;
-  height?: number;
-  weight?: number;
-  glycemia?: string;
-  dose?: string;
-  diagnose?: string;
-  protocol?: string; //enum
-  infectiousDisease?: boolean;
-  infectiousDiseaseComment?: string;
-  generalCondition?: string;
-  companion?: boolean;
-  companionComment?: string;
-  doctorRefers?: string;
-  clinicRefers?: string;
-  asthma?: boolean;
-  hyperthyroidism?: boolean;
-  diabetes?: boolean;
-  insulinTherapy?: boolean;
-  lastMenstruation?: number;
-  claustrophobia?: boolean;
-  allergy?: boolean;
-  pregnancy?: boolean;
-  surgery?: boolean;
-  surgeryNote?: string;
-  radiotherapy?: boolean;
-  radiotherapyNote?: string;
-  chemotherapyImmunotherapy?: boolean;
-  chemotherapyImmunotherapyNote?: string;
-  petKT?: boolean;
-  petKTNote?: string;
-  boneScan?: boolean;
-  boneScanNote?: string;
-  gynecologicalDiseasesInterventions?: boolean;
-  gynecologicalDiseasesInterventionsNote?: string;
-  transplantation?: boolean;
-  transplantationNote?: string;
-  recentInjury?: boolean;
-  recentInjuryNote?: string;
-  kt?: boolean;
-  ktNote?: string;
-  mr?: boolean;
-  mrNote?: string;
-  nurseAnamnesis?: string;
-  doctorAnamnesis?: string;
-  changedBy?: string;
-  createdAt?: number;
-  updatedAt?: number;
-}
 
 export interface DoctorValidation {
   id: string,
@@ -300,18 +242,10 @@ export interface DocumentComponentProps extends RouteComponentProps {
   handleDelete: (documentId: string) => void;
   handleSubmit: (files: FormData) => void;
   patient?: Patient;
-  examination?: Examination;
   sendToEmail?: string;
   isBusy: boolean;
   handleSendEmail?: (emails: string[], selectedDocumentId: string) => void;
   handleMultipleDownload: (fileKeys: string[]) => void
-}
-
-export interface ExaminationListProps extends RouteComponentProps {
-  examinations: Examination[];
-  isBusy: boolean;
-  patientId: string;
-  handleDelete: (id: string) => void
 }
 
 export interface RadioButtonProps {
@@ -371,19 +305,6 @@ export interface UserColumn {
   format?: (value: number) => string;
 }
 
-export interface ExaminationColumn {
-  id:
-  | "updatedAt"
-  | "changedBy"
-  | "examinationType"
-  | "date"
-  label: string;
-  minWidth?: string;
-  width?: string;
-  align?: "right";
-  format?: (value: number) => string;
-}
-
 // VALIDATION
 
 export interface DoctorFormProps extends MessagesState {
@@ -395,20 +316,14 @@ export interface DoctorFormProps extends MessagesState {
 
 // REDUCER STATE
 export interface UserState extends MessagesState {
-  profile: {
-    id: string;
-    email: string;
-    firstName: string;
-    lastName: string;
-    userAttributes: {
-      [key: string]: any;
-    };
-  };
+  profile: Doctor;
   accessToken: string;
   sessionToken: string;
   filledDetails: boolean | null;
   isLoggedIn: boolean;
   isLoading: boolean;
+  errorMessage: string,
+  successMessage: string
 }
 
 export interface PatientsState extends MessagesState {

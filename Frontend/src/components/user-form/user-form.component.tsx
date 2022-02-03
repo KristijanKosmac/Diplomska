@@ -48,7 +48,7 @@ export default function UserForm(props: DoctorFormProps) {
     const { errors, valid } = doctorValidation(doctor);
     setErrors(errors);
     if (valid) {
-      // props.onSubmit({ id, email, firstName, institution, lastName, dateOfBirth : "sdasd", EMBG: 123 });
+      props.onSubmit(doctor);
     }
   }
   // keyof Doctor

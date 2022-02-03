@@ -50,13 +50,16 @@ const useStyles = makeStyles((theme) => ({
   },
   dropZone: {
     width: "100%",
-    paddingTop: "20px",
     
     "&>:nth-child(2)": {
       display: "flex",
       justifyContent: "space-between",
       marginTop: "10px",
     },
+  },
+  previewChip: {
+    minWidth: 160,
+    maxWidth: 210
   },
   dropZoneGridCointainer: {
     width: "100% !important",

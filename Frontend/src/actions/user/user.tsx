@@ -1,8 +1,8 @@
-import { getUserManagementAPI } from "../../api";
+import { doctorAPI, getUserManagementAPI } from "../../api";
 import { UserActionTypes } from "../../constants/index";
 import { History } from "history";
-import { UserState, User } from "../../types";
-import { signUp, signIn } from "../../firebase/index"
+import { UserState, User, Doctor } from "../../types";
+import { signUp, signIn } from "../../firebase/index";
 
 export const signUpUser =
   (email: string, password: string, history: History) =>
@@ -13,8 +13,7 @@ export const signUpUser =
     }) => void
   ) => {
     try {
-
-      signUp(email, password)
+      signUp(email, password);
 
       dispatch({
         type: UserActionTypes.SIGN_UP_USER,
@@ -38,9 +37,8 @@ export const signInUser =
   (email: string, password: string, history: History) =>
   async (dispatch: (arg0: { type: string; payload: any }) => void) => {
     try {
-      const response = await signIn(email, password)
-
-      console.log("sign in response", response)
+      const response = await signIn(email, password);
+      console.log("sign in response", response);
 
       localStorage.setItem("profile", JSON.stringify(response.profile));
       localStorage.setItem("accessToken", response.accessToken);
@@ -51,14 +49,13 @@ export const signInUser =
         type: UserActionTypes.SIGN_IN_USER,
         payload: { errorMessage: "", ...response },
       });
-      
-      // if ( Object.keys((response as any).profile.userAttributes).length < 3 ) {
-      //   history.push("/profile");
-      // } else {
-      //   history.push("/patients");
-      // }
 
-      history.push("/patients");
+      const exists = await doctorAPI.getDoctor(response.profile.id);
+      if (exists) {
+        history.push("/patients");
+      } else {
+        history.push("/profile");
+      }
     } catch (error: any) {
       dispatch({
         type: UserActionTypes.SIGN_IN_USER_FAIL,
@@ -88,6 +85,31 @@ export const setIsLoggedIn =
     dispatch({
       type: UserActionTypes.SET_LOGGED_IN,
     });
+  };
+
+export const updateDoctorInfo =
+  (doctor: Doctor, history: History) =>
+  async (dispatch: (arg0: { type: string; payload: any }) => void) => {
+    try {
+      const profileId = JSON.parse(localStorage.getItem("profile")!).id;
+      await doctorAPI.updateDoctor(profileId, doctor);
+
+      dispatch({
+        type: UserActionTypes.UPDATE_DOCTOR_INFO,
+        payload: { successMessage: "Successfully updated Infos" },
+      });
+
+      getUser();
+
+      history.push("/patients");
+    } catch (error: any) {
+      dispatch({
+        type: UserActionTypes.UPDATE_DOCTOR_INFO_FAIL,
+        payload: {
+          errorMessage: error || error.response.data.message,
+        },
+      });
+    }
   };
 
 export const setCurrentUser =
@@ -135,49 +157,59 @@ export const createUser =
 export const getUser =
   () =>
   async (
-    dispatch: (arg0: { type: string; payload: any }) => void
+    dispatch: (arg0: { type: string; payload: { profile: Doctor } }) => void
   ) => {
-    const response = await getUserManagementAPI().getUser();
+    const profileId = JSON.parse(localStorage.getItem("profile")!).id;
+    const response = await doctorAPI.getDoctor(profileId);
+
+    console.log("Get User Info: ");
+    console.log(response);
+
     localStorage.removeItem("profile");
     localStorage.setItem("profile", JSON.stringify(response.data));
     dispatch({
       type: UserActionTypes.GET_USER,
-      payload: response.data,
+      payload: { profile: { ...response.data } },
     });
   };
 
-export const getAllUsers = 
+export const getAllUsers =
   () =>
   async (
-    dispatch: (arg0: { type: string; payload: {users?: User[], errorMessage?: string}}) => void
+    dispatch: (arg0: {
+      type: string;
+      payload: { users?: User[]; errorMessage?: string };
+    }) => void
   ) => {
     dispatch({
       type: UserActionTypes.GET_ALL_USERS_START,
-      payload: {}
+      payload: {},
     });
-    const profileId  = JSON.parse(localStorage.getItem("profile")!).id;
-    
-    try{
+    const profileId = JSON.parse(localStorage.getItem("profile")!).id;
+
+    try {
       // const { data } = await getUserManagementAPI().getAllUsers();
       const usersData = [{}] as any[];
 
-      const users: User[] =  usersData.map((user) => {
-        const { email, role, institution } = JSON.parse(
-          user.userAttributes.toString()
-        );
-        return {
-          ...user,
-          firstName: user.firstName!,
-          lastName: user.lastName!,
-          email: email || "",
-          role: role || "",
-          institution: institution || "",
-        };
-      }).filter( user => user.id !== profileId)
+      const users: User[] = usersData
+        .map((user) => {
+          const { email, role, institution } = JSON.parse(
+            user.userAttributes.toString()
+          );
+          return {
+            ...user,
+            firstName: user.firstName!,
+            lastName: user.lastName!,
+            email: email || "",
+            role: role || "",
+            institution: institution || "",
+          };
+        })
+        .filter((user) => user.id !== profileId);
 
       dispatch({
         type: UserActionTypes.GET_ALL_USERS,
-        payload: { users } 
+        payload: { users },
       });
     } catch (error: any) {
       dispatch({
@@ -185,21 +217,23 @@ export const getAllUsers =
         payload: { errorMessage: error.response.data.message },
       });
     }
-  }
+  };
 
-
-  export const resetPassword =
-  (sessionToken: string, newPassword: string, username: string, history: History) =>
-  async (
-    dispatch: (arg0: { type: string; payload: any }) => void
-  ) => {
-    try{
+export const resetPassword =
+  (
+    sessionToken: string,
+    newPassword: string,
+    username: string,
+    history: History
+  ) =>
+  async (dispatch: (arg0: { type: string; payload: any }) => void) => {
+    try {
       const response = await getUserManagementAPI().setPassword({
         sessionToken,
         newPassword,
-        username
+        username,
       });
-      
+
       dispatch({
         type: UserActionTypes.RESET_PASSWORD,
         payload: { ...response.data },
@@ -212,20 +246,17 @@ export const getAllUsers =
         payload: { errorMessage: error.response.data.message },
       });
     }
-   
   };
 
-  export const deleteUser =
+export const deleteUser =
   (userId: string) =>
-  async (
-    dispatch: (arg0: { type: string; payload: any }) => void
-  ) => {
-    try{
+  async (dispatch: (arg0: { type: string; payload: any }) => void) => {
+    try {
       await getUserManagementAPI().deleteUser(userId);
 
       dispatch({
         type: UserActionTypes.DELETE_USER,
-        payload: { successMessage: "Successfully deleted user" }
+        payload: { successMessage: "Successfully deleted user" },
       });
     } catch (error: any) {
       dispatch({
@@ -233,16 +264,12 @@ export const getAllUsers =
         payload: { errorMessage: "Something went wrong while deleting user" },
       });
     }
-   
   };
 
-  export const resetMessages =
-  () =>
-  async (
-    dispatch: (arg0: { type: string; payload: any }) => void
-  ) => {
-      dispatch({
-        type: UserActionTypes.RESET_MESSAGES,
-        payload: {}
-      });
+export const resetMessages =
+  () => async (dispatch: (arg0: { type: string; payload: any }) => void) => {
+    dispatch({
+      type: UserActionTypes.RESET_MESSAGES,
+      payload: {},
+    });
   };

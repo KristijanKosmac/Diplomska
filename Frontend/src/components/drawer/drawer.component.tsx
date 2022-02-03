@@ -27,8 +27,6 @@ import {
   ExitToApp,
 } from "@material-ui/icons";
 import SupervisedUserCircleIcon from "@material-ui/icons/SupervisedUserCircle";
-import DocumentScannerIcon from '@material-ui/icons/Scanner';
-import UploadDicomIcon from '@material-ui/icons/CloudUpload';
 import logo from "../../assets/logo.png";
 import { signOutUser } from "../../actions/index";
 import { useDispatch } from "react-redux";
@@ -36,7 +34,7 @@ import { useDispatch } from "react-redux";
 function MiniDrawer({ history }: RouteComponentProps) {
   const classes = useStyles();
   const theme = useTheme();
-  const [open, setOpen] = React.useState(true);
+  const [open, setOpen] = React.useState(false);
   const dispatch = useDispatch();
   const itemsList = [
     {

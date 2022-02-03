@@ -17,8 +17,6 @@ import AddEditPatient from "./pages/add-edit-patient/add-edit-patient";
 import PatientDetails from "./pages/patient-details/patient-details";
 import UsersListPage from "./pages/users-list/users-list";
 import AddEditUser from "./pages/add-edit-user/add-edit-user";
-import AddEditExamination from "./pages/add-edit-examination/add-edit-examination";
-import ExaminationDetails from "./pages/examination-details/examination-details"
 import Profile from "./pages/profile/profile";
 import ErrorPage from "./pages/error/error";
 import ResetForgottenPasswordPage from "./pages/reset-forgotten-password/reset-forgotten-password";
@@ -70,9 +68,6 @@ const App = () => {
           <Route path="/users/add" component={AddEditUser} />
           <Route path="/users/edit" component={AddEditUser} />
 
-          <Route path="/examinations/add" component={AddEditExamination} />
-          <Route path="/examinations/edit" component={AddEditExamination} />
-          <Route path="/examinations/:id" component={ExaminationDetails} />
           <Route path="*" component={ErrorPage} />
         </Switch>
       </div>

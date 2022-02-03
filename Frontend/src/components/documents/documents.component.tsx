@@ -219,7 +219,7 @@ const Documents = (props: DocumentComponentProps) => {
       )}
       <div className={classes.btnContainer}>
         <div className={classes.dropZone}>
-          <div style={{ marginBottom: "60px" }}>
+          <div style={{ marginBottom: "25px" }}>
             <Button
               variant="outlined"
               color="primary"
@@ -230,7 +230,7 @@ const Documents = (props: DocumentComponentProps) => {
               }}
               disabled={props.isBusy || (files && !files.getAll("file").length)}
             >
-              {props.isBusy ? "Се прикачува..." : "Започни прикачување"}
+              {props.isBusy ? "uploading..." : "Upload"}
             </Button>
           </div>
           <br />
@@ -242,18 +242,16 @@ const Documents = (props: DocumentComponentProps) => {
               item: "MuiGrid-grid-md-3",
             }}
             filesLimit={10}
-            useChipsForPreview={true}
-            showPreviews={true}
-            showPreviewsInDropzone={false}
+            // useChipsForPreview={true}
+            // showPreviews={true}
+            // showPreviewsInDropzone={false}
             previewGridProps={{ container: { spacing: 1, direction: "row" } }}
-            // previewChipProps={{classes: { root: classes.previewChip } }}
-            previewText="Избрани фајлови"
+            previewChipProps={{classes: { root: classes.previewChip } }}
+            // previewText="Избрани фајлови"
             onChange={(data) => {
               const formdata = new FormData();
               props.patient &&
                 formdata.append("directory", props.patient.id!);
-              props.examination &&
-                formdata.append("directory", props.examination.id);
               data.forEach((d) => {
                 formdata.append("name", d.name);
                 formdata.append("file", d);

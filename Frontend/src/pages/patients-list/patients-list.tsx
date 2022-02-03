@@ -12,12 +12,15 @@ import Search from "../../components/search/search.component";
 import CustomTable from "../../components/table/table";
 
 import useStyles from "./patients-list.style";
-import { getPetBackendAPI } from "../../api";
 import { getValue } from "../../utils/getValue";
 import { useDispatch, useSelector } from "react-redux";
 import { GlobalState } from "../../reducers";
 
-import { getAllPatients } from "../../actions/patients/patients"
+import {
+  deletePatinet,
+  getAllPatients,
+  resetPatientMessages,
+} from "../../actions/patients/patients";
 
 const PatientsListPage = (
   props: RouteComponentProps<
@@ -29,58 +32,46 @@ const PatientsListPage = (
     }
   >
 ) => {
-  const [successMessage, setSuccessMessage] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
-  const [searchedPatients, setSearchedPatients] = useState<Patient[]>([]);
-
+  const dispatch = useDispatch();
   const classes = useStyles();
+
+  const {
+    patients: { patients, isLoading, errorMessage, successMessage },
+    user: { profile },
+  } = useSelector((state: GlobalState) => state);
+  const [searchedPatients, setSearchedPatients] = useState<Patient[]>([]);
 
   const columns: PatientColumn[] = [
     { id: "firstName", label: "First Name" },
     { id: "lastName", label: "Last Name" },
-    { id: "EMBG", label: "EMBG"},
-    { id: "dateOfBirth", label: "Date Of Birth"},
-    { id: "email", label: "Email"},
-    { id: "telephoneNumber", label: "Telephone Number" }
+    { id: "EMBG", label: "EMBG" },
+    { id: "dateOfBirth", label: "Date Of Birth" },
+    { id: "email", label: "Email" },
+    { id: "telephoneNumber", label: "Telephone Number" },
   ];
-
-  const dispatch = useDispatch();
-
-  const { patients: {patients, isLoading} , user: { profile } } = useSelector((state: GlobalState) => state);
 
   useEffect(() => {
     setSearchedPatients(patients);
   }, [patients]);
 
   const fetch = async () => {
-    dispatch(getAllPatients(profile.id))
+    dispatch(getAllPatients(profile.id));
   };
 
   const handleDelete = async (id: string) => {
-    try {
-      await getPetBackendAPI().deletePatient(id);
-
-      setTimeout(() => {
-        fetch();
-      }, 500);
-      setSuccessMessage("Успешно избришан пациент");
-    } catch (e: any) {
-      setErrorMessage("Настана грешка при бришење на пациентот. Обидете се повторно");
-    }
+    dispatch(deletePatinet(id));
+    setTimeout(() => {
+      fetch();
+    }, 500);
   };
 
   useEffect(() => {
-    if (props.location.state && props.location.state.successMessage) {
-      setSuccessMessage(props.location.state.successMessage);
-    }
-
     fetch();
   }, []);
 
   useEffect(() => {
     setTimeout(() => {
-      setSuccessMessage("");
-      setErrorMessage("");
+      dispatch(resetPatientMessages());
     }, 5000);
   }, [errorMessage, successMessage]);
 
@@ -141,8 +132,8 @@ const PatientsListPage = (
                   state: {
                     patient: {
                       ...patient,
-                      dateOfBirth: new Date(patient.dateOfBirth).toISOString()
-                    }
+                      dateOfBirth: new Date(patient.dateOfBirth).toISOString(),
+                    },
                   },
                 });
                 event.stopPropagation();

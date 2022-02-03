@@ -5,7 +5,6 @@ export type WindowConfig = Window & {
     env: { BACKEND_ENDPOINT: string;};
   };
   
-console.log(process.env)
 const backendEndpoint = process.env.REACT_APP_BACKEND_ENDPOINT || ""
 
 class PatientAPI {
@@ -49,6 +48,5 @@ class PatientAPI {
 
 }
 
-console.log("ENDPOITN", backendEndpoint)
 const patientAPI = new PatientAPI(backendEndpoint, "patient")
 export { patientAPI }

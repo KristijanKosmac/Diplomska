@@ -117,3 +117,12 @@ export const deletePatinet =
       });
     }
   };
+
+
+export const resetPatientMessages =
+() => async (dispatch: (arg0: { type: string; payload: any }) => void) => {
+  dispatch({
+    type: PatientsActionTypes.RESET_MESSAGES,
+    payload: {},
+  });
+};

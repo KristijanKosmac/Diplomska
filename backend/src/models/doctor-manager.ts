@@ -25,7 +25,13 @@ export class DoctorManager {
 
     async updateDoctor(id: string, updatedData: DoctorInteface): Promise<DoneResult> {
         try {
-            await Doctor.findOneAndUpdate({id}, updatedData, {new: true, runValidators: true}) 
+            const exists = await Doctor.findOne({id})
+            if ( exists ) {
+                await Doctor.findOneAndUpdate({id}, updatedData, {new: true, runValidators: true}) 
+            } else {
+                const doctor = new Doctor(updatedData);
+                await doctor.save()
+            }
         } catch (e) {
             throw e
         }
@@ -56,4 +62,11 @@ export class DoctorManager {
         return doctor;
     }
 
+    async getAllDoctors(): Promise<DoctorInteface[]> {
+        const doctors = await Doctor.find()
+        if (!doctors) {
+            throw codedError(HTTP.NO_CONTENT, "There are no doctors in the system")
+        }
+        return doctors;
+    }
 }

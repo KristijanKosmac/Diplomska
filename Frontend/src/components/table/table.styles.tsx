@@ -17,10 +17,10 @@ const useStyles = makeStyles((theme) => ({
     background: theme.palette.primary.main,
     color: "#fff",
     padding: theme.spacing(2, 1),
-    // eslint-disable-next-line no-useless-computed-key
-    ["@media (max-width:1300px)"]: {
-      padding: theme.spacing(2, 0),
-    },
+    // // eslint-disable-next-line no-useless-computed-key
+    // ["@media (max-width:1300px)"]: {
+    //   padding: theme.spacing(2, 1),
+    // },
   },
   bodyCell: {
     padding: theme.spacing(2, 1),
