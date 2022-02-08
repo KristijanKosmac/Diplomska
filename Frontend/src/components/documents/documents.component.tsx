@@ -10,18 +10,13 @@ import Search from "../../components/search/search.component";
 import SendEmail from "../send-email/send-email";
 import DropdownMenuActions from "../../components/dropdownMenuActions/dropdownMenuActions";
 import EnhancedTable from "../select-table/select-table.component";
-import CustomSelect from "../select/select";
 
 import useStyles from "./documents.styles";
 import { Document, DocumentColumn, DocumentComponentProps } from "../../types";
 import { GlobalState } from "../../reducers";
 import { getValue } from "../../utils/getValue";
-import {
-  documentTypes,
-  mapTypesFromCyrillic,
-  mapTypesToCyrillic,
-} from "../../constants/document-types";
-import { getPetBackendAPI } from "../../api";
+import { saveByteArray } from "../../utils/saveByteArray";
+import { b64toBlob } from "../../utils/base64ToBlob";
 
 const Documents = (props: DocumentComponentProps) => {
   const [key, setKey] = useState(0);
@@ -39,8 +34,8 @@ const Documents = (props: DocumentComponentProps) => {
   const classes = useStyles();
 
   const documentColumns: DocumentColumn[] = [
-    { id: "name", label: "Име на документ" },
-    { id: "date", label: "Датум на прикачување" },
+    { id: "name", label: "Document name" },
+    { id: "date", label: "Upload date" },
   ];
 
   useEffect(() => {
@@ -71,14 +66,6 @@ const Documents = (props: DocumentComponentProps) => {
     }
   };
 
-  const handleTypeChange = async (documentType: string, key: string) => {
-    try {
-      await getPetBackendAPI().setDocumentType(key, documentType);
-    } catch (err: any) {
-      console.log(err);
-    }
-  };
-
   const mapDocumentElements = (document: Document) => {
     const elements = documentColumns.map((column) => {
       let value = document[column.id] || "/";
@@ -102,22 +89,22 @@ const Documents = (props: DocumentComponentProps) => {
     elements.push(
       <TableCell
         key="document"
-        align="left"
+        align="right"
         className={classes.bodyCell}
         style={{
           wordBreak: "break-word",
         }}
       >
-        <CustomSelect
-          items={documentTypes}
-          name="Тип на документ"
-          onChange={(value) =>
-            value &&
-            value !== document.type &&
-            handleTypeChange(mapTypesFromCyrillic.get(value)!, document.id)
-          }
-          value={mapTypesToCyrillic.get(document.type)}
-        />
+        {props.handleSendEmail && props.sendToEmail && (
+          <SendEmail
+            documents={props.documents}
+            email={props.sendToEmail!}
+            onClick={props.handleSendEmail!}
+            suggestedEmails={suggestedEmails}
+            defaultDocument={document}
+            // className={document.isSend ? classes.isSend : ""}
+          />
+        )}
       </TableCell>
     );
 
@@ -133,9 +120,9 @@ const Documents = (props: DocumentComponentProps) => {
         {["pdf", "jpeg", "jpg", "png"].includes(
           document.name.split(".").pop() || ""
         ) ? (
-          <a href={document.url} target="_blank" rel="noreferrer">
+          <a href={document.content} target="_blank" rel="noreferrer">
             <Button variant="outlined" color="primary" className={classes.btn}>
-              Види документ
+              Open document
             </Button>
           </a>
         ) : null}
@@ -148,48 +135,28 @@ const Documents = (props: DocumentComponentProps) => {
         color="primary"
         className={classes.btn}
         size="small"
-        // onClick={async (event) => {}}
+        onClick={async (event) => {
+          event.stopPropagation();
+          const blob = b64toBlob(document.content, "");
+          saveByteArray(`${document.id}`, blob);
+        }}
       >
-        <a
-          href={document.url}
-          target="_blank"
-          title={document.name}
-          download={document.name}
-          style={{
-            color: "inherit",
-            textDecoration: "none",
-          }}
-          rel="noreferrer"
-        >
-          Превземи
-        </a>
+        Download
       </Button>,
       <CustomModal
-        buttonName="Избриши"
+        buttonName="Delete"
         onClick={() => {
           props.handleDelete(document.id);
         }}
-        title="Избриши документ"
-        content={`Дали сте сигурни дека сакате да го избришете документот ${document.id
-          .split("/")
+        title="Delete Document"
+        content={`Are you sure you want to delete document: ${document.id
+          .split("-")
           .slice(1)
-          .join("/")}?`}
+          .join("-")}?`}
         id={document["id"]!}
       />,
     ];
 
-    props.handleSendEmail &&
-      props.sendToEmail &&
-      dropDownItems.push(
-        <SendEmail
-          documents={props.documents}
-          email={props.sendToEmail}
-          onClick={props.handleSendEmail}
-          suggestedEmails={suggestedEmails}
-          defaultDocument={document}
-          className={document.isSend ? classes.isSend : ""}
-        />
-      );
     const dropDownMenuActions = (
       <TableCell
         align="right"
@@ -246,12 +213,11 @@ const Documents = (props: DocumentComponentProps) => {
             // showPreviews={true}
             // showPreviewsInDropzone={false}
             previewGridProps={{ container: { spacing: 1, direction: "row" } }}
-            previewChipProps={{classes: { root: classes.previewChip } }}
+            previewChipProps={{ classes: { root: classes.previewChip } }}
             // previewText="Избрани фајлови"
             onChange={(data) => {
               const formdata = new FormData();
-              props.patient &&
-                formdata.append("directory", props.patient.id!);
+              props.patient && formdata.append("directory", props.patient.id!);
               data.forEach((d) => {
                 formdata.append("name", d.name);
                 formdata.append("file", d);
@@ -265,7 +231,7 @@ const Documents = (props: DocumentComponentProps) => {
             <Search
               className={classes.searchBar}
               handleSearch={handleSearchDocument}
-              placeholder="пребарувај по име на документ и датум"
+              placeholder="Search by document or date"
             />
           </div>
         </div>
@@ -273,17 +239,12 @@ const Documents = (props: DocumentComponentProps) => {
       {!props.isBusy ? (
         <Paper className={classes.root} elevation={3}>
           {searchedDocuments.length === 0 ? (
-            <h2 className={classes.noDocuments}>Нема документи!</h2>
+            <h2 className={classes.noDocuments}>There are no documents!</h2>
           ) : (
             <EnhancedTable
               columns={[
                 ...documentColumns,
-                {
-                  id: "type",
-                  label: "Тип на документ",
-                  align: "left",
-                  width: "25%",
-                },
+                { id: "send email", label: "", align: "right" },
                 { id: "preview", label: "", align: "right" },
                 { id: "actionButtons", label: "", align: "right" },
               ]}

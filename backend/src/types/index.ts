@@ -13,5 +13,5 @@ export interface MulterFiles {
 
 export interface File {
     filename: string;
-    content: string;
+    content: string | Buffer;
 }   

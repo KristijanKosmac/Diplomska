@@ -63,7 +63,6 @@ app.delete(
   })
 );
 
-
 app.get(
   "/patient/:id/documents",
   errorHandler.wrap(async (req) => {
@@ -72,6 +71,31 @@ app.get(
     return new PatientManager().getAllFiles(id);
   })
 );
+
+app.post(
+  "/patient/:id/documents/send-email",
+  bodyParser.json(),
+  errorHandler.wrap(async (req) => {
+    const { id } = req.params as any;
+    const { emails, text, filesIds} = req.body as any
+
+    return new PatientManager().sendEmail( id, emails, text, filesIds );
+  })
+);
+
+
+app.post(
+  "/patient/:id/documents/download",
+  bodyParser.json(),
+  errorHandler.wrap(async (req) => {
+    const { id } = req.params as any;
+    const { documentIds} = req.body as any
+
+    return new PatientManager().getMultipleFiles( id, documentIds, "" );
+  })
+);
+
+
 
 // Export your express server so you can import it in the lambda function.
 export const patientRouter = app;

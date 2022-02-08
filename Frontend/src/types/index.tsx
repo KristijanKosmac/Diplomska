@@ -146,18 +146,9 @@ export interface Document {
   id: string;
   name: string;
   date: string;
-  url?: string;
-  isSend: boolean;
-  type: string
+  content: string;
 }
 
-export interface File {
-  Key: string;
-  LastModified: string;
-  url: string;
-  isSend: boolean;
-  type: string;
-}
 
 interface Column {
   id: string;
@@ -224,7 +215,7 @@ export interface SendEmailProps {
   suggestedEmails: string[];
   documents: Document[];
   email: string;
-  onClick: (emails: string[], selectedDocumentId: string) => void;
+  onClick: (emails: string[], selectedDocumentId: string, text: string) => void;
   // onChange: (value: string[]) => void;
   // onChangeSelectedDocument: (document: string) => void;
   defaultDocument: Document;
@@ -244,7 +235,7 @@ export interface DocumentComponentProps extends RouteComponentProps {
   patient?: Patient;
   sendToEmail?: string;
   isBusy: boolean;
-  handleSendEmail?: (emails: string[], selectedDocumentId: string) => void;
+  handleSendEmail?: (emails: string[], selectedDocumentId: string, text: string) => void;
   handleMultipleDownload: (fileKeys: string[]) => void
 }
 

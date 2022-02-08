@@ -10,14 +10,14 @@ export default function CustomModal({
   content,
   id,
   buttonSize,
-  isOpened
+  isOpened,
 }: ModalProps) {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
 
   useEffect(() => {
-    isOpened && isOpened(open)
-  }, [open])
+    isOpened && isOpened(open);
+  }, [open]);
 
   const handleOpen = () => {
     setOpen(true);
@@ -43,9 +43,8 @@ export default function CustomModal({
         <div>
           <h3>{content}</h3>
         </div>
-        {
-          onClick && 
-            <div className={classes.btnWrap}>
+        {onClick && (
+          <div className={classes.btnWrap}>
             <Button
               variant="outlined"
               className={classes.confirmBtn}
@@ -54,17 +53,17 @@ export default function CustomModal({
                 handleClose();
               }}
             >
-              Да
+              Yes
             </Button>
             <Button
               variant="outlined"
               className={classes.cancelBtn}
               onClick={handleClose}
             >
-              Не
+              No
             </Button>
-          </div> 
-        }
+          </div>
+        )}
       </div>
     </div>
   );

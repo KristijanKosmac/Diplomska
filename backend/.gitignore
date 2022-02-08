@@ -10,4 +10,7 @@ package-lock.json
 src/sdk/axios
 src/sdk/src
 src/sdk/package-lock.json
-
+src/documents
+config/
+/config
+config

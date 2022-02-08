@@ -39,11 +39,19 @@ class PatientAPI {
     }
 
     deleteFile(id: string, fileName: string) {
-        return axios.post(`${this.endpoint}/${id}/documents`, { params: { fileName }})
+        return axios.delete(`${this.endpoint}/${id}/documents`, { params: { fileName }})
     }
 
     getAllFiles(id: string) {
-        return axios.post(`${this.endpoint}/${id}/documents`)
+        return axios.get(`${this.endpoint}/${id}/documents`)
+    }
+
+    sendEmail(id: string, emails: string[], text: string, filesIds: string[]) {
+        return  axios.post(`${this.endpoint}/${id}/documents/send-email`,{ emails, text, filesIds })
+    }
+
+    getMultipleFiles(id: string, documentIds: string[]) {
+        return  axios.post(`${this.endpoint}/${id}/documents/download`, { documentIds })
     }
 
 }

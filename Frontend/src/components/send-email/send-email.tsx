@@ -7,14 +7,17 @@ import { useEffect, useState } from "react";
 import CustomSelect from "../select/select";
 
 export default function SendEmail(props: SendEmailProps) {
-  const [selectedDocumentId, setSelectedDocumentId] = useState(props.defaultDocument.id);
+  const [selectedDocumentId, setSelectedDocumentId] = useState(
+    props.defaultDocument.id
+  );
   const [emails, setEmails] = useState<string[]>([props.email]);
+  const [text, setText] = useState("");
   const [isOpened, setIsOpened] = useState(false);
 
   useEffect(() => {
     if (isOpened) {
-      setSelectedDocumentId(props.defaultDocument.id)
-      setEmails([props.email!])
+      setSelectedDocumentId(props.defaultDocument.id);
+      setEmails([props.email!]);
     }
   }, [isOpened]);
 
@@ -24,14 +27,15 @@ export default function SendEmail(props: SendEmailProps) {
       onClick={(event) => event.stopPropagation()}
     >
       <CustomModal
+        id={"id"}
         buttonName={
           <>
             <EmailIcon fontSize="small" style={{ marginRight: "5px" }} />
-            Испрати емаил
+            Send email
           </>
         }
-        onClick={() => props.onClick(emails, selectedDocumentId)}
-        title="Исрати емаил"
+        onClick={() => props.onClick(emails, selectedDocumentId, text)}
+        title="Send Email"
         buttonSize={props.className ? "medium" : "small"}
         isOpened={(value) => setIsOpened(value)}
         content={
@@ -68,12 +72,28 @@ export default function SendEmail(props: SendEmailProps) {
               errorMessage=""
               name="Документ"
               onChange={(value) => {
-                setSelectedDocumentId(value)
+                setSelectedDocumentId(value);
               }}
+            />
+            <TextField
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              id="text"
+              label="Text"
+              type="text"
+              name="text"
+              autoComplete="text"
+              minRows={1}
+              maxRows={5}
+              multiline 
+              autoFocus
+              value={text}
+              onChange={(value) => setText(value.target.value)}
             />
           </>
         }
-        id={"id"}
       />
     </div>
   );

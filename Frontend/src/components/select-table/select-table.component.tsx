@@ -31,6 +31,7 @@ export default function EnhancedTable(props: CheckboxTableProps) {
   };
 
   const handleClick = (event: React.MouseEvent<unknown>, name: string) => {
+    event.stopPropagation()
     const selectedIndex = selected.indexOf(name);
     let newSelected: string[] = [];
 
@@ -151,7 +152,7 @@ export default function EnhancedTable(props: CheckboxTableProps) {
           onClick={() => props.onDownload(selected)}
           disabled={selected.length == 0}
         >
-          Превземи документи
+          Download zip
         </Button>
         <TablePagination
           onPageChange={handleChangePage}

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { withRouter, RouteComponentProps } from "react-router-dom";
 import { StaticContext } from "react-router";
-import axios from "axios";
 
 import {
   Paper,
@@ -13,15 +12,11 @@ import {
   Button,
 } from "@material-ui/core";
 
-import {
-  Patient,
-  Document,
-  File,
-} from "../../types";
+import { Patient, Document } from "../../types";
 
 import Documents from "../../components/documents/documents.component";
 
-import { getPetBackendAPI } from "../../api";
+import { patientAPI } from "../../api";
 import { getValue } from "../../utils/getValue";
 import { mapPatientKeys } from "../../utils/mapPatientKeys";
 
@@ -53,45 +48,31 @@ const PatientDetails = (props: RouteComponentProps<{}, StaticContext, {}>) => {
 
   const fetchPatient = async () => {
     try {
-      const { data } = await getPetBackendAPI().getPatient(patientId);
+      const { data } = await patientAPI.getPatient(patientId);
       setPatient(data as unknown as Patient);
     } catch (error: any) {
-      setErrorMessage(
-        "Настана грешка при превземање на информациите за пациентот. Обидете се повторно."
-      );
+      setErrorMessage("Problem occurred while getting patient data");
     }
   };
 
   const fetchDocuments = async () => {
-    if (patient.id) {
-      try {
-        const response = await getPetBackendAPI().getDocuments(patient.id);
-        const data = response.data as unknown as File[];
+    try {
+      const { data } = await patientAPI.getAllFiles(patientId);
 
-        const docs = data.sort((a, b) =>
-          new Date(a.LastModified).getTime() <
-          new Date(b.LastModified).getTime()
-            ? 1
-            : -1
-        );
+      setDocuments(
+        data.map((doc: any) => {
+          return {
+            id: doc.filename,
+            date: parseInt(doc.filename.split("-")[0]),
+            name: doc.filename.split("-").slice(1).join("-"),
+            content: doc.content,
+          };
+        }) as Document[]
+      );
 
-        setDocuments(
-          docs.map((doc) => {
-            return {
-              id: doc.Key,
-              date: doc.LastModified,
-              name: doc.Key.split("/").slice(1).join("/"),
-              url: doc.url,
-              isSend: doc.isSend,
-              type: doc.type,
-            };
-          }) as Document[]
-        );
-
-        setIsBusy(false);
-      } catch (error: any) {
-        setErrorMessage(error.response.data.message);
-      }
+      setIsBusy(false);
+    } catch (error: any) {
+      setErrorMessage(error.response.data.message);
     }
   };
 
@@ -107,9 +88,7 @@ const PatientDetails = (props: RouteComponentProps<{}, StaticContext, {}>) => {
     } else {
       fetchPatient();
     }
-  }, []);
 
-  useEffect(() => {
     fetchDocuments();
   }, []);
 
@@ -122,8 +101,8 @@ const PatientDetails = (props: RouteComponentProps<{}, StaticContext, {}>) => {
 
   const handleDeleteDocument = async (documentId: string) => {
     try {
-      await getPetBackendAPI().deleteDocument(patient.id, documentId);
-      setSuccessMessage("Документот е успешно избришан");
+      await patientAPI.deleteFile(patientId, documentId);
+      setSuccessMessage("Document is successfully deleted");
 
       setTimeout(() => {
         fetchDocuments();
@@ -136,20 +115,7 @@ const PatientDetails = (props: RouteComponentProps<{}, StaticContext, {}>) => {
   const handleSubmit = async (files: FormData) => {
     try {
       setIsBusy(true);
-      await axios
-        .post(
-          ``,
-          files,
-          {
-            headers: {
-              authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-            },
-          }
-        )
-        .then(() => setSuccessMessage("Документот е успешно прикачен"))
-        .catch((err: any) => {
-          throw err;
-        });
+      await patientAPI.uploadFiles(patientId, files);
 
       setTimeout(() => {
         fetchDocuments();
@@ -163,45 +129,32 @@ const PatientDetails = (props: RouteComponentProps<{}, StaticContext, {}>) => {
 
   const handleMultipleDownload = async (fileKeys: string[]) => {
     try {
-      const data = await getPetBackendAPI().downloadMultipleFiles({
-        documents: fileKeys.map((key) => {
-          return { key, name: key.split("/")[1] };
-        }),
-      });
-      const bufferArray = base64ToArrayBuffer(data.data.blob);
-      saveByteArray(`${patient.id}.zip`, bufferArray);
+      setInformMessage("Zip file preparing ...")
+      window.scrollTo({top: 0, behavior: "smooth"})
+      const { data } = await patientAPI.getMultipleFiles(patientId, fileKeys)
+      const bufferArray = base64ToArrayBuffer(data);
+      saveByteArray(`${patient.firstName}-${patient.lastName}.zip`, bufferArray);
+      setSuccessMessage("Zip file downloaded successfully")
+      setInformMessage("")
     } catch (err: any) {
-      console.log(err);
+      setErrorMessage("Error while getting zip file")
     }
   };
 
   const handleSendEmail = async (
     emails: string[],
-    selectedDocumentId: string
+    selectedDocumentId: string,
+    text: string
   ) => {
     try {
-      await getPetBackendAPI().sendEmail({
-        emails,
-        documentId: selectedDocumentId,
-      });
+      await patientAPI.sendEmail(patientId, emails, text, [
+        selectedDocumentId,
+      ]);
 
-      setDocuments(
-        documents.map((document) => {
-          if (document.id === selectedDocumentId) {
-            return {
-              ...document,
-              isSend: true,
-            };
-          } else {
-            return document;
-          }
-        })
-      );
-      setSuccessMessage("Пораката е успешно пратена");
+      setSuccessMessage("Mail successfully send");
     } catch (e) {
-      setErrorMessage(
-        "Настана грешка при праќање на пораката. Обидете се повторно."
-      );
+      console.log(e);
+      setErrorMessage("Error occurred while sending mail");
     }
   };
 
@@ -228,7 +181,7 @@ const PatientDetails = (props: RouteComponentProps<{}, StaticContext, {}>) => {
         </div>
       )}
       <h1>
-        Пациент: {patient.firstName} {patient.lastName}
+        Patient: {patient.firstName} {patient.lastName}
       </h1>
       <AppBar position="static" className={classes.appBar}>
         <Tabs
@@ -238,11 +191,8 @@ const PatientDetails = (props: RouteComponentProps<{}, StaticContext, {}>) => {
           variant="fullWidth"
           centered
         >
-          <Tab label={<h3>Документи</h3>} style={{ width: "100%" }} />
-          <Tab
-            label={<h3>Информации за пациентот</h3>}
-            style={{ width: "100%" }}
-          />
+          <Tab label={<h3>Documents</h3>} style={{ width: "100%" }} />
+          <Tab label={<h3>Patient Info</h3>} style={{ width: "100%" }} />
         </Tabs>
       </AppBar>
       {tab === 0 ? (
@@ -276,7 +226,7 @@ const PatientDetails = (props: RouteComponentProps<{}, StaticContext, {}>) => {
                 });
               }}
             >
-              Промени
+              Edit
             </Button>
           </div>
           <Paper elevation={3}>

@@ -162,9 +162,6 @@ export const getUser =
     const profileId = JSON.parse(localStorage.getItem("profile")!).id;
     const response = await doctorAPI.getDoctor(profileId);
 
-    console.log("Get User Info: ");
-    console.log(response);
-
     localStorage.removeItem("profile");
     localStorage.setItem("profile", JSON.stringify(response.data));
     dispatch({

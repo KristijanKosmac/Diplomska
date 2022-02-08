@@ -1,25 +1,23 @@
 export const mapPatientKeys = (key: string) => {
     switch (key) {
-        case "name":
-            return "Име"
-        case "surname":
-            return "Презиме"
-        case "petId":
-            return "ПЕТ број"
+        case "firstName":
+            return "Name"
+        case "lastName":
+            return "Surname"
         case "telephoneNumber":
-            return "Телефонски број"
-        case "secondTelephoneNumber":
-            return "Втор телефонски број"
+            return "Telephone number"
         case "dateOfBirth":
-            return "Датум на раѓање"
-        case "citizenship":
-            return "Државјанство"
+            return "Date of birth"
+        case "nationality":
+            return "Nationality"
         case "sex":
-            return "Пол";
+            return "Sex";
         case "address":
-            return "Адреса";
+            return "Address";
         case "EMBG":
-            return "ЕМБГ"
+            return "EMBG"
+        case "familyDoctor":
+            return "Family Doctor"
         default:
             return key.charAt(0).toUpperCase() + key.slice(1)
     }
