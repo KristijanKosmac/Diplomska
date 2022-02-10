@@ -1,18 +1,20 @@
-require("./database/mongoose")
+require("./database/mongoose");
 // import bodyParser from "body-parser";
 import express from "express";
 // import fs from "fs";
 // import path from "path";
 import cors from "cors";
-import {doctorRouter} from "./routes/doctor"
-import {patientRouter} from "./routes/patient"
+import { doctorRouter } from "./routes/doctor";
+import { patientRouter } from "./routes/patient";
+import { userRouter } from "./routes/user";
+import "./firebase/index"
 
 const app = express();
+
 // const router = express.Router();
 
 // router.use(bodyParser.json());
 // router.use(bodyParser.urlencoded({ extended: true }));
-
 
 // const routesFolder = path.join(__dirname, "/routes");
 // const fileExtension = /\.js$/;
@@ -34,7 +36,7 @@ const app = express();
 //         app.use(usepath, routeModule.route);
 //     });
 
-app.use(express.json())
+app.use(express.json());
 // app.use(bodyParser.urlencoded({
 //     parameterLimit: 1000000000,
 //     limit: '50mb',
@@ -43,9 +45,11 @@ app.use(express.json())
 // app.use(bodyParser.json({limit: '50mb'}))
 // app.use(express.json({limit: '50mb'}));
 // app.use(express.urlencoded({limit: '50mb'}));
-app.use(cors())
-app.use(patientRouter)
-app.use(doctorRouter)
+app.use(cors());
+app.use(patientRouter);
+app.use(doctorRouter);
+app.use(userRouter);
+
 // app.use("/", router);
 
-export default app;
+export { app };

@@ -1,9 +1,8 @@
 import { FormEvent, useEffect, useState } from "react";
 import { LockOutlined as LockOutlinedIcon } from "@material-ui/icons";
-import { RouteComponentProps } from "react-router-dom";
+import { RouteComponentProps, withRouter } from "react-router-dom";
 import passwordValidation from "../../utils/validations/password-validation";
-import { UserActionTypes } from "../../constants/index";
-import useStyles from "./reset-password.styles";
+import useStyles from "./change-password.styles";
 import {
   Avatar,
   Box,
@@ -14,16 +13,15 @@ import {
   Typography,
 } from "@material-ui/core";
 import Copyright from "../../components/copyright-footer/copyright-footer.component";
-import { getUserManagementAPI } from "../../api";
 import { useDispatch, useSelector } from "react-redux";
 import { GlobalState } from "../../reducers";
-import { resetPassword, setIsLoggedIn } from "../../actions";
+import { changePassword } from "../../actions";
 
-const ResetPasswordPage = (props: RouteComponentProps) => {
+const ChangePasswordPage = (props: RouteComponentProps) => {
   const classes = useStyles();
   const dispatch = useDispatch();
 
-  const { sessionToken, profile, successMessage, errorMessage } = useSelector(
+  const { profile, successMessage, errorMessage } = useSelector(
     (state: GlobalState) => state.user
   );
   const [newPassword, setNewPassword] = useState("");
@@ -41,14 +39,10 @@ const ResetPasswordPage = (props: RouteComponentProps) => {
 
     if (valid) {
       dispatch(
-        resetPassword(sessionToken, newPassword, profile.id, props.history)
+        changePassword(profile.id, newPassword, props.history)
       );
     }
   };
-
-  useEffect(()=>{
-    !sessionToken && props.history.push("/sign-in")
-  },[])
 
   return (
     <>
@@ -61,7 +55,7 @@ const ResetPasswordPage = (props: RouteComponentProps) => {
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Ресетирај ја лозинката
+            Change Password
           </Typography>
           <form className={classes.form} onSubmit={handleSubmit}>
             <TextField
@@ -70,7 +64,7 @@ const ResetPasswordPage = (props: RouteComponentProps) => {
               required
               fullWidth
               name="newPassword"
-              label="Нова лозинка"
+              label="New Password"
               type="password"
               id="newPassword"
               autoComplete="newPassword"
@@ -85,7 +79,7 @@ const ResetPasswordPage = (props: RouteComponentProps) => {
               required
               fullWidth
               name="confirmPassword"
-              label="Повтори нова лозинка"
+              label="Congirm Password"
               type="password"
               id="confirmPassword"
               autoComplete="confirmPassword"
@@ -101,7 +95,7 @@ const ResetPasswordPage = (props: RouteComponentProps) => {
               className={classes.submit}
               color="primary"
             >
-              Промени лозинка
+              Change Password
             </Button>
           </form>
         </div>
@@ -113,4 +107,4 @@ const ResetPasswordPage = (props: RouteComponentProps) => {
   );
 };
 
-export default ResetPasswordPage;
+export default withRouter(ChangePasswordPage);

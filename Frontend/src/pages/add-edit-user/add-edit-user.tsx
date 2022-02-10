@@ -13,7 +13,7 @@ import {
 } from "@material-ui/core";
 import { AccountBoxOutlined as AccountBoxOutlinedIcon } from "@material-ui/icons";
 
-import { UserRole, User } from "../../types";
+import { User } from "../../types";
 
 import { GlobalState } from "../../reducers";
 import { createUser } from "../../actions";
@@ -21,7 +21,6 @@ import { createUser } from "../../actions";
 import CustomSelect from "../../components/select/select";
 import useStyles from "./add-edit-user.styles";
 import CreateUserValidation from "../../utils/validations/create-user-validation";
-import { getUserManagementAPI } from "../../api";
 
 export default function AddEditUser(
   props: RouteComponentProps<{}, StaticContext, { data: User }>
@@ -39,7 +38,7 @@ export default function AddEditUser(
     email: "",
     role: "",
   });
-  const roles = Object.values(UserRole);
+  const roles = "";
 
   useEffect(() => {
     if (props.location.state && props.location.state.data) {
@@ -64,12 +63,7 @@ export default function AddEditUser(
         role,
         institution,
         email,
-      };
-
-      await getUserManagementAPI().updateUserAttributes({
-        userAttributes: req,
-        userId: id
-      });
+      }
 
       props.history.push("/users")
     } else {
@@ -108,7 +102,7 @@ export default function AddEditUser(
               required
               fullWidth
               id="email"
-              label="емаил"
+              label="email"
               type="text"
               name="email"
               autoComplete="email"
@@ -119,14 +113,14 @@ export default function AddEditUser(
               error={!!errors.email}
               helperText={errors.email}
             />
-            <CustomSelect
+            {/* <CustomSelect
               required
               items={roles}
               errorMessage={errors.role}
               name="Улога"
               onChange={(value) => setRole(UserRole[value as UserRole])}
               value={role}
-            />
+            /> */}
           </Grid>
           <div className={classes.btnContainer}> 
             <Button

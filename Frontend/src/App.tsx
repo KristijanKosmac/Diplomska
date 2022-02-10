@@ -2,7 +2,7 @@ import "./App.css";
 import { Route } from "react-router";
 import { Redirect, Switch } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { ThemeProvider, createMuiTheme } from "@material-ui/core/styles";
+import { ThemeProvider, createTheme } from "@material-ui/core/styles";
 import { GlobalState } from "./reducers";
 
 import Header from "./components/header/header.component";
@@ -11,7 +11,7 @@ import SignInPage from "./pages/sign-in/sign-in";
 import SignUpPage from "./pages/sign-up/sign-up";
 import ForgotPasswordPage from "./pages/forgot-password/forgot-password";
 import ActivateUserPage from "./pages/activate-user/activate-user";
-import ResetPasswordPage from "./pages/reset-password/reset-password";
+import ChangePasswordPage from "./pages/change-password/change-password";
 import PatientsListPage from "./pages/patients-list/patients-list";
 import AddEditPatient from "./pages/add-edit-patient/add-edit-patient";
 import PatientDetails from "./pages/patient-details/patient-details";
@@ -21,7 +21,7 @@ import Profile from "./pages/profile/profile";
 import ErrorPage from "./pages/error/error";
 import ResetForgottenPasswordPage from "./pages/reset-forgotten-password/reset-forgotten-password";
 
-export const theme = createMuiTheme({
+export const theme = createTheme({
   palette: {
     primary: {
       main: "#01A8C2",
@@ -37,14 +37,13 @@ const App = () => {
 
   const notLoggedInRoutes = (
     <div>
-      <Header />
+      <Header/>
       <Switch>
         <Route path="/" component={SignInPage} exact />
         <Route path="/sign-in" component={SignInPage} />
         <Route path="/sign-up" component={SignUpPage} />
         <Route path="/forgot-password" component={ForgotPasswordPage} />
         <Route path="/activate/:userId/:code" component={ActivateUserPage} />
-        <Route path="/reset-password" component={ResetPasswordPage} />
         <Route path="/reset-forgotten-password" component={ResetForgottenPasswordPage} />
         <Redirect to="/sign-in" />
       </Switch>
@@ -57,6 +56,7 @@ const App = () => {
       <div style={{marginTop: "2%", width: "100%"}}>
         <Switch>
           <Route exact path="/profile" component={Profile} />
+          <Route path="/profile/change-password" component={ChangePasswordPage} />
 
           <Route exact path="/" component={PatientsListPage} />
           <Route exact path="/patients" component={PatientsListPage} />

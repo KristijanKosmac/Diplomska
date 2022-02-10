@@ -28,7 +28,7 @@ export default function UserMessage({
             color="primary"
             onClick={() => history.push("/sign-in")}
           >
-            Најави се
+            Sign in
           </Button>
         )}
       </>
@@ -49,7 +49,7 @@ export default function UserMessage({
             color="primary"
             onClick={() => history.push("/resend-email")}
           >
-            Испрати емаил повторно
+            Send email again
           </Button>
       </>
     );

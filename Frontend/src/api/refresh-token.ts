@@ -1,6 +1,5 @@
-import axios, { AxiosError, AxiosResponse } from "axios";
-// import { RefreshTokenResponse } from "pet-user-management-sdk";
-import { getUserManagementAPI, getAccessToken } from ".";
+import axios, { AxiosError  } from "axios";
+import { getAccessToken } from ".";
 import { signOutUser } from "../actions/index";
 type Subscriber = (accessToken: string) => void;
 
@@ -27,7 +26,6 @@ export default {
                 if (!errorResponse.data && !errorResponse.status) {
                     return resetTokenAndReattemptRequest(error, store);
                 } else if( errorResponse.data ) {
-    
                     if (isRefreshTokenExpiredError(errorResponse.data)) {
                         store.dispatch(signOutUser());
                     }
@@ -50,6 +48,7 @@ export default {
         axios.interceptors.request.use(
             config => {
                 config.headers['Access-Control-Allow-Origin'] = '*'
+                config.headers['Authorization'] = `Bearer ${getAccessToken()}`
                 return config
             }
         )

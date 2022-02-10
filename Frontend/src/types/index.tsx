@@ -28,67 +28,13 @@ export type MessagesState = {
   successMessage: string;
 };
 
-export interface PatientState extends MessagesState {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  PET: number;
-}
-
-export enum UserRole {
-  InstitutionalAdmin = "InstitutionalAdmin",
-  NonMedical = "NonMedical",
-  NonMedicalAdmin = "NonMedicalAdmin",
-  Nurse = "Nurse",
-  Physician = "Physician",
-  PhysicianAdmin = "PhysicianAdmin",
-  PhysicianInTraining = "PhysicianInTraining",
-  RadiologyTechnologist = "RadiologyTechnologist",
-  TechnologistAdmin = "TechnologistAdmin"
-}
-
 export interface User {
   id: string;
   firstName: string;
   lastName: string;
   email: string;
-  role: UserRole;
+  role: string;
   institution: string;
-}
-
-export interface Study {
-  id: string;
-  isStable: boolean;
-  lastUpdate: string;
-  // mainDicomTags: MainDicomTags
-  institutionName: string,
-  studyDate: string,
-  studyDescription: string,
-  studyID: string,
-  studyTime: string
-  type: string
-  patientId: string;
-  patientName: string
-}
-
-export interface StudiesResponse {
-  id: string,
-  isStable: boolean,
-  lastUpdate: string,
-  mainDicomTags: {
-    accessionNumber: string,
-    institutionName: string,
-    referringPhysicianName: string,
-    studyDate: string,
-    studyDescription: string,
-    studyID: string,
-    studyInstanceUID: string,
-    studyTime: string
-  },
-  parentPatient: string,
-  series: string[],
-  type: string
 }
 
 export interface PatientValidationProps {
@@ -222,12 +168,6 @@ export interface SendEmailProps {
   className?: string;
 }
 
-export interface StudiesListProps extends RouteComponentProps {
-  studies: Study[];
-  isBusy: boolean;
-  downloadStudy: (studyUid: string, studyId: string) => void
-}
-
 export interface DocumentComponentProps extends RouteComponentProps {
   documents: Document[];
   handleDelete: (documentId: string) => void;
@@ -262,15 +202,6 @@ export interface PatientColumn {
   | "dateOfBirth"
   | "telephoneNumber"
   | "sex";
-  label: string;
-  minWidth?: string;
-  width?: string;
-  align?: "right";
-  format?: (value: number) => string;
-}
-
-export interface StudyColumn {
-  id: "lastUpdate" | "studyDate" | "institutionName" | "studyDescription" | "studyID" | "patientName" | "patientId";
   label: string;
   minWidth?: string;
   width?: string;
@@ -327,56 +258,6 @@ export interface PatientPayload {
   errorMessage?: string;
   successMessage?: string;
 }
-
-export interface UnassignesStudies {
-  id: string;
-  isStable: boolean;
-  lastUpdate: string;
-  mainDicomTags: MainDicomTags;
-  parentPatient: string;
-  patientMainDicomTags: PatientMainDicomTags;
-  series?: (string)[] | null;
-  type: string;
-  accessionNumber: string;
-  institutionName: string;
-  referringPhysicianName: string;
-  studyDate: string;
-  studyDescription: string;
-  studyID: string;
-  studyInstanceUID: string;
-  studyTime: string;
-  patientId: string;
-  patientBirthDate: string;
-  patientName: string;
-  patientSex: string;
-}
-export interface MainDicomTags {
-  accessionNumber: string;
-  institutionName: string;
-  referringPhysicianName: string;
-  studyDate: string;
-  studyDescription: string;
-  studyID: string;
-  studyInstanceUID: string;
-  studyTime: string;
-}
-export interface PatientMainDicomTags {
-  patientId: string;
-  patientBirthDate: string;
-  patientName: string;
-  patientSex: string;
-}
-
-export interface UnassignesStudiesState extends MessagesState {
-  studies: UnassignesStudies[];
-  isLoading: boolean,
-}
-export interface UnassignedStudiesPayload {
-  studies?: UnassignesStudies[];
-  errorMessage?: string;
-  successMessage?: string;
-}
-
 
 /// *********** NEW TYPES ************
 

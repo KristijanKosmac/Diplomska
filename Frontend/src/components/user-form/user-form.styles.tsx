@@ -21,6 +21,20 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(4, 0, 2),
     width: "35%",
     color: "white",
+  },
+  btnContainer: {
+    display: "flex",
+    width: "100%",
+    justifyContent: "space-evenly",
+    "& a": {
+      width: "35%",
+      textDecoration: "none",
+      color: "white",
+
+      "& button": {
+        width: "100%"
+      }
+    }
   }
 }));
 export default useStyles;

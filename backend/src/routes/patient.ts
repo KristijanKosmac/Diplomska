@@ -3,10 +3,12 @@ import express from "express";
 import * as errorHandler from "../lib/async-response-handler";
 import { PatientManager } from "../models/patient-manager";
 import { upload } from "../utils/multerStorage";
+import { auth } from "../middleware/auth"
 
 const app = express.Router();
 app.get(
   "/patient/:id",
+  auth,
   errorHandler.wrap(async (req) => {
     const { id } = req.params as any;
     return new PatientManager().getPatient(id);
@@ -14,6 +16,7 @@ app.get(
 );
 app.post(
   "/patient",
+  auth,
   bodyParser.json(),
   errorHandler.wrap(async (req) => {
     return new PatientManager().addPatient(req.body);
@@ -22,6 +25,7 @@ app.post(
 
 app.get(
   "/patient",
+  auth,
   errorHandler.wrap(async (req) => {
     const { doctorId } = req.query
     return new PatientManager().getAllPatientsForDoctor(doctorId as string);
@@ -30,6 +34,7 @@ app.get(
 
 app.delete(
   "/patient/:id",
+  auth,
   errorHandler.wrap(async (req) => {
     const { id } = req.params as any;
     return new PatientManager().deletePatient(id);
@@ -38,6 +43,7 @@ app.delete(
 
 app.put(
   "/patient/:id",
+  auth,
   bodyParser.json(),
   errorHandler.wrap(async (req) => {
     const { id } = req.params as any;
@@ -47,6 +53,7 @@ app.put(
 
 app.post(
   "/patient/:id/documents",
+  auth,
   upload.array("file"),
   errorHandler.wrap(async (req) => {
     return new PatientManager().uploadFiles(req.files);
@@ -55,6 +62,7 @@ app.post(
 
 app.delete(
   "/patient/:id/documents",
+  auth,
   errorHandler.wrap(async (req) => {
     const { id } = req.params as any;
     const { fileName } = req.query as any;
@@ -65,6 +73,7 @@ app.delete(
 
 app.get(
   "/patient/:id/documents",
+  auth,
   errorHandler.wrap(async (req) => {
     const { id } = req.params as any;
 
@@ -74,6 +83,7 @@ app.get(
 
 app.post(
   "/patient/:id/documents/send-email",
+  auth,
   bodyParser.json(),
   errorHandler.wrap(async (req) => {
     const { id } = req.params as any;
@@ -86,6 +96,7 @@ app.post(
 
 app.post(
   "/patient/:id/documents/download",
+  auth,
   bodyParser.json(),
   errorHandler.wrap(async (req) => {
     const { id } = req.params as any;

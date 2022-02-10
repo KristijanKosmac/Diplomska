@@ -49,16 +49,6 @@ export const signUp = async(email: string, password: string) => {
     }
 }
 
-// export const refreshToken = async () => {
-//     try {
-
-//         const response = await auth.signInWithCredential({})
-//         await response.user!.sendEmailVerification()
-//     } catch (err : any) {
-//         throw err
-//     }
-// }
-
 export const signIn = async (email: string, password: string) => {
     try {
         const { user }: any = await auth.signInWithEmailAndPassword(email, password)
@@ -81,16 +71,12 @@ export const signIn = async (email: string, password: string) => {
     }
 }
 
-export const resetPassword = (email: string) => {
+export const resetPasswordFirebase = async (email: string) => {
     try {
-        auth.sendPasswordResetEmail(email)
+        await auth.sendPasswordResetEmail(email)
     } catch (err : any) {
         throw err
     }
 }
-
-const provider = new firebase.auth.GoogleAuthProvider();
-provider.setCustomParameters({ prompt: "select_account" });
-export const signInWithGoogle = () => auth.signInWithPopup(provider);
 
 export default firebase;

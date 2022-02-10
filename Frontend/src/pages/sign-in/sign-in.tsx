@@ -29,7 +29,7 @@ const SignInPage = (props: RouteComponentProps) => {
       <Authentication
         title={"Sign in"}
         links={[
-          { href: "/reset-forgotten-password", content: "forgot password?" },
+          { href: "/forgot-password", content: "forgot password?" },
           { href: "/sign-up", content: "Sign up" },
         ]}
         onChange={handleChange}

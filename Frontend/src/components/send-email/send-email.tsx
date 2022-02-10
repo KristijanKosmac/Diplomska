@@ -53,8 +53,8 @@ export default function SendEmail(props: SendEmailProps) {
                 <TextField
                   {...params}
                   variant="outlined"
-                  label="Исрати емаил до:"
-                  placeholder="додади една или повеќе емаил адреси"
+                  label="Send email to:"
+                  placeholder="Add one or more emails"
                 />
               )}
             />

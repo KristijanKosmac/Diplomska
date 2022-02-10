@@ -12,11 +12,12 @@ import {
 import { AccountBoxOutlined as AccountBoxOutlinedIcon } from "@material-ui/icons";
 
 import CustomSelect from "../../components/select/select";
-import DatePicker from "../date-picker/date-picker.component"
+import DatePicker from "../date-picker/date-picker.component";
 import useStyles from "./user-form.styles";
 import { DoctorFormProps, Doctor } from "../../types";
 import doctorValidation from "../../utils/validations/doctor.validation";
 import { institutions } from "../../constants/institutions";
+import { Link } from "react-router-dom";
 export default function UserForm(props: DoctorFormProps) {
   const classes = useStyles();
 
@@ -159,11 +160,13 @@ export default function UserForm(props: DoctorFormProps) {
                 value={doctor.telephoneNumber}
                 onChange={handleChange}
               />
-              <DatePicker 
+              <DatePicker
                 name="Date of Birth"
-                onChange={(dateOfBirth) => setDoctor({ ...doctor, dateOfBirth })}
+                onChange={(dateOfBirth) =>
+                  setDoctor({ ...doctor, dateOfBirth })
+                }
                 value={doctor.dateOfBirth}
-                />
+              />
             </Grid>
             <Grid item xs={6} spacing={5}>
               <TextField
@@ -228,14 +231,21 @@ export default function UserForm(props: DoctorFormProps) {
               />
             </Grid>
           </Grid>
-          <Button
-            type="submit"
-            variant="contained"
-            className={classes.submit}
-            color="primary"
-          >
-            {props.isUpdate ? "Edit" : "Create"}
-          </Button>
+          <div className={classes.btnContainer}>
+            <Button
+              type="submit"
+              variant="contained"
+              className={classes.submit}
+              color="primary"
+            >
+              {props.isUpdate ? "Edit" : "Create"}
+            </Button>
+            <Link to="/profile/change-password" >
+              <Button variant="contained" color="primary" className={classes.submit}>
+                Change Password
+              </Button>
+            </Link>
+          </div>
         </form>
       </div>
     </Container>

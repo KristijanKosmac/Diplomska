@@ -1,8 +1,9 @@
-import { doctorAPI, getUserManagementAPI } from "../../api";
+import { doctorAPI } from "../../api";
 import { UserActionTypes } from "../../constants/index";
 import { History } from "history";
 import { UserState, User, Doctor } from "../../types";
-import { signUp, signIn } from "../../firebase/index";
+import { signUp, signIn, resetPasswordFirebase } from "../../firebase/index";
+import { userAPI } from "../../api";
 
 export const signUpUser =
   (email: string, password: string, history: History) =>
@@ -13,7 +14,8 @@ export const signUpUser =
     }) => void
   ) => {
     try {
-      signUp(email, password);
+      await userAPI.signUp(email, password)
+      // signUp(email, password);
 
       dispatch({
         type: UserActionTypes.SIGN_UP_USER,
@@ -37,7 +39,9 @@ export const signInUser =
   (email: string, password: string, history: History) =>
   async (dispatch: (arg0: { type: string; payload: any }) => void) => {
     try {
-      const response = await signIn(email, password);
+      // const response = await signIn(email, password);
+      const { data } = await userAPI.signIn(email, password);
+      const response = data
       console.log("sign in response", response);
 
       localStorage.setItem("profile", JSON.stringify(response.profile));
@@ -135,10 +139,10 @@ export const createUser =
     }) => void
   ) => {
     try {
-      await getUserManagementAPI().adminCreateUser({
-        username,
-        groupName,
-      });
+      // await getUserManagementAPI().adminCreateUser({
+      //   username,
+      //   groupName,
+      // });
 
       dispatch({
         type: UserActionTypes.CREATE_USER,
@@ -217,23 +221,15 @@ export const getAllUsers =
   };
 
 export const resetPassword =
-  (
-    sessionToken: string,
-    newPassword: string,
-    username: string,
-    history: History
-  ) =>
+  (email: string, history: History) =>
   async (dispatch: (arg0: { type: string; payload: any }) => void) => {
     try {
-      const response = await getUserManagementAPI().setPassword({
-        sessionToken,
-        newPassword,
-        username,
-      });
+      await userAPI.resetPassword(email)
+      // await resetPasswordFirebase(email);
 
       dispatch({
         type: UserActionTypes.RESET_PASSWORD,
-        payload: { ...response.data },
+        payload: {},
       });
 
       history.push("/sign-in");
@@ -245,11 +241,33 @@ export const resetPassword =
     }
   };
 
+export const changePassword =
+  (userId: string, password: string, history: History) =>
+  async (dispatch: (arg0: { type: string; payload: any }) => void) => {
+    try {
+      await userAPI.changePassword(userId, password);
+
+      dispatch({
+        type: UserActionTypes.CHANGE_PASSWORD,
+        payload: {
+          payload: { successMessage: "Password was successfully changed" },
+        },
+      });
+
+      history.push("/profile");
+    } catch (error: any) {
+      dispatch({
+        type: UserActionTypes.CHANGE_PASSWORD_FAIL,
+        payload: { errorMessage: error.response.data.message },
+      });
+    }
+  };
+
 export const deleteUser =
   (userId: string) =>
   async (dispatch: (arg0: { type: string; payload: any }) => void) => {
     try {
-      await getUserManagementAPI().deleteUser(userId);
+      // await getUserManagementAPI().deleteUser(userId);
 
       dispatch({
         type: UserActionTypes.DELETE_USER,

@@ -11,7 +11,6 @@ export const getValue = (column: string, value: string | number) => {
     column === "date" ||
     column === "birthDate" ||
     column === "dateOfBirth" ||
-    column === "studyDate" ||
     column === "lastUpdate"
   ) {
     return value ? formatDate(value as string) : "/";

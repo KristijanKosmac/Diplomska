@@ -1,6 +1,5 @@
 import { useState } from "react";
 import SumbitEmail from "../../components/submit-email/submit-email.component";
-import { getUserManagementAPI } from "../../api";
 
 const ResendEmailPage = () => {
   const [email, setEmail] = useState("");

@@ -10,12 +10,9 @@ function Header() {
       <CssBaseline />
       <AppBar position="fixed">
         <Toolbar>
-          <img
-            src={logo}
-            alt="logo"
-            height="64px"
-            className={classes.logo}
-          />
+          <a href="/">
+            <img src={logo} alt="logo" height="64px" className={classes.logo} />
+          </a>
         </Toolbar>
       </AppBar>
     </div>

@@ -8,7 +8,7 @@ export default function Copyright() {
         Diplomska
       </Link>{" "}
       {new Date().getFullYear()}©{" "}
-      Сите права се задржани
+      Аll rights reserved
     </Typography>
   );
 }

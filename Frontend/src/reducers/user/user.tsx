@@ -146,6 +146,16 @@ const userReducer = (state = INITIAL_STATE, action: any) => {
           ...state,
           errorMessage: action.payload.errorMessage
       }
+    case UserActionTypes.CHANGE_PASSWORD:
+      return {
+        ...state,
+        ...action.payload
+      }
+    case UserActionTypes.CHANGE_PASSWORD_FAIL:
+      return {
+        ...state,
+        ...action.payload
+      }
     default:
       return state;
   }

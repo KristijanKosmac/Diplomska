@@ -1,30 +1,24 @@
 import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { resetPassword } from "../../actions";
+import { GlobalState } from "../../reducers";
 import SumbitEmail from "../../components/submit-email/submit-email.component";
-import { getUserManagementAPI } from "../../api";
+import { RouteComponentProps } from "react-router-dom";
 
-const ForgotPasswordPage = () => {
+
+const ForgotPasswordPage = (props: RouteComponentProps) => {
   const [email, setEmail] = useState("");
-
-  const [successMessage, setSuccessMessage] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
+  const { errorMessage, successMessage } = useSelector(
+    (state: GlobalState) => state.user
+  );
+  const dispatch = useDispatch()
 
   const handleChange = (event: { email: string }) => {
     setEmail(event.email);
   };
 
   const handleSubmit = async () => {
-    try {
-      const { data: { username } } = await getUserManagementAPI().getUserByEmail(email);
-      // await getUserManagementAPI().resetPassword({
-      //   username,
-      //   emailLanguage: ResetPasswordRequestEmailLanguageEnum.En,
-      // } as ResetPasswordRequest);
-
-      setSuccessMessage("Успешно пратена порака за промена на лозинката!")
-    } catch (error: any) {
-      setErrorMessage(error.response.data.message);
-    }
-
+    dispatch(resetPassword(email, props.history));
   };
 
   return (

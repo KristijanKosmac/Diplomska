@@ -2,7 +2,6 @@ import { FormEvent, useEffect, useState } from "react";
 import { LockOutlined as LockOutlinedIcon } from "@material-ui/icons";
 import { RouteComponentProps } from "react-router-dom";
 import passwordValidation from "../../utils/validations/password-validation";
-import { UserActionTypes } from "../../constants/index";
 import useStyles from "./reset-forgotten-password.styles";
 import {
   Avatar,
@@ -14,7 +13,6 @@ import {
   Typography,
 } from "@material-ui/core";
 import Copyright from "../../components/copyright-footer/copyright-footer.component";
-import { getUserManagementAPI } from "../../api";
 import { useDispatch, useSelector } from "react-redux";
 import forgotPasswordValidation from "../../utils/validations/forgot-password-validation";
 
@@ -40,7 +38,6 @@ const ResetForgottenPasswordPage = (props: RouteComponentProps) => {
 
     try {
       if (email) {
-        const { data: { username } } = await getUserManagementAPI().getUserByEmail(email);
 
         // await getUserManagementAPI().resetPassword({
         //   username,
@@ -75,15 +72,6 @@ const ResetForgottenPasswordPage = (props: RouteComponentProps) => {
 
     if (valid) {
       try {
-        const { data: { username } } = await getUserManagementAPI().getUserByEmail(email)
-
-        console.log(username)
-
-        await getUserManagementAPI().confirmResetPassword({
-          code,
-          username: username,
-          password: newPassword,
-        });
 
         setTimeout(() => props.history.push("/sign-in"), 2000);
       } catch (error: any) {
@@ -152,7 +140,7 @@ const ResetForgottenPasswordPage = (props: RouteComponentProps) => {
                   required
                   fullWidth
                   name="newPassword"
-                  label="Нова лозинка"
+                  label="New Password"
                   type="password"
                   id="newPassword"
                   autoComplete="newPassword"
@@ -167,7 +155,7 @@ const ResetForgottenPasswordPage = (props: RouteComponentProps) => {
                   required
                   fullWidth
                   name="confirmPassword"
-                  label="Повтори нова лозинка"
+                  label="Confirm Password"
                   type="password"
                   id="confirmPassword"
                   autoComplete="confirmPassword"
@@ -186,7 +174,7 @@ const ResetForgottenPasswordPage = (props: RouteComponentProps) => {
               className={classes.submit}
               color="primary"
             >
-              {show? "Submit" : "Испрати верификациски код"}
+              {show? "Submit" : "Send verification code"}
             </Button>
           </form>
         </div>

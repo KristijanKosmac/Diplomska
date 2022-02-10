@@ -1,4 +1,4 @@
-const { MongoClient, ObjectID } = require('mongodb')
+import { MongoClient } from 'mongodb'
 
 const connectionURL = process.env.MONGODB_URL
 const databaseName = process.env.TABLE_NAME

@@ -39,7 +39,7 @@ const PatientDetails = (props: RouteComponentProps<{}, StaticContext, {}>) => {
     email: "",
   });
 
-  const [isBusy, setIsBusy] = useState(false); // set to true
+  const [isBusy, setIsBusy] = useState(true);
   const [tab, setTab] = useState(0);
 
   const patientId = window.location.pathname.split("/").reverse()[0];

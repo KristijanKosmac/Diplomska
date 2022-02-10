@@ -9,7 +9,6 @@ import CustomModal from "../../components/modal/modal.component";
 import DropdownMenuActions from "../../components/dropdownMenuActions/dropdownMenuActions";
 import Search from "../../components/search/search.component";
 import CustomTable from "../../components/table/table";
-import { getUserManagementAPI } from "../../api/index";
 
 import useStyles from "./users-list.styles";
 import { GlobalState } from "../../reducers";

@@ -12,10 +12,7 @@ export default function Profile(props: RouteComponentProps<{}, StaticContext>) {
   const { errorMessage, successMessage, profile } = useSelector(
     (state: GlobalState) => state.user
   );
-
   const dispatch = useDispatch();
-
-  console.log(profile)
 
   useEffect(() => {
     dispatch(getUser())

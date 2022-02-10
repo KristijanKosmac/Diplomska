@@ -20,7 +20,6 @@ export default function EnhancedTable(props: CheckboxTableProps) {
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const classes = useStyles();
 
-
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
       const newSelecteds = props.rows.map((row) => row.id);
@@ -31,7 +30,7 @@ export default function EnhancedTable(props: CheckboxTableProps) {
   };
 
   const handleClick = (event: React.MouseEvent<unknown>, name: string) => {
-    event.stopPropagation()
+    event.stopPropagation();
     const selectedIndex = selected.indexOf(name);
     let newSelected: string[] = [];
 
@@ -70,7 +69,7 @@ export default function EnhancedTable(props: CheckboxTableProps) {
   return (
     <React.Fragment>
       <TableContainer className={classes.container}>
-        <Table>
+        <Table stickyHeader>
           <TableHead>
             <TableRow>
               <TableCell className={classes.cell}>
