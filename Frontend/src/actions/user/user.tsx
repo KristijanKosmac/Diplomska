@@ -2,7 +2,6 @@ import { doctorAPI } from "../../api";
 import { UserActionTypes } from "../../constants/index";
 import { History } from "history";
 import { UserState, User, Doctor } from "../../types";
-import { signUp, signIn, resetPasswordFirebase } from "../../firebase/index";
 import { userAPI } from "../../api";
 
 export const signUpUser =
@@ -15,7 +14,6 @@ export const signUpUser =
   ) => {
     try {
       await userAPI.signUp(email, password)
-      // signUp(email, password);
 
       dispatch({
         type: UserActionTypes.SIGN_UP_USER,
@@ -39,7 +37,6 @@ export const signInUser =
   (email: string, password: string, history: History) =>
   async (dispatch: (arg0: { type: string; payload: any }) => void) => {
     try {
-      // const response = await signIn(email, password);
       const { data } = await userAPI.signIn(email, password);
       const response = data
       console.log("sign in response", response);
@@ -139,10 +136,6 @@ export const createUser =
     }) => void
   ) => {
     try {
-      // await getUserManagementAPI().adminCreateUser({
-      //   username,
-      //   groupName,
-      // });
 
       dispatch({
         type: UserActionTypes.CREATE_USER,
@@ -225,7 +218,6 @@ export const resetPassword =
   async (dispatch: (arg0: { type: string; payload: any }) => void) => {
     try {
       await userAPI.resetPassword(email)
-      // await resetPasswordFirebase(email);
 
       dispatch({
         type: UserActionTypes.RESET_PASSWORD,
@@ -267,7 +259,6 @@ export const deleteUser =
   (userId: string) =>
   async (dispatch: (arg0: { type: string; payload: any }) => void) => {
     try {
-      // await getUserManagementAPI().deleteUser(userId);
 
       dispatch({
         type: UserActionTypes.DELETE_USER,

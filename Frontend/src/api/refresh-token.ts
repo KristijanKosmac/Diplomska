@@ -20,6 +20,7 @@ export default {
                 return response;
             },
             error => {
+                console.log(error)
                 const errorResponse = error.response;
                 console.log("Interceptor - err:", errorResponse)
 
@@ -64,7 +65,7 @@ function isTokenExpiredError(
 function isTokenInvalidError(
     errorMessage: string
 ): boolean {
-    return errorMessage.includes("JsonWebTokenError");
+    return errorMessage.includes("JsonWebTokenError") || errorMessage.includes("EmptyToken");
 }
 
 function isRefreshTokenExpiredError(
