@@ -1,8 +1,7 @@
-import { doctorAPI } from "../../api";
+import { doctorAPI, userAPI } from "../../api";
 import { UserActionTypes } from "../../constants/index";
 import { History } from "history";
 import { UserState, User, Doctor } from "../../types";
-import { userAPI } from "../../api";
 
 export const signUpUser =
   (email: string, password: string, history: History) =>
@@ -13,7 +12,7 @@ export const signUpUser =
     }) => void
   ) => {
     try {
-      await userAPI.signUp(email, password)
+      await userAPI.signUp(email, password);
 
       dispatch({
         type: UserActionTypes.SIGN_UP_USER,
@@ -38,7 +37,7 @@ export const signInUser =
   async (dispatch: (arg0: { type: string; payload: any }) => void) => {
     try {
       const { data } = await userAPI.signIn(email, password);
-      const response = data
+      const response = data;
       console.log("sign in response", response);
 
       localStorage.setItem("profile", JSON.stringify(response.profile));
@@ -51,12 +50,11 @@ export const signInUser =
         payload: { errorMessage: "", ...response },
       });
 
-      const exists = await doctorAPI.getDoctor(response.profile.id);
-      if (exists) {
-        history.push("/patients");
-      } else {
+      doctorAPI.getDoctor(response.profile.id).catch(e => {
         history.push("/profile");
-      }
+      })
+
+      history.push("/patients");
     } catch (error: any) {
       dispatch({
         type: UserActionTypes.SIGN_IN_USER_FAIL,
@@ -128,7 +126,7 @@ export const setCurrentUser =
   };
 
 export const createUser =
-  (username: string, groupName: string, history: History) =>
+  (email: string, history: History) =>
   async (
     dispatch: (arg0: {
       type: string;
@@ -136,6 +134,7 @@ export const createUser =
     }) => void
   ) => {
     try {
+      await userAPI.creatUser(email);
 
       dispatch({
         type: UserActionTypes.CREATE_USER,
@@ -156,15 +155,19 @@ export const getUser =
   async (
     dispatch: (arg0: { type: string; payload: { profile: Doctor } }) => void
   ) => {
-    const profileId = JSON.parse(localStorage.getItem("profile")!).id;
-    const response = await doctorAPI.getDoctor(profileId);
+    try {
+      const profileId = JSON.parse(localStorage.getItem("profile")!).id;
+      const response = await doctorAPI.getDoctor(profileId);
 
-    localStorage.removeItem("profile");
-    localStorage.setItem("profile", JSON.stringify(response.data));
-    dispatch({
-      type: UserActionTypes.GET_USER,
-      payload: { profile: { ...response.data } },
-    });
+      localStorage.removeItem("profile");
+      localStorage.setItem("profile", JSON.stringify(response.data));
+      dispatch({
+        type: UserActionTypes.GET_USER,
+        payload: { profile: { ...response.data } },
+      });
+    } catch (err) {
+      console.log(err);
+    }
   };
 
 export const getAllUsers =
@@ -172,7 +175,7 @@ export const getAllUsers =
   async (
     dispatch: (arg0: {
       type: string;
-      payload: { users?: User[]; errorMessage?: string };
+      payload: { users?: Doctor[]; errorMessage?: string };
     }) => void
   ) => {
     dispatch({
@@ -182,24 +185,11 @@ export const getAllUsers =
     const profileId = JSON.parse(localStorage.getItem("profile")!).id;
 
     try {
-      // const { data } = await getUserManagementAPI().getAllUsers();
-      const usersData = [{}] as any[];
+      const { data } = await doctorAPI.getAllDoctors();
 
-      const users: User[] = usersData
-        .map((user) => {
-          const { email, role, institution } = JSON.parse(
-            user.userAttributes.toString()
-          );
-          return {
-            ...user,
-            firstName: user.firstName!,
-            lastName: user.lastName!,
-            email: email || "",
-            role: role || "",
-            institution: institution || "",
-          };
-        })
-        .filter((user) => user.id !== profileId);
+      const users: Doctor[] = data.filter(
+        (user: Doctor) => user.id !== profileId
+      );
 
       dispatch({
         type: UserActionTypes.GET_ALL_USERS,
@@ -217,7 +207,7 @@ export const resetPassword =
   (email: string, history: History) =>
   async (dispatch: (arg0: { type: string; payload: any }) => void) => {
     try {
-      await userAPI.resetPassword(email)
+      await userAPI.resetPassword(email);
 
       dispatch({
         type: UserActionTypes.RESET_PASSWORD,
@@ -259,6 +249,7 @@ export const deleteUser =
   (userId: string) =>
   async (dispatch: (arg0: { type: string; payload: any }) => void) => {
     try {
+      await userAPI.deleteUser(userId);
 
       dispatch({
         type: UserActionTypes.DELETE_USER,

@@ -219,7 +219,7 @@ export interface DocumentColumn {
 }
 
 export interface UserColumn {
-  id: "role" | "firstName" | "lastName" | "email" | "institution";
+  id: "firstName" | "lastName" | "email" | "institution";
   label: string;
   minWidth?: string;
   width?: string;
@@ -239,6 +239,7 @@ export interface DoctorFormProps extends MessagesState {
 // REDUCER STATE
 export interface UserState extends MessagesState {
   profile: Doctor;
+  users: Doctor[];
   accessToken: string;
   sessionToken: string;
   filledDetails: boolean | null;

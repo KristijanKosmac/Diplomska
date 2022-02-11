@@ -24,6 +24,14 @@ class UserAPI {
   resetPassword(email: string) {
     return axios.post(`${this.endpoint}/reset-password`, { email })
   }
+
+  creatUser(email: string) {
+    return axios.post(`${this.endpoint}/create`, { email })
+  }
+  
+  deleteUser(userId: string) {
+    return axios.delete(`${this.endpoint}/${userId}`)
+  }
 }
 
 const userAPI = new UserAPI(backendEndpoint, "user");

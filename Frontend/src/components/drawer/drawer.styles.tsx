@@ -1,4 +1,4 @@
-import { lighten, makeStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 
 const drawerWidth = 240;
 
@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   links: {
-    width: "20%",
+    width: "230px",
     justifyContent: "flex-end",
     display: "flex",
     "& a": {

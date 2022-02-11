@@ -3,7 +3,7 @@ import { withRouter, RouteComponentProps } from "react-router-dom";
 
 import { Button, Paper, TableCell, CircularProgress } from "@material-ui/core";
 
-import { UserColumn, User } from "../../types";
+import { UserColumn, Doctor } from "../../types";
 
 import CustomModal from "../../components/modal/modal.component";
 import DropdownMenuActions from "../../components/dropdownMenuActions/dropdownMenuActions";
@@ -16,27 +16,28 @@ import { useDispatch, useSelector } from "react-redux";
 import { deleteUser, getAllUsers, resetMessages } from "../../actions";
 
 const UsersListPage = (props: RouteComponentProps) => {
-  const [searchedUsers, setSearchedUsers] = useState<User[]>([]);
+  const [searchedUsers, setSearchedUsers] = useState<Doctor[]>([]);
 
-  const { isLoading, successMessage, errorMessage } = useSelector((state: GlobalState) => state.user);
+  const { isLoading, successMessage, errorMessage, users } = useSelector(
+    (state: GlobalState) => state.user
+  );
 
   const classes = useStyles();
   const dispatch = useDispatch();
 
   const columns: UserColumn[] = [
-    { id: "firstName", label: "Име" },
-    { id: "lastName", label: "Презиме" },
-    { id: "email", label: "Емаил" },
-    { id: "role", label: "Улога" },
-    { id: "institution", label: "Институција" },
+    { id: "firstName", label: "First Name" },
+    { id: "lastName", label: "Last Name" },
+    { id: "email", label: "Email" },
+    { id: "institution", label: "Institution" },
   ];
 
-  // useEffect(() => {
-  //   setSearchedUsers(users);
-  // }, [users]);
+  useEffect(() => {
+    setSearchedUsers(users);
+  }, [users]);
 
   const fetch = async () => {
-    dispatch(getAllUsers())
+    dispatch(getAllUsers());
   };
 
   useEffect(() => {
@@ -45,38 +46,31 @@ const UsersListPage = (props: RouteComponentProps) => {
 
   useEffect(() => {
     setTimeout(() => {
-      dispatch(resetMessages())
+      dispatch(resetMessages());
     }, 4000);
   }, [errorMessage, successMessage]);
 
   const handleDelete = async (id: string) => {
-    dispatch(deleteUser(id))
-    // try {
-    //   await getUserManagementAPI().deleteUser(id);
-    //   setSuccessMessage("Successfully deleted user");
-    //   fetch()
-    // } catch (e: any) {
-    //   setErrorMessage(e.response);
-    // }
+    dispatch(deleteUser(id));
   };
 
   const handleSearchUsers = (search: string) => {
     search = search.toLowerCase().trim();
-    // if (search === "") {
-    //   setSearchedUsers(users);
-    // } else {
-    //   // setSearchedUsers(
-    //   //   // users.filter(
-    //   //   //   (user) =>
-    //   //   //     user.role.toString().toLocaleLowerCase().includes(search) ||
-    //   //   //     user.firstName.toLowerCase().includes(search) ||
-    //   //   //     user.lastName.toLowerCase().includes(search)
-    //   //   // )
-    //   // );
-    // }
+    if (search === "") {
+      setSearchedUsers(users);
+    } else {
+      setSearchedUsers(
+        users.filter(
+          (user) =>
+            user.firstName.toLowerCase().includes(search) ||
+            user.lastName.toLowerCase().includes(search) ||
+            user.institution!.toString().toLocaleLowerCase().includes(search)
+        )
+      );
+    }
   };
 
-  const mapElements = (user: User) => {
+  const mapElements = (user: Doctor) => {
     const elements = columns.map((column) => {
       let value = user[column.id] || "/";
 
@@ -121,18 +115,18 @@ const UsersListPage = (props: RouteComponentProps) => {
                 event.stopPropagation();
               }}
             >
-              Промени
+              Change
             </Button>,
             <CustomModal
-              buttonName="Избриши"
+              buttonName="Delete"
               onClick={(
                 event: React.MouseEvent<HTMLButtonElement, MouseEvent>
               ) => {
                 // event.stopPropagation();
                 handleDelete(user.id);
               }}
-              title="Избриши Корисник"
-              content={`Дали сте сигурни дека сакате да го избришете корисникот ${user["firstName"]} ${user["lastName"]}?`}
+              title="Delete User"
+              content={`Are you sure you want to delete user: ${user["firstName"]} ${user["lastName"]}?`}
               id={user["id"]!}
             />,
           ]}
@@ -155,7 +149,7 @@ const UsersListPage = (props: RouteComponentProps) => {
           {errorMessage}
         </div>
       )}
-      <h1>Сите Корисници</h1>
+      <h1>All Users</h1>
       <div className={classes.btnContainer}>
         <Button
           variant="outlined"
@@ -163,17 +157,17 @@ const UsersListPage = (props: RouteComponentProps) => {
           className={classes.btn}
           onClick={() => props.history.push("/users/add")}
         >
-          Додади Корисник
+          Add User
         </Button>
         <Search
           handleSearch={handleSearchUsers}
-          placeholder="пребарувај по име, презиме и улога"
+          placeholder="search by first name, last name or institution"
         />
       </div>
       {!isLoading ? (
         <Paper className={classes.root} elevation={3}>
           {searchedUsers.length === 0 ? (
-            <h2 className={classes.noUsers}>Нема пронајдени корисници!</h2>
+            <h2 className={classes.noUsers}>There are no users!</h2>
           ) : (
             <CustomTable
               columns={columns}

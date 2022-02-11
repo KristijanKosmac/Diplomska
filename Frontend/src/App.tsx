@@ -10,7 +10,6 @@ import MiniDrawer from "./components/drawer/drawer.component";
 import SignInPage from "./pages/sign-in/sign-in";
 import SignUpPage from "./pages/sign-up/sign-up";
 import ForgotPasswordPage from "./pages/forgot-password/forgot-password";
-import ActivateUserPage from "./pages/activate-user/activate-user";
 import ChangePasswordPage from "./pages/change-password/change-password";
 import PatientsListPage from "./pages/patients-list/patients-list";
 import AddEditPatient from "./pages/add-edit-patient/add-edit-patient";
@@ -43,7 +42,6 @@ const App = () => {
         <Route path="/sign-in" component={SignInPage} />
         <Route path="/sign-up" component={SignUpPage} />
         <Route path="/forgot-password" component={ForgotPasswordPage} />
-        <Route path="/activate/:userId/:code" component={ActivateUserPage} />
         <Route path="/reset-forgotten-password" component={ResetForgottenPasswordPage} />
         <Redirect to="/sign-in" />
       </Switch>

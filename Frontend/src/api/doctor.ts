@@ -29,7 +29,6 @@ class DoctorAPI {
     deleteDoctor(id: string) {
         return axios.delete(`${this.endpoint}/${id}`)
     }
-
 }
 
 const doctorAPI = new DoctorAPI(backendEndpoint, "doctor")

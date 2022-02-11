@@ -57,7 +57,6 @@ export default function UserForm(props: DoctorFormProps) {
     setDoctor({ ...doctor, [event.target.name]: event.target.value });
   };
 
-  console.log(doctor);
   return (
     <Container component="main" maxWidth="md">
       {props.successMessage && (

@@ -26,26 +26,26 @@ export default function AddEditUser(
   props: RouteComponentProps<{}, StaticContext, { data: User }>
 ) {
   const dispatch = useDispatch();
-  const { successMessage, errorMessage } = useSelector(
+  const { successMessage, errorMessage, isLoading } = useSelector(
     (state: GlobalState) => state.user
   );
   const classes = useStyles();
 
-  const [role, setRole] = useState("");
+  // const [role, setRole] = useState("");
   const [email, setEmail] = useState("");
 
   const [errors, setErrors] = useState({
     email: "",
-    role: "",
+    // role: "",
   });
-  const roles = "";
+  // const roles = "";
 
   useEffect(() => {
     if (props.location.state && props.location.state.data) {
-      const { email, role } = props.location.state.data;
+      const { email } = props.location.state.data;
 
       setEmail(email);
-      setRole(role);
+      // setRole(role);
     }
   }, []);
 
@@ -59,18 +59,18 @@ export default function AddEditUser(
     if (isUpdate) {
       const { email, institution, id } = props.location.state.data;
 
-      const req = {
-        role,
-        institution,
-        email,
-      }
+      // const req = {
+      //   role,
+      //   institution,
+      //   email,
+      // }
 
       props.history.push("/users")
     } else {
-      const { errors, valid } = CreateUserValidation({ email, role });
+      const { errors, valid } = CreateUserValidation({ email });
       setErrors(errors);
       
-      valid && dispatch(createUser(email, role, props.history));
+      valid && dispatch(createUser(email, props.history));
     }
   };
 
@@ -92,7 +92,7 @@ export default function AddEditUser(
           <AccountBoxOutlinedIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
-          {isUpdate ? "Промени податоци за корисник" : "Додади Корисник"}
+          {isUpdate ? "Edit User" : "Create User"}
         </Typography>
         <form className={classes.form} onSubmit={handleSubmit}>
           <Grid container spacing={5}>
@@ -131,15 +131,16 @@ export default function AddEditUser(
                 props.history.push("/users")
               }}
             >
-              Откажи
+              Cancel
             </Button>
             <Button
               type="submit"
               variant="contained"
               className={classes.submit}
               color="primary"
+              disabled={isLoading}
             >
-              {isUpdate ? "Промени" : "Креирај"}
+              {isUpdate ? "Edit" : "Create"}
             </Button>
           </div>
         </form>
