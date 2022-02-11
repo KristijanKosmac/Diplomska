@@ -15,3 +15,12 @@ export interface File {
     filename: string;
     content: string | Buffer;
 }   
+
+export interface signInReponse {
+    accessToken: string,
+    profile: {
+        id: string,
+        email: string,
+    },
+    refreshToken: string,
+}

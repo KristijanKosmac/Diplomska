@@ -49,5 +49,25 @@ app.put(
   })
 );
 
+app.post(
+  "/user/create",
+  bodyParser.json(),
+  errorHandler.wrap(async (req) => {
+    const { email } = req.body as any;
+
+    return new UserManager().createUser( email )
+  })
+);
+
+app.delete(
+  "/user/:id",
+  bodyParser.json(),
+  errorHandler.wrap(async (req) => {
+    const { id } = req.params as any;
+
+    return new UserManager().deleteUser( id )
+  })
+);
+
 // Export your express server so you can import it in the lambda function.
 export const userRouter = app;
