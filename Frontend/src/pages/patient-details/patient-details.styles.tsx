@@ -56,7 +56,21 @@ const useStyles = makeStyles((theme) => ({
   circularProgress: {
     verticalAlign: "middle",
     color: "gray",
-    marginRight: "10px"
+    marginRight: "10px",
+
+   
+  },
+  documentWrapper: {
+    width: "80%",
+    "& > div:nth-of-type(1)": {
+      display: "grid",
+      gridTemplateColumns: "40% auto",
+      
+      "& > button": {
+        width: "100px",
+        height: "40px"
+      }
+    }
   }
 }));
 

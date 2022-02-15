@@ -3,7 +3,7 @@ import { Doctor, DoctorInteface } from "../database/entities";
 import { codedError } from "../lib/coded-error";
 import HTTP from "http-status-codes";
 
-export class DoctorManager {
+class DoctorManager {
 
     async addDoctor(data: DoctorInteface): Promise<DoneResult & { id: string }> {
         const doctor = new Doctor(data);
@@ -70,3 +70,5 @@ export class DoctorManager {
         return doctors;
     }
 }
+
+export const doctorManager = new DoctorManager()

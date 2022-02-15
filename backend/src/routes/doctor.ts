@@ -1,7 +1,7 @@
 import * as bodyParser from "body-parser";
 import express from "express";
 import * as errorHandler from "../lib/async-response-handler";
-import { DoctorManager } from "../models/doctor-manager";
+import { doctorManager } from "../models/doctor-manager";
 import { auth } from "../middleware/auth"
 
 const app = express.Router();
@@ -11,14 +11,14 @@ app.get(
   auth,
   errorHandler.wrap(async (req) => {
     const { id } = req.params as any;
-    return new DoctorManager().getDoctor(id);
+    return doctorManager.getDoctor(id);
   })
 );
 app.post(
   "/doctor",
   bodyParser.json(),
   errorHandler.wrap(async (req) => {
-    return new DoctorManager().addDoctor(req.body);
+    return doctorManager.addDoctor(req.body);
   })
 );
 
@@ -26,7 +26,7 @@ app.get(
   "/doctor",
   auth,
   errorHandler.wrap(async () => {
-    return new DoctorManager().getAllDoctors();
+    return doctorManager.getAllDoctors();
   })
 );
 
@@ -35,7 +35,7 @@ app.delete(
   auth,
   errorHandler.wrap(async (req) => {
     const { id } = req.params as any;
-    return new DoctorManager().deleteDoctor(id);
+    return doctorManager.deleteDoctor(id);
   })
 );
 app.put(
@@ -44,7 +44,7 @@ app.put(
   bodyParser.json(),
   errorHandler.wrap(async (req) => {
     const { id } = req.params as any;
-    return new DoctorManager().updateDoctor(id, req.body);
+    return doctorManager.updateDoctor(id, req.body);
   })
 );
 

@@ -6,7 +6,7 @@ import { admin, auth } from "../firebase/index";
 import { codedError } from "../lib/coded-error";
 const { EMAIL_PASSWORD, EMAIL_USERNAME } = require("../config");
 
-export class UserManager {
+class UserManager {
   async changeUserPassword(
     userId: string,
     password: string
@@ -108,3 +108,5 @@ export class UserManager {
     }
   }
 }
+
+export const userManager = new UserManager()

@@ -3,8 +3,12 @@ import fs from "fs";
 
 var storage = multer.diskStorage({
     destination: function (req, files, cb) {
-        const path = `src/documents/${req.params.id}`
-
+        let path = `src/documents/${req.params.id}/`
+        
+        if(req.params.folderName) {
+            path = `src/documents/${req.params.id}/${req.params.folderName}/`
+        }
+        
         if(!fs.existsSync(path)) { 
             fs.mkdirSync(path)
         }

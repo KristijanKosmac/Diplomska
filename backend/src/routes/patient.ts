@@ -1,7 +1,7 @@
 import * as bodyParser from "body-parser";
 import express from "express";
 import * as errorHandler from "../lib/async-response-handler";
-import { PatientManager } from "../models/patient-manager";
+import { patientManager } from "../models/patient-manager";
 import { upload } from "../utils/multerStorage";
 import { auth } from "../middleware/auth"
 
@@ -11,7 +11,7 @@ app.get(
   auth,
   errorHandler.wrap(async (req) => {
     const { id } = req.params as any;
-    return new PatientManager().getPatient(id);
+    return patientManager.getPatient(id);
   })
 );
 app.post(
@@ -19,7 +19,7 @@ app.post(
   auth,
   bodyParser.json(),
   errorHandler.wrap(async (req) => {
-    return new PatientManager().addPatient(req.body);
+    return patientManager.addPatient(req.body);
   })
 );
 
@@ -28,7 +28,7 @@ app.get(
   auth,
   errorHandler.wrap(async (req) => {
     const { doctorId } = req.query
-    return new PatientManager().getAllPatientsForDoctor(doctorId as string);
+    return patientManager.getAllPatientsForDoctor(doctorId as string);
   })
 );
 
@@ -37,7 +37,7 @@ app.delete(
   auth,
   errorHandler.wrap(async (req) => {
     const { id } = req.params as any;
-    return new PatientManager().deletePatient(id);
+    return patientManager.deletePatient(id);
   })
 );
 
@@ -47,7 +47,7 @@ app.put(
   bodyParser.json(),
   errorHandler.wrap(async (req) => {
     const { id } = req.params as any;
-    return new PatientManager().updatePatient(id, req.body);
+    return patientManager.updatePatient(id, req.body);
   })
 );
 
@@ -56,7 +56,7 @@ app.post(
   auth,
   upload.array("file"),
   errorHandler.wrap(async (req) => {
-    return new PatientManager().uploadFiles(req.files);
+    return patientManager.uploadFiles(req.files);
   })
 );
 
@@ -67,7 +67,7 @@ app.delete(
     const { id } = req.params as any;
     const { fileName } = req.query as any;
 
-    return new PatientManager().deleteFile(id, fileName);
+    return patientManager.deleteFile(id, fileName);
   })
 );
 
@@ -77,7 +77,70 @@ app.get(
   errorHandler.wrap(async (req) => {
     const { id } = req.params as any;
 
-    return new PatientManager().getAllFiles(id);
+    return patientManager.getAllFiles(id);
+  })
+);
+
+app.get(
+  "/patient/:id/folder/:folderName",
+  auth,
+  errorHandler.wrap(async (req) => {
+    const { id, folderName } = req.params as any;
+
+    return patientManager.getAllFilesFromFolder(id, folderName);
+  })
+);
+
+app.get(
+  "/patient/:id/folder",
+  auth,
+  errorHandler.wrap(async (req) => {
+    const { id } = req.params as any;
+
+    return patientManager.getAllFolders(id);
+  })
+);
+
+app.post(
+  "/patient/:id/folder/:folderName",
+  auth,
+  bodyParser.json(),
+  errorHandler.wrap(async (req) => {
+    const { id, folderName } = req.params as any;
+
+    return patientManager.createFolder( id, folderName);
+  })
+);
+
+app.post(
+  "/patient/:id/folder/:folderName/upload",
+  auth,
+  upload.array("file"),
+  errorHandler.wrap(async (req) => {
+    return patientManager.uploadFiles(req.files);
+  })
+);
+
+app.delete(
+  "/patient/:id/folder/:folderName",
+  auth,
+  bodyParser.json(),
+  errorHandler.wrap(async (req) => {
+    const { id, folderName } = req.params as any;
+
+    return patientManager.deleteFolder( id, folderName);
+  })
+);
+
+app.put(
+  "/patient/:id/folder/:folderName",
+  auth,
+  bodyParser.json(),
+  errorHandler.wrap(async (req) => {
+    const { id, folderName } = req.params as any;
+    const { newFolderName } = req.body as any;
+
+    return patientManager.renameFolder( id, folderName, newFolderName);
   })
 );
 
@@ -89,7 +152,7 @@ app.post(
     const { id } = req.params as any;
     const { emails, text, filesIds} = req.body as any
 
-    return new PatientManager().sendEmail( id, emails, text, filesIds );
+    return patientManager.sendEmail( id, emails, text, filesIds );
   })
 );
 
@@ -100,9 +163,9 @@ app.post(
   bodyParser.json(),
   errorHandler.wrap(async (req) => {
     const { id } = req.params as any;
-    const { documentIds} = req.body as any
+    const { documentIds, folderName} = req.body as any
 
-    return new PatientManager().getMultipleFiles( id, documentIds, "" );
+    return patientManager.getMultipleFiles( id, documentIds, folderName, "" );
   })
 );
 

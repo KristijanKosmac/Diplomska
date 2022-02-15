@@ -5,9 +5,9 @@ import JSZip from "jszip"
 import { DoneResult, File } from "../types";
 import { Patient, PatientInteface } from "../database/entities";
 import { codedError } from "../lib/coded-error";
+import rimraf from "rimraf"
 const { EMAIL_PASSWORD, EMAIL_USERNAME } = require("../config")
-
-export class PatientManager {
+class PatientManager {
 
     async addPatient(data: PatientInteface): Promise<DoneResult & { id: string }> {
         const patient = new Patient(data);
@@ -35,6 +35,7 @@ export class PatientManager {
     async deletePatient(id: string): Promise<DoneResult> {
         try {
             await Patient.findByIdAndRemove(id)
+            await this.deleteFolder(id, "")
         } catch (e) {
             throw codedError(HTTP.BAD_REQUEST, "Can't be deleted patient that doesn't exists!")
         }
@@ -71,11 +72,33 @@ export class PatientManager {
         const path = `src/documents/${patientId}/${folderName}`
 
         if (!fs.existsSync(path)) {
-            fs.mkdirSync(path)
+            fs.mkdirSync(path, { recursive: true })
         } else {
             throw codedError(HTTP.CONFLICT, `Folder with ${folderName} name already exists`)
         }
 
+        return { done: true };
+    }
+
+    async renameFolder(patientId: string, folderName: string, newFolderName: string): Promise<DoneResult> {
+        const oldPath = `src/documents/${patientId}/${folderName}`
+        const newPath = `src/documents/${patientId}/${newFolderName}`
+
+        if (!fs.existsSync(newPath)) {
+            fs.renameSync(oldPath, newPath)
+        } else {
+            throw codedError(HTTP.CONFLICT, `Folder with ${folderName} name already exists`)
+        }
+      
+        return { done: true };
+    }
+
+    async deleteFolder(patientId: string, folderName: string): Promise<DoneResult> {
+        const path = `src/documents/${patientId}/${folderName}`
+
+        rimraf(path, (err) => {
+            console.log(err)
+        })
         return { done: true };
     }
 
@@ -113,15 +136,27 @@ export class PatientManager {
         return files
     }
 
-    async getMultipleFiles(patientId: string, documentIds: string[], encoding = "base64"): Promise<Buffer | string> {
-        const path = `src/documents/${patientId}/`
+    async getAllFilesFromFolder(patientId: string, folderName: string, encoding = "base64"): Promise<File[]> {
+        const path = `src/documents/${patientId}/${folderName}/`
+        const filenames = fs.readdirSync(path)
+        const files: File[] = filenames.map(function (filename) {
+            const content = fs.readFileSync(path + filename, { encoding })
+
+            return { filename, content }
+        });
+
+        return files
+    }
+
+    async getMultipleFiles(patientId: string, documentIds: string[],folderName: string, encoding = "base64"): Promise<Buffer | string> {
+        const path = `src/documents/${patientId}/${folderName}/`
         const zip = new JSZip()
-        
+
         documentIds.forEach(documentId => {
-            zip.file( documentId.split("-").slice(1).join("-"), fs.readFileSync(path + documentId, "base64"), {base64: true});
+            zip.file(documentId.split("-").slice(1).join("-"), fs.readFileSync(path + documentId, "base64"), { base64: true });
         })
         const zipFile = await zip.generateAsync({ type: "base64" });
-        
+
         return zipFile
     }
 
@@ -164,3 +199,5 @@ export class PatientManager {
     }
 
 }
+
+export const patientManager = new PatientManager()

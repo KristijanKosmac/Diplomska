@@ -34,8 +34,12 @@ class PatientAPI {
         return axios.delete(`${this.endpoint}/${id}`)
     }
 
-    uploadFiles(id: string, files: FormData) {
-        return axios.post(`${this.endpoint}/${id}/documents`, files)
+    // uploadFiles(id: string, files: FormData) {
+    //     return axios.post(`${this.endpoint}/${id}/documents`, files)
+    // }
+
+    uploadFiles(id: string, folderName: string, files: FormData) {
+        return axios.post(`${this.endpoint}/${id}/folder/${folderName}/upload`, files)
     }
 
     deleteFile(id: string, fileName: string) {
@@ -46,12 +50,32 @@ class PatientAPI {
         return axios.get(`${this.endpoint}/${id}/documents`)
     }
 
+    getAllFolders(id: string) {
+        return axios.get(`${this.endpoint}/${id}/folder`)
+    }
+
+    getAllFilesFromFolder(id:string, folderName: string) {
+        return axios.get(`${this.endpoint}/${id}/folder/${folderName}`)
+    }
+
+    createFolder (id:string, folderName: string) {
+        return axios.post(`${this.endpoint}/${id}/folder/${folderName}`)
+    }
+
+    deleteFolder (id:string, folderName: string) {
+        return axios.delete(`${this.endpoint}/${id}/folder/${folderName}`)
+    }
+
+    renameFolder (id:string, folderName: string, newFolderName: string) {
+        return axios.put(`${this.endpoint}/${id}/folder/${folderName}`, { newFolderName })
+    }
+
     sendEmail(id: string, emails: string[], text: string, filesIds: string[]) {
         return  axios.post(`${this.endpoint}/${id}/documents/send-email`,{ emails, text, filesIds })
     }
 
-    getMultipleFiles(id: string, documentIds: string[]) {
-        return  axios.post(`${this.endpoint}/${id}/documents/download`, { documentIds })
+    getMultipleFiles(id: string, folderName: string, documentIds: string[]) {
+        return  axios.post(`${this.endpoint}/${id}/documents/download`, { documentIds, folderName })
     }
 
 }

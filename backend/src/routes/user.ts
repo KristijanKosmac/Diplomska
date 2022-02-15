@@ -1,7 +1,7 @@
 import * as bodyParser from "body-parser";
 import express from "express";
 import * as errorHandler from "../lib/async-response-handler";
-import { UserManager } from "../models/user-manager";
+import { userManager } from "../models/user-manager";
 import { auth } from "../middleware/auth"
 
 const app = express.Router();
@@ -12,7 +12,7 @@ app.post(
   errorHandler.wrap(async (req) => {
     const { email, password } = req.body as any;
 
-    return new UserManager().signUp(email, password)
+    return userManager.signUp(email, password)
   })
 );
 
@@ -23,7 +23,7 @@ app.post(
     const { email, password } = req.body as any;
     console.log("VLAGA")
 
-    return new UserManager().signIn(email, password)
+    return userManager.signIn(email, password)
   })
 );
 
@@ -33,7 +33,7 @@ app.post(
   errorHandler.wrap(async (req) => {
     const { email } = req.body as any;
 
-    return new UserManager().resetPasswordFirebase(email)
+    return userManager.resetPasswordFirebase(email)
   })
 );
 
@@ -45,7 +45,7 @@ app.put(
     const { id } = req.params as any;
     const { password } = req.body as any;
 
-    return new UserManager().changeUserPassword(id, password)
+    return userManager.changeUserPassword(id, password)
   })
 );
 
@@ -55,7 +55,7 @@ app.post(
   errorHandler.wrap(async (req) => {
     const { email } = req.body as any;
 
-    return new UserManager().createUser( email )
+    return userManager.createUser( email )
   })
 );
 
@@ -65,7 +65,7 @@ app.delete(
   errorHandler.wrap(async (req) => {
     const { id } = req.params as any;
 
-    return new UserManager().deleteUser( id )
+    return userManager.deleteUser( id )
   })
 );
 

@@ -70,7 +70,7 @@ export default function SendEmail(props: SendEmailProps) {
               })}
               objectParametars={["name"]}
               errorMessage=""
-              name="Документ"
+              name="Document"
               onChange={(value) => {
                 setSelectedDocumentId(value);
               }}

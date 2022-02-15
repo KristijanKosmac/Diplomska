@@ -179,6 +179,11 @@ export interface DocumentComponentProps extends RouteComponentProps {
   handleMultipleDownload: (fileKeys: string[]) => void
 }
 
+export interface FolderComponentProps extends RouteComponentProps {
+  patientId: string;
+  onClick: (folderName: string) => void;
+}
+
 export interface RadioButtonProps {
   onChangeRadio: (value: boolean) => void;
   radioLabel: string

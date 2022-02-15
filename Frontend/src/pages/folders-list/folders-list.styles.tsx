@@ -2,9 +2,10 @@ import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    width: "100%",
+    width: "80%",
     marginTop: "1%",
     marginBottom: "3%",
+    padding: "1%",
     // eslint-disable-next-line no-useless-computed-key
     ["@media (max-width:1100px)"]: {
       width: "80%",
@@ -15,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   btnContainer: {
-    width: "100%",
+    width: "80%",
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
@@ -38,7 +39,13 @@ const useStyles = makeStyles((theme) => ({
       margin: theme.spacing(1, 0),
     },
   },
-  noDocuments: {
+  mainContainer: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    width: "100%",
+  },
+  noUsers: {
     margin: "0",
     padding: "10px 2px",
     textAlign: "center",
@@ -48,32 +55,40 @@ const useStyles = makeStyles((theme) => ({
   bodyCell: {
     padding: theme.spacing(2, 1),
   },
-  dropZone: {
-    width: "100%",
-    
-    "&>:nth-child(2)": {
-      display: "flex",
-      justifyContent: "space-between",
-      marginTop: "10px",
+  folder: {
+    "&:hover": {
+      opacity: "70%",
+      cursor: "pointer"
     },
-  },
-  previewChip: {
-    minWidth: 160,
-    maxWidth: 210
-  },
-  dropZoneGridCointainer: {
-    width: "100% !important",
-  },
-  searchBar: {
-    alignItems: "flex-end",
-    float: "left"
-  },
-  isSend: {
-    "& button": {
-      color: "#0c47b3",
-      border: "1px solid #0c47b3"
+    "& div:nth-of-type(1)": {
+      display: "flex",
+      "& button": {
+        height: "40px"
+      }
+    },
+    "& img": {
+      width: "65%",
+    
+      // "&:hover": {
+      //   opacity: "70%",
+      //   cursor: "pointer"
+      // }
+    },
+    "& div:nth-of-type(2)": {
+      textAlign: "center",
+      width: "65%",
+      color: "gray",
+      fontSize: "15px"
     }
-  },
+  }
+  // folderIcon: {
+  //   width: "150px",
+    
+  //   "&:hover": {
+  //     opacity: "70%",
+  //     cursor: "pointer"
+  //   }
+  // }
 }));
 
 export default useStyles;

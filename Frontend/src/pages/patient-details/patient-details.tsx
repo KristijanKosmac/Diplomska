@@ -15,6 +15,7 @@ import {
 import { Patient, Document } from "../../types";
 
 import Documents from "../../components/documents/documents.component";
+import FoldersListPage from "../folders-list/folders-list";
 
 import { patientAPI } from "../../api";
 import { getValue } from "../../utils/getValue";
@@ -25,6 +26,7 @@ import { base64ToArrayBuffer } from "../../utils/base64ToArrayBuffer";
 import { saveByteArray } from "../../utils/saveByteArray";
 
 const PatientDetails = (props: RouteComponentProps<{}, StaticContext, {}>) => {
+  const [folder, setFolder] = useState("");
   const [documents, setDocuments] = useState<Document[]>([]);
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -57,19 +59,24 @@ const PatientDetails = (props: RouteComponentProps<{}, StaticContext, {}>) => {
 
   const fetchDocuments = async () => {
     try {
-      const { data } = await patientAPI.getAllFiles(patientId);
-
-      setDocuments(
-        data.map((doc: any) => {
-          return {
-            id: doc.filename,
-            date: parseInt(doc.filename.split("-")[0]),
-            name: doc.filename.split("-").slice(1).join("-"),
-            content: doc.content,
-          };
-        }) as Document[]
-      );
-
+      if (folder) {
+        setIsBusy(true)
+        const { data } = await patientAPI.getAllFilesFromFolder(
+          patientId,
+          folder
+        );
+        setDocuments(
+          data.map((doc: any) => {
+            return {
+              id: doc.filename,
+              date: parseInt(doc.filename.split("-")[0]),
+              name: doc.filename.split("-").slice(1).join("-"),
+              content: doc.content,
+            };
+          }) as Document[]
+        );
+      }
+      // const { data } = await patientAPI.getAllFiles(patientId);
       setIsBusy(false);
     } catch (error: any) {
       setErrorMessage(error.response.data.message);
@@ -88,9 +95,11 @@ const PatientDetails = (props: RouteComponentProps<{}, StaticContext, {}>) => {
     } else {
       fetchPatient();
     }
-
-    fetchDocuments();
   }, []);
+
+  useEffect(() => {
+    fetchDocuments();
+  }, [folder]);
 
   useEffect(() => {
     setTimeout(() => {
@@ -101,7 +110,7 @@ const PatientDetails = (props: RouteComponentProps<{}, StaticContext, {}>) => {
 
   const handleDeleteDocument = async (documentId: string) => {
     try {
-      await patientAPI.deleteFile(patientId, documentId);
+      await patientAPI.deleteFile(patientId, `${folder}/${documentId}`);
       setSuccessMessage("Document is successfully deleted");
 
       setTimeout(() => {
@@ -115,7 +124,7 @@ const PatientDetails = (props: RouteComponentProps<{}, StaticContext, {}>) => {
   const handleSubmit = async (files: FormData) => {
     try {
       setIsBusy(true);
-      await patientAPI.uploadFiles(patientId, files);
+      await patientAPI.uploadFiles(patientId, folder, files);
 
       setTimeout(() => {
         fetchDocuments();
@@ -129,15 +138,18 @@ const PatientDetails = (props: RouteComponentProps<{}, StaticContext, {}>) => {
 
   const handleMultipleDownload = async (fileKeys: string[]) => {
     try {
-      setInformMessage("Zip file preparing ...")
-      window.scrollTo({top: 0, behavior: "smooth"})
-      const { data } = await patientAPI.getMultipleFiles(patientId, fileKeys)
+      setInformMessage("Zip file preparing ...");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      const { data } = await patientAPI.getMultipleFiles(patientId, folder, fileKeys);
       const bufferArray = base64ToArrayBuffer(data);
-      saveByteArray(`${patient.firstName}-${patient.lastName}.zip`, bufferArray);
-      setSuccessMessage("Zip file downloaded successfully")
-      setInformMessage("")
+      saveByteArray(
+        `${patient.firstName}-${patient.lastName}.zip`,
+        bufferArray
+      );
+      setSuccessMessage("Zip file downloaded successfully");
+      setInformMessage("");
     } catch (err: any) {
-      setErrorMessage("Error while getting zip file")
+      setErrorMessage("Error while getting zip file");
     }
   };
 
@@ -147,9 +159,7 @@ const PatientDetails = (props: RouteComponentProps<{}, StaticContext, {}>) => {
     text: string
   ) => {
     try {
-      await patientAPI.sendEmail(patientId, emails, text, [
-        selectedDocumentId,
-      ]);
+      await patientAPI.sendEmail(patientId, emails, text, [selectedDocumentId]);
 
       setSuccessMessage("Mail successfully send");
     } catch (e) {
@@ -196,16 +206,39 @@ const PatientDetails = (props: RouteComponentProps<{}, StaticContext, {}>) => {
         </Tabs>
       </AppBar>
       {tab === 0 ? (
-        <Documents
-          documents={documents}
-          handleSubmit={handleSubmit}
-          handleDelete={handleDeleteDocument}
-          sendToEmail={patient.email}
-          patient={patient}
-          isBusy={isBusy}
-          handleMultipleDownload={handleMultipleDownload}
-          handleSendEmail={handleSendEmail}
-        />
+        folder ? (
+          <div className={classes.documentWrapper}>
+            <div>
+              <Button
+                variant="outlined"
+                color="primary"
+                onClick={() => {
+                  setFolder("");
+                }}
+              >
+                Go Back
+              </Button>
+              <h2> Folder: {folder} </h2>
+            </div>
+            <Documents
+              documents={documents}
+              handleSubmit={handleSubmit}
+              handleDelete={handleDeleteDocument}
+              sendToEmail={patient.email}
+              patient={patient}
+              isBusy={isBusy}
+              handleMultipleDownload={handleMultipleDownload}
+              handleSendEmail={handleSendEmail}
+            />
+          </div>
+        ) : (
+          <FoldersListPage
+            patientId={patientId}
+            onClick={(folderName) => {
+              setFolder(folderName);
+            }}
+          />
+        )
       ) : (
         <div className={classes.root}>
           <div>
