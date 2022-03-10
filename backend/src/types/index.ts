@@ -24,3 +24,8 @@ export interface signInReponse {
     },
     refreshToken: string,
 }
+
+export interface refreshTokenResponse {
+    accessToken: string,
+    refreshToken: string,
+}

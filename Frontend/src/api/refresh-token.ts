@@ -1,6 +1,7 @@
 import axios, { AxiosError  } from "axios";
 import { getAccessToken } from ".";
 import { signOutUser } from "../actions/index";
+import { userAPI } from "./index"
 type Subscriber = (accessToken: string) => void;
 
 let isAlreadyFetchingAccessToken = false;
@@ -110,8 +111,9 @@ async function resetTokenAndReattemptRequest(error: AxiosError, store: any) {
         });
         if (!isAlreadyFetchingAccessToken) {
             isAlreadyFetchingAccessToken = true;
-            // const response = await getUserManagementAPI().refreshToken({ refreshToken });
-            const response: any = {} // remove this the commented row is correct
+            const response = await userAPI.refreshToken(refreshToken);
+            console.log(response)
+             // remove this the commented row is correct
             if (!response.data) {
                 store.dispatch(signOutUser());
                 return Promise.reject(error);

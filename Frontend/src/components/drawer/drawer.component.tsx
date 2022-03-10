@@ -1,5 +1,6 @@
 import React from "react";
 import clsx from "clsx";
+import { useDispatch, useSelector } from "react-redux";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import { useTheme } from "@material-ui/core/styles";
 import {
@@ -25,17 +26,24 @@ import {
   PeopleAltOutlined as PeopleAltOutlinedIcon,
   PersonOutline,
   ExitToApp,
+  DeleteForever,
 } from "@material-ui/icons";
-import SupervisedUserCircleIcon from "@material-ui/icons/SupervisedUserCircle";
+import LockIcon from "@material-ui/icons/Lock";
 import logo from "../../assets/logo.png";
-import { signOutUser } from "../../actions/index";
-import { useDispatch } from "react-redux";
+import SupervisedUserCircleIcon from "@material-ui/icons/SupervisedUserCircle";
+
+import { deleteUser, signOutUser } from "../../actions/index";
+import DropdownMenuActions from "../dropdownMenuActions/dropdownMenuActions";
+import { GlobalState } from "../../reducers";
+import CustomModal from "../modal/modal.component";
 
 function MiniDrawer({ history }: RouteComponentProps) {
   const classes = useStyles();
-  const theme = useTheme();
-  const [open, setOpen] = React.useState(false);
   const dispatch = useDispatch();
+  const theme = useTheme();
+  const { profile } = useSelector((state: GlobalState) => state.user);
+
+  const [open, setOpen] = React.useState(false);
   const itemsList = [
     {
       text: "Patients",
@@ -46,7 +54,7 @@ function MiniDrawer({ history }: RouteComponentProps) {
       text: "Users",
       icon: <SupervisedUserCircleIcon />,
       onClick: () => history.push("/users"),
-    }
+    },
   ];
 
   const handleDrawerOpen = () => {
@@ -55,6 +63,10 @@ function MiniDrawer({ history }: RouteComponentProps) {
 
   const handleDrawerClose = () => {
     setOpen(false);
+  };
+
+  const handleDelete = async () => {
+    dispatch(deleteUser(profile.id));
   };
 
   return (
@@ -66,7 +78,7 @@ function MiniDrawer({ history }: RouteComponentProps) {
           [classes.appBarShift]: open,
         })}
       >
-        <Toolbar >
+        <Toolbar>
           <IconButton
             color="inherit"
             aria-label="open drawer"
@@ -84,22 +96,55 @@ function MiniDrawer({ history }: RouteComponentProps) {
             </a>
           </Typography>
           <Typography variant="button" className={classes.links}>
-            <Link
-              onClick={() => history.push("/profile")}
-              color="inherit"
-              underline="none"
-            >
-              <PersonOutline />
-              Profile
-            </Link>
-            <Link
-              onClick={() => dispatch(signOutUser(history))}
-              color="inherit"
-              underline="none"
-            >
-              <ExitToApp />
-              Sign out
-            </Link>
+            <DropdownMenuActions
+              items={[
+                <Link
+                  onClick={() => history.push("/profile")}
+                  color="inherit"
+                  underline="none"
+                  className={classes.verticalyAlign}
+                >
+                  <PersonOutline />
+                  <label>Profile</label>
+                </Link>,
+                <Link
+                  onClick={() => history.push("/profile/change-password")}
+                  color="inherit"
+                  underline="none"
+                  className={classes.verticalyAlign}
+                >
+                  <LockIcon />
+                  <label>Change Password</label>
+                </Link>,
+                <Link
+                  onClick={() => dispatch(signOutUser(history))}
+                  color="inherit"
+                  underline="none"
+                  className={classes.verticalyAlign}
+                >
+                  <ExitToApp />
+                  <label>Sign out</label>
+                </Link>,
+                <Link
+                  color="inherit"
+                  underline="none"
+                  className={classes.deleteAccount}
+                >
+                  <DeleteForever />
+                  <CustomModal
+                    buttonName="Delete Account"
+                    onClick={(
+                      event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+                    ) => {
+                      handleDelete();
+                    }}
+                    title="Delete Account"
+                    content={`Are you sure you want to delete your account ?`}
+                    id={profile.id}
+                  /> 
+                </Link>,
+              ]}
+            />
           </Typography>
         </Toolbar>
       </AppBar>

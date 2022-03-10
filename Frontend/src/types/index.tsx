@@ -224,7 +224,7 @@ export interface DocumentColumn {
 }
 
 export interface UserColumn {
-  id: "firstName" | "lastName" | "email" | "institution";
+  id: "firstName" | "lastName" | "email" | "institution" | "dateOfBirth" | "city";
   label: string;
   minWidth?: string;
   width?: string;

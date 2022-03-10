@@ -149,8 +149,8 @@ app.post(
   auth,
   bodyParser.json(),
   errorHandler.wrap(async (req) => {
-    const { id } = req.params as any;
-    const { emails, text, filesIds} = req.body as any
+    // const { id } = req.params as any;
+    const { id ,emails, text, filesIds} = req.body as any
 
     return patientManager.sendEmail( id, emails, text, filesIds );
   })

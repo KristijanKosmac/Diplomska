@@ -32,7 +32,7 @@ export const theme = createTheme({
 });
 
 const App = () => {
-  const { isLoggedIn } = useSelector((state: GlobalState) => state.user);
+  const { isLoggedIn, profile } = useSelector((state: GlobalState) => state.user);
 
   const notLoggedInRoutes = (
     <div>
@@ -47,6 +47,16 @@ const App = () => {
       </Switch>
     </div>
   );
+
+  const notFilledProfileInfo = (
+    <>
+      <MiniDrawer />
+      <Switch>
+        <Route exact path="/profile" component={Profile} />
+        <Redirect to="/profile" />
+      </Switch>
+    </>
+  )
 
   const loggedInRoutes = (
     <div style={{ display: "flex", flexDirection: "row" }}>
@@ -81,7 +91,8 @@ const App = () => {
           flexDirection: "column",
         }}
       >
-        {isLoggedIn ? loggedInRoutes : notLoggedInRoutes}
+         {/* {isLoggedIn ? loggedInRoutes : notLoggedInRoutes} */}
+        {isLoggedIn ? Object.keys(profile).length < 5 ? notFilledProfileInfo : loggedInRoutes : notLoggedInRoutes}
       </div>
     </ThemeProvider>
   );

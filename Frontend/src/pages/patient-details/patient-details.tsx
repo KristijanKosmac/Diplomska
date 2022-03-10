@@ -159,7 +159,7 @@ const PatientDetails = (props: RouteComponentProps<{}, StaticContext, {}>) => {
     text: string
   ) => {
     try {
-      await patientAPI.sendEmail(patientId, emails, text, [selectedDocumentId]);
+      await patientAPI.sendEmail(`${patientId}/${folder}`, emails, text, [selectedDocumentId]);
 
       setSuccessMessage("Mail successfully send");
     } catch (e) {

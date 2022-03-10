@@ -32,7 +32,8 @@ const FoldersListPage = (props: FolderComponentProps) => {
       const { data } = await patientAPI.getAllFolders(props.patientId);
       setFolders(data);
     } catch (error: any) {
-      setErrorMessage("Something went wrong while getting folders");
+      setIsLoading(false);
+      error.response.data.code !== 404 && setErrorMessage("Something went wrong while getting folders");
     }
     setIsLoading(false);
   };

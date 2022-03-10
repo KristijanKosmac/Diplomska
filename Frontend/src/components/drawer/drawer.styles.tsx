@@ -5,7 +5,7 @@ const drawerWidth = 240;
 const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
-    paddingLeft: theme.spacing(3)
+    paddingLeft: theme.spacing(3),
   },
   logo: {
     margin: "5px",
@@ -27,19 +27,29 @@ const useStyles = makeStyles((theme) => ({
     width: "230px",
     justifyContent: "flex-end",
     display: "flex",
+
+    "& button": {
+      "& span": {
+        "& svg": {
+          color: "white",
+        },
+      },
+    },
+
     "& a": {
       cursor: "pointer",
       fontWeight: "bold",
       display: "flex",
+      width: "100%",
 
       "&:hover": {
-        opacity: "70%"
+        opacity: "70%",
       },
 
       "&:nth-of-type(1)": {
-        marginRight: "15%"
-      }
-    }
+        marginRight: "15%",
+      },
+    },
   },
   appBar: {
     zIndex: theme.zIndex.drawer + 1,
@@ -101,8 +111,40 @@ const useStyles = makeStyles((theme) => ({
   customSvg: {
     width: "25px",
     height: "25px",
-    fill: "rgba(0, 0, 0, 0.54)"
-  }
+    fill: "rgba(0, 0, 0, 0.54)",
+  },
+  verticalyAlign: {
+    width: "100%",
+    "& svg": {
+      verticalAlign: "middle",
+    },
+    "& label": {
+      padding: "3px 9px",
+      "&:hover": {
+        cursor: "pointer",
+      },
+    },
+  },
+  deleteAccount: {
+    width: "100%",
+    color: "red",
+    display: "flex",
+
+    "& svg": {
+      color: "black",
+      verticalAlign: "middle",
+    },
+
+    "& button": {
+      border: "none",
+      color: "red",
+
+      "&:hover": {
+        border: "none",
+        background: "none",
+      },
+    },
+  },
 }));
 
 export default useStyles;

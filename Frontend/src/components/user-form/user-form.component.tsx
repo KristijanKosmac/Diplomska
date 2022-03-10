@@ -17,7 +17,7 @@ import useStyles from "./user-form.styles";
 import { DoctorFormProps, Doctor } from "../../types";
 import doctorValidation from "../../utils/validations/doctor.validation";
 import { institutions } from "../../constants/institutions";
-import { Link } from "react-router-dom";
+
 export default function UserForm(props: DoctorFormProps) {
   const classes = useStyles();
 
@@ -239,11 +239,6 @@ export default function UserForm(props: DoctorFormProps) {
             >
               {props.isUpdate ? "Edit" : "Create"}
             </Button>
-            <Link to="/profile/change-password" >
-              <Button variant="contained" color="primary" className={classes.submit}>
-                Change Password
-              </Button>
-            </Link>
           </div>
         </form>
       </div>

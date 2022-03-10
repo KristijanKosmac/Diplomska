@@ -1,10 +1,13 @@
+import axios from "axios"
 import HTTP from "http-status-codes";
 import nodemailer from "nodemailer";
 import { Doctor } from "../database/entities";
-import { DoneResult, signInReponse } from "../types";
+import { DoneResult, refreshTokenResponse, signInReponse } from "../types";
 import { admin, auth } from "../firebase/index";
 import { codedError } from "../lib/coded-error";
-const { EMAIL_PASSWORD, EMAIL_USERNAME } = require("../config");
+
+import { config } from "../../config/firebaseConfig"
+const { EMAIL_PASSWORD, EMAIL_USERNAME, } = require("../config");
 
 class UserManager {
   async changeUserPassword(
@@ -103,6 +106,16 @@ class UserManager {
         text: `Sign in with username: ${email} and password: ${tempPassword}`,
       });
       return { done: true };
+    } catch (err: any) {
+      throw err;
+    }
+  }
+
+  async getNewToken(refreshToken: string): Promise<refreshTokenResponse> {
+    try {
+      const { data } = await axios.post(`https://securetoken.googleapis.com/v1/token?key=${config.apiKey}`, { grant_type: "refresh_token", refresh_token: refreshToken })
+      
+      return { accessToken: data.access_token, refreshToken: data.refresh_token };
     } catch (err: any) {
       throw err;
     }

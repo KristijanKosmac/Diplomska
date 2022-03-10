@@ -26,12 +26,12 @@ const useStyles = makeStyles((theme: Theme) =>
       width: "35%",
     },
     confirmBtn: {
-      background: "#dc3545",
+      background: theme.palette.primary.main,
       color: "white",
       width: "35%",
       "&:hover": {
-        border: "1px solid #dc3545",
-        color: "#dc3545",
+        border: `1px solid ${theme.palette.primary.main}`,
+        color: theme.palette.primary.main,
         background: "white",
       }
     },

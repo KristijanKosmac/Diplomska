@@ -28,7 +28,7 @@ app.post(
 );
 
 app.post(
-  "/user/resent-password",
+  "/user/reset-password",
   bodyParser.json(),
   errorHandler.wrap(async (req) => {
     const { email } = req.body as any;
@@ -66,6 +66,16 @@ app.delete(
     const { id } = req.params as any;
 
     return userManager.deleteUser( id )
+  })
+);
+
+app.post(
+  "/user/refresh-token",
+  bodyParser.json(),
+  errorHandler.wrap(async (req) => {
+    const { refreshToken } = req.body as any;
+
+    return userManager.getNewToken( refreshToken )
   })
 );
 

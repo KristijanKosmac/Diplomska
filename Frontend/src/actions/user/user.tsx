@@ -1,7 +1,7 @@
 import { doctorAPI, userAPI } from "../../api";
 import { UserActionTypes } from "../../constants/index";
 import { History } from "history";
-import { UserState, User, Doctor } from "../../types";
+import { UserState, Doctor } from "../../types";
 
 export const signUpUser =
   (email: string, password: string, history: History) =>
@@ -37,29 +37,37 @@ export const signInUser =
   async (dispatch: (arg0: { type: string; payload: any }) => void) => {
     try {
       const { data } = await userAPI.signIn(email, password);
-      const response = data;
-      console.log("sign in response", response);
+      let response = data;
 
       localStorage.setItem("profile", JSON.stringify(response.profile));
       localStorage.setItem("accessToken", response.accessToken);
       localStorage.setItem("refreshToken", response.refreshToken);
       localStorage.setItem("isLoggedIn", "true");
 
-      dispatch({
-        type: UserActionTypes.SIGN_IN_USER,
-        payload: { errorMessage: "", ...response },
-      });
-
-      doctorAPI.getDoctor(response.profile.id).catch(e => {
+      await doctorAPI.getDoctor(response.profile.id).then((res ) => {
+        response = { ...response, profile: res.data }
+        dispatch({
+          type: UserActionTypes.SIGN_IN_USER,
+          payload: { errorMessage: "", ...response },
+        });
+        history.push("/patients");
+      }).catch(_e => {
+        dispatch({
+          type: UserActionTypes.SIGN_IN_USER,
+          payload: { errorMessage: "", ...response },
+        });
         history.push("/profile");
       })
+      console.log("sign in response", response);
 
-      history.push("/patients");
+      // doctorAPI.getDoctor(response.profile.id).catch(e => {
+      //   history.push("/profile");
+      // })
     } catch (error: any) {
       dispatch({
         type: UserActionTypes.SIGN_IN_USER_FAIL,
         payload: {
-          errorMessage: error || error.response.data.message,
+          errorMessage: error || error.response.data ||error.response.data.message,
         },
       });
     }

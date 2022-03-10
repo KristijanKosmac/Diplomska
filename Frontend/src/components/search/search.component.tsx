@@ -54,6 +54,7 @@ export default function SearchAppBar({
           onChange={handleSearchInput}
           onKeyUp={handleKeyUp}
           value={search}
+          type="search"
         />
         <IconButton
           aria-label="delete"

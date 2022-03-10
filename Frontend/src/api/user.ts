@@ -32,6 +32,10 @@ class UserAPI {
   deleteUser(userId: string) {
     return axios.delete(`${this.endpoint}/${userId}`)
   }
+
+  refreshToken(refreshToken: string) {
+    return axios.post(`${this.endpoint}/refresh-token`, {refreshToken})
+  }
 }
 
 const userAPI = new UserAPI(backendEndpoint, "user");

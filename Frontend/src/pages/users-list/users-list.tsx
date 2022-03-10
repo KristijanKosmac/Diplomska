@@ -1,23 +1,32 @@
-import React, { useEffect, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { withRouter, RouteComponentProps } from "react-router-dom";
 
-import { Button, Paper, TableCell, CircularProgress } from "@material-ui/core";
+import {
+  Paper,
+  TableCell,
+  CircularProgress,
+  TextField,
+} from "@material-ui/core";
 
 import { UserColumn, Doctor } from "../../types";
 
-import CustomModal from "../../components/modal/modal.component";
-import DropdownMenuActions from "../../components/dropdownMenuActions/dropdownMenuActions";
 import Search from "../../components/search/search.component";
 import CustomTable from "../../components/table/table";
 
 import useStyles from "./users-list.styles";
 import { GlobalState } from "../../reducers";
 import { useDispatch, useSelector } from "react-redux";
-import { deleteUser, getAllUsers, resetMessages } from "../../actions";
+import { createUser, getAllUsers, resetMessages } from "../../actions";
+import CustomModal from "../../components/modal/modal.component";
+import CreateUserValidation from "../../utils/validations/create-user-validation";
+import { getValue } from "../../utils/getValue";
 
 const UsersListPage = (props: RouteComponentProps) => {
   const [searchedUsers, setSearchedUsers] = useState<Doctor[]>([]);
-
+  const [email, setEmail] = useState("");
+  const [errors, setErrors] = useState({
+    email: "",
+  });
   const { isLoading, successMessage, errorMessage, users } = useSelector(
     (state: GlobalState) => state.user
   );
@@ -30,6 +39,8 @@ const UsersListPage = (props: RouteComponentProps) => {
     { id: "lastName", label: "Last Name" },
     { id: "email", label: "Email" },
     { id: "institution", label: "Institution" },
+    { id: "dateOfBirth", label: "Date of Birth" },
+    { id: "city", label: "City" }   
   ];
 
   useEffect(() => {
@@ -50,10 +61,6 @@ const UsersListPage = (props: RouteComponentProps) => {
     }, 4000);
   }, [errorMessage, successMessage]);
 
-  const handleDelete = async (id: string) => {
-    dispatch(deleteUser(id));
-  };
-
   const handleSearchUsers = (search: string) => {
     search = search.toLowerCase().trim();
     if (search === "") {
@@ -68,6 +75,15 @@ const UsersListPage = (props: RouteComponentProps) => {
         )
       );
     }
+  };
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    // event.preventDefault();
+
+    const { errors, valid } = CreateUserValidation({ email });
+    setErrors(errors);
+
+    valid && dispatch(createUser(email, props.history));
   };
 
   const mapElements = (user: Doctor) => {
@@ -85,56 +101,19 @@ const UsersListPage = (props: RouteComponentProps) => {
             width: column.width,
           }}
         >
-          {value}
+          {getValue(column.id, value)}
         </TableCell>
       );
     });
 
-    const dropDownMenuActions = (
-      <TableCell
-        align="right"
-        style={{
-          minWidth: "5%",
-          width: "5%",
-        }}
-      >
-        <DropdownMenuActions
-          items={[
-            <Button
-              variant="outlined"
-              color="primary"
-              className={classes.btn}
-              size="small"
-              onClick={(event) => {
-                props.history.push({
-                  pathname: "/users/edit",
-                  state: {
-                    data: user,
-                  },
-                });
-                event.stopPropagation();
-              }}
-            >
-              Change
-            </Button>,
-            <CustomModal
-              buttonName="Delete"
-              onClick={(
-                event: React.MouseEvent<HTMLButtonElement, MouseEvent>
-              ) => {
-                // event.stopPropagation();
-                handleDelete(user.id);
-              }}
-              title="Delete User"
-              content={`Are you sure you want to delete user: ${user["firstName"]} ${user["lastName"]}?`}
-              id={user["id"]!}
-            />,
-          ]}
-        />
-      </TableCell>
-    );
+    elements.push(<TableCell
+      key={"last"}
+      align={"right"}
+      className={classes.bodyCell}
+    >
+    </TableCell>)
 
-    return [...elements, dropDownMenuActions];
+    return [...elements];
   };
 
   return (
@@ -151,14 +130,31 @@ const UsersListPage = (props: RouteComponentProps) => {
       )}
       <h1>All Users</h1>
       <div className={classes.btnContainer}>
-        <Button
-          variant="outlined"
-          color="primary"
-          className={classes.btn}
-          onClick={() => props.history.push("/users/add")}
-        >
-          Add User
-        </Button>
+        <CustomModal
+          id={"id"}
+          buttonName="Add user"
+          buttonSize="medium"
+          onClick={handleSubmit}
+          title="Send Email"
+          content={
+            <TextField
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              id="email"
+              label="email"
+              type="email"
+              name="email"
+              autoComplete="email"
+              autoFocus
+              value={email}
+              onChange={(value) => setEmail(value.target.value)}
+              error={!!errors.email}
+              helperText={errors.email}
+            />
+          }
+        />
         <Search
           handleSearch={handleSearchUsers}
           placeholder="search by first name, last name or institution"

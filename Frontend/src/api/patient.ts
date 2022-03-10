@@ -71,7 +71,7 @@ class PatientAPI {
     }
 
     sendEmail(id: string, emails: string[], text: string, filesIds: string[]) {
-        return  axios.post(`${this.endpoint}/${id}/documents/send-email`,{ emails, text, filesIds })
+        return  axios.post(`${this.endpoint}/${id.split("/")[0]}/documents/send-email`,{ id, emails, text, filesIds })
     }
 
     getMultipleFiles(id: string, folderName: string, documentIds: string[]) {
