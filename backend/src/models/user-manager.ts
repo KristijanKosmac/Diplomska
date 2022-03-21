@@ -85,7 +85,7 @@ class UserManager {
     }
   }
 
-  async createUser(email: string): Promise<DoneResult> {
+  async createUser(email: string): Promise<{done: boolean, id: string}> {
     const tempPassword = Math.random().toString(36).slice(-8);
     let transporter = nodemailer.createTransport({
       service: "Outlook365",
@@ -96,7 +96,7 @@ class UserManager {
     });
 
     try {
-      await admin
+      const user = await admin
         .auth()
         .createUser({ email, password: tempPassword, emailVerified: true });
       await transporter.sendMail({
@@ -105,7 +105,8 @@ class UserManager {
         subject: "Welcome to MedicalFiles",
         text: `Sign in with username: ${email} and password: ${tempPassword}`,
       });
-      return { done: true };
+
+      return { done: true , id: user.uid };
     } catch (err: any) {
       throw err;
     }

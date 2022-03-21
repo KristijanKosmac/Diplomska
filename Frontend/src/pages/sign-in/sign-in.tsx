@@ -10,7 +10,7 @@ const SignInPage = (props: RouteComponentProps) => {
   const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const {errorMessage, successMessage} = useSelector((state: GlobalState) => state.user)
+  const {user, patients} = useSelector((state: GlobalState) => state)
 
   const handleChange = (event: AuthenticationEvent) => {
     setEmail(event.email);
@@ -23,8 +23,10 @@ const SignInPage = (props: RouteComponentProps) => {
 
   return (
     <>
-      {successMessage && <div className="successMessage">{successMessage}</div>}
-      {errorMessage && <div className="errorMessage">{errorMessage}</div>}
+      {user.successMessage && <div className="successMessage">{user.successMessage}</div>}
+      {user.errorMessage && <div className="errorMessage">{user.errorMessage}</div>}
+      {patients.successMessage && <div className="successMessage">{patients.successMessage}</div>}
+      {patients.errorMessage && <div className="errorMessage">{patients.errorMessage}</div>}
 
       <Authentication
         title={"Sign in"}

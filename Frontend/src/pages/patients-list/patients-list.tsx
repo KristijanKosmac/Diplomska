@@ -84,6 +84,7 @@ const PatientsListPage = (
         patients.filter(
           (patient) =>
             patient.EMBG!.toString().toLowerCase().includes(search) ||
+            `${patient.firstName.toString().toLowerCase()} ${patient.lastName.toString().toLowerCase()}`.includes(search) ||
             (getValue("date", patient.dateOfBirth!) as string).includes(search)
         )
       );

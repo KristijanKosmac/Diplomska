@@ -22,6 +22,7 @@ import { citizenships } from "../../constants/citizenship";
 import { useDispatch, useSelector } from "react-redux";
 import { GlobalState } from "../../reducers";
 import { getUser } from "../../actions/user/user";
+import { bloodTypes } from "../../constants/blood-types";
 
 export default function AddEditPatient(
   props: RouteComponentProps<
@@ -227,8 +228,6 @@ export default function AddEditPatient(
                 value={patient.telephoneNumber}
                 onChange={handleChange}
               />
-            </Grid>
-            <Grid item xs={6}>
               <TextField
                 variant="outlined"
                 margin="normal"
@@ -241,6 +240,8 @@ export default function AddEditPatient(
                 value={patient.address}
                 onChange={handleChange}
               />
+            </Grid>
+            <Grid item xs={6}>
               <TextField
                 variant="outlined"
                 margin="normal"
@@ -305,6 +306,15 @@ export default function AddEditPatient(
                 name="Sex"
                 onChange={(sex) => {
                   setPatient({ ...patient, sex });
+                }}
+              />
+              <CustomSelect
+                value={patient.bloodType || ""}
+                items={bloodTypes}
+                errorMessage=""
+                name="Blood Type"
+                onChange={(bloodType) => {
+                  setPatient({ ...patient, bloodType });
                 }}
               />
             </Grid>

@@ -144,6 +144,7 @@ const Documents = (props: DocumentComponentProps) => {
         Download
       </Button>,
       <CustomModal
+        disabled={props.disableButtons}
         buttonName="Delete"
         onClick={() => {
           props.handleDelete(document.id);

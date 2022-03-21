@@ -24,6 +24,8 @@ import { mapPatientKeys } from "../../utils/mapPatientKeys";
 import useStyles from "./patient-details.styles";
 import { base64ToArrayBuffer } from "../../utils/base64ToArrayBuffer";
 import { saveByteArray } from "../../utils/saveByteArray";
+import { GlobalState } from "../../reducers";
+import { useSelector } from "react-redux";
 
 const PatientDetails = (props: RouteComponentProps<{}, StaticContext, {}>) => {
   const [folder, setFolder] = useState("");
@@ -31,6 +33,7 @@ const PatientDetails = (props: RouteComponentProps<{}, StaticContext, {}>) => {
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [informMessage, setInformMessage] = useState("");
+  const { profile } = useSelector((state: GlobalState) => state.user);
 
   const [patient, setPatient] = React.useState<Patient>({
     firstName: "",
@@ -45,6 +48,7 @@ const PatientDetails = (props: RouteComponentProps<{}, StaticContext, {}>) => {
   const [tab, setTab] = useState(0);
 
   const patientId = window.location.pathname.split("/").reverse()[0];
+  const disableButtons = profile.role === "Patient";
 
   const classes = useStyles();
 
@@ -60,7 +64,7 @@ const PatientDetails = (props: RouteComponentProps<{}, StaticContext, {}>) => {
   const fetchDocuments = async () => {
     try {
       if (folder) {
-        setIsBusy(true)
+        setIsBusy(true);
         const { data } = await patientAPI.getAllFilesFromFolder(
           patientId,
           folder
@@ -140,7 +144,11 @@ const PatientDetails = (props: RouteComponentProps<{}, StaticContext, {}>) => {
     try {
       setInformMessage("Zip file preparing ...");
       window.scrollTo({ top: 0, behavior: "smooth" });
-      const { data } = await patientAPI.getMultipleFiles(patientId, folder, fileKeys);
+      const { data } = await patientAPI.getMultipleFiles(
+        patientId,
+        folder,
+        fileKeys
+      );
       const bufferArray = base64ToArrayBuffer(data);
       saveByteArray(
         `${patient.firstName}-${patient.lastName}.zip`,
@@ -159,7 +167,9 @@ const PatientDetails = (props: RouteComponentProps<{}, StaticContext, {}>) => {
     text: string
   ) => {
     try {
-      await patientAPI.sendEmail(`${patientId}/${folder}`, emails, text, [selectedDocumentId]);
+      await patientAPI.sendEmail(`${patientId}/${folder}`, emails, text, [
+        selectedDocumentId,
+      ]);
 
       setSuccessMessage("Mail successfully send");
     } catch (e) {
@@ -229,6 +239,7 @@ const PatientDetails = (props: RouteComponentProps<{}, StaticContext, {}>) => {
               isBusy={isBusy}
               handleMultipleDownload={handleMultipleDownload}
               handleSendEmail={handleSendEmail}
+              disableButtons={disableButtons}
             />
           </div>
         ) : (
@@ -237,6 +248,7 @@ const PatientDetails = (props: RouteComponentProps<{}, StaticContext, {}>) => {
             onClick={(folderName) => {
               setFolder(folderName);
             }}
+            disableButtons={disableButtons}
           />
         )
       ) : (
@@ -245,6 +257,7 @@ const PatientDetails = (props: RouteComponentProps<{}, StaticContext, {}>) => {
             <Button
               variant="outlined"
               color="primary"
+              disabled={disableButtons}
               onClick={() => {
                 props.history.push({
                   pathname: "/patients/edit",

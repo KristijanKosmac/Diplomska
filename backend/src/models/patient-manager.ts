@@ -6,20 +6,24 @@ import { DoneResult, File } from "../types";
 import { Patient, PatientInteface } from "../database/entities";
 import { codedError } from "../lib/coded-error";
 import rimraf from "rimraf"
+import { userManager } from "./user-manager";
+import { doctorManager } from "./doctor-manager"
 const { EMAIL_PASSWORD, EMAIL_USERNAME } = require("../config")
 class PatientManager {
 
     async addPatient(data: PatientInteface): Promise<DoneResult & { id: string }> {
-        const patient = new Patient(data);
-
         try {
+            const res = await userManager.createUser(data.email)
+
+            const patient = new Patient({id: res.id, ...data});
             await patient.save()
+            await doctorManager.addDoctor({...data, id: res.id, role: "Patient"})
+
+            // TODO CHECK IF patient.id work if it doenst change it with patient._id
+            return { done: true, id: patient.id };
         } catch (e) {
             throw e
         }
-
-        // TODO CHECK IF patient.id work if it doenst change it with patient._id
-        return { done: true, id: patient.id };
     }
 
     async updatePatient(id: string, updatedData: PatientInteface): Promise<DoneResult> {
@@ -44,7 +48,8 @@ class PatientManager {
     }
 
     async getPatient(id: string): Promise<PatientInteface> {
-        const patient = await Patient.findById(id)
+        // const patient = await Patient.findById(id)
+        const patient = await Patient.findOne({id})
 
         if (!patient || !id) {
             throw codedError(HTTP.NOT_FOUND, `Patient does not exist`);

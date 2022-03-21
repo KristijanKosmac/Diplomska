@@ -11,6 +11,7 @@ export default function CustomModal({
   id,
   buttonSize,
   isOpened,
+  disabled
 }: ModalProps) {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
@@ -75,6 +76,7 @@ export default function CustomModal({
         color="primary"
         size={buttonSize || "small"}
         onClick={handleOpen}
+        disabled={disabled}
       >
         {buttonName}
       </Button>

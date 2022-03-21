@@ -9,6 +9,7 @@ export interface DoctorInteface {
     EMBG: number;
     dateOfBirth: string;
     email: string;
+    role: "Doctor" | "Admin" | "Patient"
     address?: string;
     telephoneNumber?: number
     institution?: string
@@ -51,6 +52,11 @@ const doctorSchema = new mongoose.Schema({
             }
         }
     },
+    role: {
+        type: String,
+        require: true,
+        enum: ["Doctor", "Admin", "Patient"]
+    },
     telephoneNumber: {
         type: Number,
     },
@@ -64,6 +70,9 @@ const doctorSchema = new mongoose.Schema({
         type: String
     },
     nationality: {
+        type: String
+    },
+    address: {
         type: String
     }
 }, {

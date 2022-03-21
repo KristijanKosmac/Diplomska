@@ -64,10 +64,11 @@ export const signInUser =
       //   history.push("/profile");
       // })
     } catch (error: any) {
+      console.log(error.response.data)
       dispatch({
         type: UserActionTypes.SIGN_IN_USER_FAIL,
         payload: {
-          errorMessage: error || error.response.data ||error.response.data.message,
+          errorMessage: error.response.data || error ||error.response.data.message,
         },
       });
     }
@@ -263,6 +264,7 @@ export const deleteUser =
         type: UserActionTypes.DELETE_USER,
         payload: { successMessage: "Successfully deleted user" },
       });
+      signOutUser()
     } catch (error: any) {
       dispatch({
         type: UserActionTypes.DELETE_USER_FAIL,
