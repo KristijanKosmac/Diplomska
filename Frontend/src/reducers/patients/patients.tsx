@@ -53,7 +53,7 @@ const patientsReducer = (state = INITIAL_STATE, action: any) => {
     case PatientsActionTypes.DELETE_PATIENT_SUCCESS:
       return {
         ...state,
-        successMessage: action.payload.successMessage,
+        successMessage: "Successfully deleted patient",
         patients: action.payload.patients,
       }
     case PatientsActionTypes.DELETE_PATIENT_FAIL:

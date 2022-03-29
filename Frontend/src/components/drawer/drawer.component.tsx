@@ -67,6 +67,7 @@ function MiniDrawer({ history }: RouteComponentProps) {
 
   const handleDelete = async () => {
     dispatch(deleteUser(profile.id));
+    dispatch(signOutUser(history));
   };
 
   return (

@@ -2,7 +2,13 @@ import { useEffect, useState } from "react";
 import { withRouter } from "react-router-dom";
 import { useSelector } from "react-redux";
 
-import { Button, Paper, TableCell, CircularProgress } from "@material-ui/core";
+import {
+  Button,
+  Paper,
+  TableCell,
+  CircularProgress,
+  TextField,
+} from "@material-ui/core";
 import { DropzoneArea } from "material-ui-dropzone";
 
 import CustomModal from "../../components/modal/modal.component";
@@ -12,14 +18,18 @@ import DropdownMenuActions from "../../components/dropdownMenuActions/dropdownMe
 import EnhancedTable from "../select-table/select-table.component";
 
 import useStyles from "./documents.styles";
-import { Document, DocumentColumn, DocumentComponentProps } from "../../types";
+import {
+  Document,
+  DocumentColumn,
+  DocumentComment,
+  DocumentComponentProps,
+} from "../../types";
 import { GlobalState } from "../../reducers";
 import { getValue } from "../../utils/getValue";
 import { saveByteArray } from "../../utils/saveByteArray";
 import { b64toBlob } from "../../utils/base64ToBlob";
 
 const Documents = (props: DocumentComponentProps) => {
-  const [key, setKey] = useState(0);
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [searchedDocuments, setSearchedDocuments] = useState<Document[]>(
@@ -30,12 +40,18 @@ const Documents = (props: DocumentComponentProps) => {
   const suggestedEmails = patients.map((patient) =>
     patient.email ? patient.email : ""
   );
+  const [documentsComments, setDocumentsComments] = useState<DocumentComment[]>(
+    []
+  );
+  const [currentDocumentName, setCurrentDocumentName] = useState("");
+  const [currentDocumentComment, setCurrentDocumentComment] = useState("");
 
   const classes = useStyles();
 
   const documentColumns: DocumentColumn[] = [
-    { id: "name", label: "Document name" },
-    { id: "date", label: "Upload date" },
+    { id: "name", label: "Document Name" },
+    { id: "date", label: "Upload Date" },
+    { id: "comment", label: "Comment", width: "30%" },
   ];
 
   useEffect(() => {
@@ -102,34 +118,65 @@ const Documents = (props: DocumentComponentProps) => {
             onClick={props.handleSendEmail!}
             suggestedEmails={suggestedEmails}
             defaultDocument={document}
+            text={document.comment}
             // className={document.isSend ? classes.isSend : ""}
           />
         )}
       </TableCell>
     );
 
-    elements.push(
-      <TableCell
-        key="preview"
-        align="right"
-        className={classes.bodyCell}
-        style={{
-          wordBreak: "break-word",
-        }}
-      >
-        {["pdf", "jpeg", "jpg", "png"].includes(
-          document.name.split(".").pop() || ""
-        ) ? (
-          <a href={document.content} target="_blank" rel="noreferrer">
-            <Button variant="outlined" color="primary" className={classes.btn}>
-              Open document
-            </Button>
-          </a>
-        ) : null}
-      </TableCell>
-    );
-
+    
     const dropDownItems = [
+      <CustomModal
+        buttonName="Edit"
+        onClick={() => {
+          props.handleEditDocument(
+            `${document.id.split("/").slice(0, -1).join("/")}/${
+              currentDocumentName || document.name
+            }`,
+            document.id,
+            document.comment,
+            currentDocumentComment || document.comment
+          );
+        }}
+        title="Edit Document"
+        content={
+          <div>
+            <TextField
+              variant="outlined"
+              margin="normal"
+              fullWidth
+              id={document.id}
+              label="Name"
+              type="text"
+              name={"name"}
+              autoFocus
+              value={currentDocumentName || document.name}
+              onChange={(value) => {
+                setCurrentDocumentName(value.target.value);
+              }}
+            />
+            <TextField
+              variant="outlined"
+              margin="normal"
+              fullWidth
+              id={document.id}
+              label="Comment"
+              type="text"
+              name={"comment"}
+              minRows={1}
+              maxRows={5}
+              multiline
+              autoFocus
+              value={currentDocumentComment || document.comment}
+              onChange={(value) => {
+                setCurrentDocumentComment(value.target.value);
+              }}
+            />
+          </div>
+        }
+        id={document["id"]!}
+      />,
       <Button
         variant="outlined"
         color="primary"
@@ -149,10 +196,7 @@ const Documents = (props: DocumentComponentProps) => {
           props.handleDelete(document.id);
         }}
         title="Delete Document"
-        content={`Are you sure you want to delete document: ${document.id
-          .split("-")
-          .slice(1)
-          .join("-")}?`}
+        content={`Are you sure you want to delete document: ${document.name}?`}
         id={document["id"]!}
       />,
     ];
@@ -186,8 +230,44 @@ const Documents = (props: DocumentComponentProps) => {
       )}
       <div className={classes.btnContainer}>
         <div className={classes.dropZone}>
-          <div style={{ marginBottom: "25px" }}>
-            <Button
+          <div style={{ marginBottom: "10px", float: "right" }}>
+            <CustomModal
+              id="FileUpload"
+              buttonName={props.isBusy ? "uploading..." : "Upload"}
+              title="Files redy to upload"
+              onClick={() => props.handleSubmit(files!, documentsComments)}
+              disabled={props.isBusy || (files && !files.getAll("file").length)}
+              content={documentsComments.map((doc, index) => {
+                return (
+                  <div className={classes.commentDisplay}>
+                    <label>{doc.fileName}</label>
+                    <TextField
+                      variant="outlined"
+                      margin="normal"
+                      fullWidth
+                      id={doc.fileName}
+                      label="Comment"
+                      type="text"
+                      name={doc.fileName}
+                      minRows={1}
+                      maxRows={5}
+                      multiline
+                      autoFocus
+                      value={doc.comment}
+                      onChange={(value) => {
+                        let updatedDocumentComments = [...documentsComments];
+                        updatedDocumentComments[index] = {
+                          fileName: doc.fileName,
+                          comment: value.target.value,
+                        };
+                        setDocumentsComments(updatedDocumentComments);
+                      }}
+                    />
+                  </div>
+                );
+              })}
+            />
+            {/* <Button
               variant="outlined"
               color="primary"
               className={classes.btn}
@@ -198,30 +278,29 @@ const Documents = (props: DocumentComponentProps) => {
               disabled={props.isBusy || (files && !files.getAll("file").length)}
             >
               {props.isBusy ? "uploading..." : "Upload"}
-            </Button>
+            </Button> */}
           </div>
           <br />
           <DropzoneArea
-            key={key}
+            key="0"
             previewGridClasses={{
               container: classes.dropZoneGridCointainer,
               image: "",
               item: "MuiGrid-grid-md-3",
             }}
             filesLimit={10}
-            // useChipsForPreview={true}
-            // showPreviews={true}
-            // showPreviewsInDropzone={false}
             previewGridProps={{ container: { spacing: 1, direction: "row" } }}
             previewChipProps={{ classes: { root: classes.previewChip } }}
-            // previewText="Избрани фајлови"
             onChange={(data) => {
               const formdata = new FormData();
               props.patient && formdata.append("directory", props.patient.id!);
-              data.forEach((d) => {
-                formdata.append("name", d.name);
-                formdata.append("file", d);
-              });
+              setDocumentsComments(
+                data.map((d) => {
+                  formdata.append("name", d.name);
+                  formdata.append("file", d);
+                  return { fileName: d.name, comment: "" };
+                })
+              );
               setFiles(formdata);
             }}
             maxFileSize={100000000}
@@ -245,7 +324,6 @@ const Documents = (props: DocumentComponentProps) => {
               columns={[
                 ...documentColumns,
                 { id: "send email", label: "", align: "right" },
-                { id: "preview", label: "", align: "right" },
                 { id: "actionButtons", label: "", align: "right" },
               ]}
               rows={searchedDocuments.map((document) => {

@@ -69,6 +69,11 @@ export default function UserForm(props: DoctorFormProps) {
           {props.errorMessage}
         </div>
       )}
+      {Object.keys(doctor).length < 5 && (
+        <div className="informMessage" style={{ margin: "20px auto 0" }}>
+          Your must fill the required fields
+        </div>
+      )}
       <CssBaseline />
       <div className={classes.paper}>
         <Avatar className={classes.avatar}>
@@ -186,9 +191,9 @@ export default function UserForm(props: DoctorFormProps) {
                 margin="normal"
                 fullWidth
                 id="address"
-                label="address"
+                label="Address"
                 type="text"
-                name="Address"
+                name="address"
                 autoComplete="address"
                 autoFocus
                 value={doctor.address}
@@ -226,7 +231,7 @@ export default function UserForm(props: DoctorFormProps) {
                 onChange={(value) => {
                   setDoctor({ ...doctor, institution: value });
                 }}
-                value={doctor.institution}
+                value={doctor.institution || ""}
               />
             </Grid>
           </Grid>

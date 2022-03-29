@@ -12,8 +12,11 @@ export interface MulterFiles {
 }
 
 export interface File {
+    id?: string;
     filename: string;
     content: string | Buffer;
+    date?: string;
+    comment?: string
 }   
 
 export interface signInReponse {

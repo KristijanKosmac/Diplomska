@@ -59,26 +59,11 @@ export interface Patient {
   height?: number;
   weight?: number;
   sex?: "Male" | "Female";
+  bloodType?: "A+" | "A-" | "B+" | "B-" | "AB+" | "AB-" | "O-" | "O+"
   country?: string;
   city?: string;
   nationality?: string;
 }
-
-// export interface Patient {
-//   name: string;
-//   surname: string;
-//   petId: string;
-//   telephoneNumber: string;
-//   createdAt: number;
-//   updatedAt?: number;
-//   secondTelephoneNumber?: string;
-//   email?: string;
-//   EMBG?: string;
-//   address?: string;
-//   citizenship?: string;
-//   dateOfBirth?: string;
-//   sex?: "male" | "female";
-// }
 
 export interface DoctorValidation {
   id: string,
@@ -93,6 +78,12 @@ export interface Document {
   name: string;
   date: string;
   content: string;
+  comment: string;
+}
+
+export interface DocumentComment {
+  fileName: string;
+  comment: string
 }
 
 
@@ -115,6 +106,7 @@ export interface ModalProps {
   title: string;
   content: string | any;
   id: string;
+  disabled?: boolean;
   buttonSize?: "small" | "medium" | "large";
   isOpened?: (value: boolean) => void;
 }
@@ -165,18 +157,20 @@ export interface SendEmailProps {
   // onChange: (value: string[]) => void;
   // onChangeSelectedDocument: (document: string) => void;
   defaultDocument: Document;
+  text?: string;
   className?: string;
 }
 
 export interface DocumentComponentProps extends RouteComponentProps {
   documents: Document[];
   handleDelete: (documentId: string) => void;
-  handleSubmit: (files: FormData) => void;
+  handleSubmit: (files: FormData, documentsComments: DocumentComment[]) => void;
   patient?: Patient;
   sendToEmail?: string;
   isBusy: boolean;
   handleSendEmail?: (emails: string[], selectedDocumentId: string, text: string) => void;
   handleMultipleDownload: (fileKeys: string[]) => void
+  handleEditDocument: (documentId: string, oldDocumentId: string, comment: string, newComment: string) => void
 }
 
 export interface FolderComponentProps extends RouteComponentProps {
@@ -215,7 +209,7 @@ export interface PatientColumn {
 }
 
 export interface DocumentColumn {
-  id: "name" | "date";
+  id: "name" | "date" | "comment";
   label: string;
   minWidth?: string;
   width?: string;

@@ -26,7 +26,7 @@ export const signUpUser =
       dispatch({
         type: UserActionTypes.SIGN_UP_USER_FAIL,
         payload: {
-          errorMessage: error,
+          errorMessage: error.response.data.message || error.response.data || error ,
         },
       });
     }
@@ -67,7 +67,7 @@ export const signInUser =
       dispatch({
         type: UserActionTypes.SIGN_IN_USER_FAIL,
         payload: {
-          errorMessage: error || error.response.data ||error.response.data.message,
+          errorMessage: error.response.data.message || error.response.data || error ,
         },
       });
     }
@@ -113,7 +113,7 @@ export const updateDoctorInfo =
       dispatch({
         type: UserActionTypes.UPDATE_DOCTOR_INFO_FAIL,
         payload: {
-          errorMessage: error || error.response.data.message,
+          errorMessage: error.response.data.message || error.response.data || error ,
         },
       });
     }
@@ -146,7 +146,7 @@ export const createUser =
 
       dispatch({
         type: UserActionTypes.CREATE_USER,
-        payload: { successMessage: "Successfully created user" },
+        payload: { successMessage: "Successfully invited user" },
       });
 
       history.push("/users");
@@ -239,9 +239,7 @@ export const changePassword =
 
       dispatch({
         type: UserActionTypes.CHANGE_PASSWORD,
-        payload: {
-          payload: { successMessage: "Password was successfully changed" },
-        },
+        payload: { successMessage: "Password was successfully changed" },
       });
 
       history.push("/profile");

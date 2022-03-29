@@ -39,12 +39,12 @@ export default function Authentication({
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    // const { errors, valid } = userValidation(email, password);
+    const { errors, valid } = userValidation(email, password);
     setErrors(errors);
 
-    // if(valid){
+    if(valid){
         onSubmit();
-    // }
+    }
   };
 
   return (

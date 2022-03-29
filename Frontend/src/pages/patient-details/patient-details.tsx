@@ -12,7 +12,7 @@ import {
   Button,
 } from "@material-ui/core";
 
-import { Patient, Document } from "../../types";
+import { Patient, Document, DocumentComment } from "../../types";
 
 import Documents from "../../components/documents/documents.component";
 import FoldersListPage from "../folders-list/folders-list";
@@ -48,6 +48,8 @@ const PatientDetails = (props: RouteComponentProps<{}, StaticContext, {}>) => {
 
   const classes = useStyles();
 
+  console.log(documents)
+
   const fetchPatient = async () => {
     try {
       const { data } = await patientAPI.getPatient(patientId);
@@ -60,7 +62,7 @@ const PatientDetails = (props: RouteComponentProps<{}, StaticContext, {}>) => {
   const fetchDocuments = async () => {
     try {
       if (folder) {
-        setIsBusy(true)
+        setIsBusy(true);
         const { data } = await patientAPI.getAllFilesFromFolder(
           patientId,
           folder
@@ -68,10 +70,11 @@ const PatientDetails = (props: RouteComponentProps<{}, StaticContext, {}>) => {
         setDocuments(
           data.map((doc: any) => {
             return {
-              id: doc.filename,
-              date: parseInt(doc.filename.split("-")[0]),
-              name: doc.filename.split("-").slice(1).join("-"),
+              id: doc.id,
+              date: doc.date,
+              name: doc.filename,
               content: doc.content,
+              comment: doc.comment,
             };
           }) as Document[]
         );
@@ -109,8 +112,9 @@ const PatientDetails = (props: RouteComponentProps<{}, StaticContext, {}>) => {
   }, [errorMessage, successMessage]);
 
   const handleDeleteDocument = async (documentId: string) => {
+    console.log(documentId, "TUKAAA")
     try {
-      await patientAPI.deleteFile(patientId, `${folder}/${documentId}`);
+      await patientAPI.deleteFile(documentId);
       setSuccessMessage("Document is successfully deleted");
 
       setTimeout(() => {
@@ -121,15 +125,24 @@ const PatientDetails = (props: RouteComponentProps<{}, StaticContext, {}>) => {
     }
   };
 
-  const handleSubmit = async (files: FormData) => {
+  const handleSubmit = async (
+    files: FormData,
+    documentsComments: DocumentComment[]
+  ) => {
     try {
       setIsBusy(true);
       await patientAPI.uploadFiles(patientId, folder, files);
+      await patientAPI.uploadFilesComments(
+        patientId,
+        folder,
+        documentsComments
+      );
 
       setTimeout(() => {
         fetchDocuments();
       }, 500);
       setIsBusy(false);
+      setSuccessMessage("Successfully uploaded files");
     } catch (error: any) {
       setIsBusy(false);
       setErrorMessage(error.response.data.message);
@@ -140,7 +153,11 @@ const PatientDetails = (props: RouteComponentProps<{}, StaticContext, {}>) => {
     try {
       setInformMessage("Zip file preparing ...");
       window.scrollTo({ top: 0, behavior: "smooth" });
-      const { data } = await patientAPI.getMultipleFiles(patientId, folder, fileKeys);
+      console.log(fileKeys)
+      const { data } = await patientAPI.getMultipleFiles(
+        "id",
+        fileKeys
+      );
       const bufferArray = base64ToArrayBuffer(data);
       saveByteArray(
         `${patient.firstName}-${patient.lastName}.zip`,
@@ -150,6 +167,7 @@ const PatientDetails = (props: RouteComponentProps<{}, StaticContext, {}>) => {
       setInformMessage("");
     } catch (err: any) {
       setErrorMessage("Error while getting zip file");
+      setInformMessage("");
     }
   };
 
@@ -159,12 +177,33 @@ const PatientDetails = (props: RouteComponentProps<{}, StaticContext, {}>) => {
     text: string
   ) => {
     try {
-      await patientAPI.sendEmail(`${patientId}/${folder}`, emails, text, [selectedDocumentId]);
+      await patientAPI.sendEmail(`${patientId}/${folder}`, emails, text, [
+        selectedDocumentId,
+      ]);
 
       setSuccessMessage("Mail successfully send");
     } catch (e) {
       console.log(e);
       setErrorMessage("Error occurred while sending mail");
+    }
+  };
+
+  const handleEditDocument = async (documentId: string, oldDocumentId: string, comment: string, newComment: string) => {
+    try {
+      if ( comment !== newComment || documentId !== oldDocumentId) {
+        await patientAPI.updateDocument(
+          patientId,
+          folder,
+          documentId,
+          oldDocumentId,
+          newComment
+        );
+
+        fetchDocuments()
+      } 
+      
+    } catch (err) {
+      console.log(err);
     }
   };
 
@@ -229,6 +268,7 @@ const PatientDetails = (props: RouteComponentProps<{}, StaticContext, {}>) => {
               isBusy={isBusy}
               handleMultipleDownload={handleMultipleDownload}
               handleSendEmail={handleSendEmail}
+              handleEditDocument={handleEditDocument}
             />
           </div>
         ) : (
@@ -269,6 +309,7 @@ const PatientDetails = (props: RouteComponentProps<{}, StaticContext, {}>) => {
                   (entry, index) =>
                     entry[0] !== "createdAt" &&
                     entry[0] !== "updatedAt" &&
+                    entry[0] !== "familyDoctor" &&
                     entry[0] !== "id" &&
                     entry[0] !== "_id" &&
                     entry[0] !== "__v" && (

@@ -12,6 +12,7 @@ export interface PatientInteface {
     height?: number;
     weight?: number;
     sex?: "Male" | "Female";
+    bloodType?: "A+" | "A-" | "B+" | "B-" | "AB+" | "AB-" | "O-" | "O+"
     country?: string;
     city?: string;
     nationality?: string;
@@ -61,6 +62,10 @@ const patientSchema = new mongoose.Schema({
     sex: {
         type: String,
         enum: ["Male", "Female"]
+    },
+    bloodType: {
+        type: String,
+        enum: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O-", "O+"]
     },
     country: {
         type: String

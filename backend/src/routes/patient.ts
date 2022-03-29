@@ -51,35 +51,25 @@ app.put(
   })
 );
 
-app.post(
-  "/patient/:id/documents",
-  auth,
-  upload.array("file"),
-  errorHandler.wrap(async (req) => {
-    return patientManager.uploadFiles(req.files);
-  })
-);
-
 app.delete(
   "/patient/:id/documents",
   auth,
   errorHandler.wrap(async (req) => {
-    const { id } = req.params as any;
-    const { fileName } = req.query as any;
+    const { id } = req.body as any;
 
-    return patientManager.deleteFile(id, fileName);
+    return patientManager.deleteFile(id);
   })
 );
 
-app.get(
-  "/patient/:id/documents",
-  auth,
-  errorHandler.wrap(async (req) => {
-    const { id } = req.params as any;
+// app.get(
+//   "/patient/:id/documents",
+//   auth,
+//   errorHandler.wrap(async (req) => {
+//     const { id } = req.params as any;
 
-    return patientManager.getAllFiles(id);
-  })
-);
+//     return patientManager.getAllFiles(id);
+//   })
+// );
 
 app.get(
   "/patient/:id/folder/:folderName",
@@ -112,12 +102,42 @@ app.post(
   })
 );
 
+// app.post(
+//   "/patient/:id/documents",
+//   auth,
+//   upload.array("file"),
+//   errorHandler.wrap(async (req) => {
+//     return patientManager.uploadFiles(req.files);
+//   })
+// );
+
 app.post(
   "/patient/:id/folder/:folderName/upload",
   auth,
   upload.array("file"),
   errorHandler.wrap(async (req) => {
     return patientManager.uploadFiles(req.files);
+  })
+);
+
+app.post(
+  "/patient/:id/folder/:folderName/files-comments",
+  auth,
+  errorHandler.wrap(async (req) => {
+    const { id, folderName } = req.params as any
+
+    return patientManager.uploadFilesComments(id, folderName, req.body.documents);
+  })
+);
+
+app.put(
+  "/patient/:id/folder/:folderName/file-edit",
+  auth,
+  errorHandler.wrap(async (req) => {
+    // const { id, folderName } = req.params as any
+    const { documentId, oldDocumentId, comment } = req.body as any
+
+    return patientManager.updateDocument(documentId, oldDocumentId, comment);
   })
 );
 
@@ -162,10 +182,10 @@ app.post(
   auth,
   bodyParser.json(),
   errorHandler.wrap(async (req) => {
-    const { id } = req.params as any;
-    const { documentIds, folderName} = req.body as any
+    // const { id } = req.params as any;
+    const { documentIds} = req.body as any
 
-    return patientManager.getMultipleFiles( id, documentIds, folderName, "" );
+    return patientManager.getMultipleFiles( documentIds, "" );
   })
 );
 

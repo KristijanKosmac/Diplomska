@@ -1,5 +1,5 @@
 import axios from "axios"
-import { Patient } from "../types";
+import { DocumentComment, Patient } from "../types";
 
 export type WindowConfig = Window & {
     env: { BACKEND_ENDPOINT: string;};
@@ -38,12 +38,20 @@ class PatientAPI {
     //     return axios.post(`${this.endpoint}/${id}/documents`, files)
     // }
 
-    uploadFiles(id: string, folderName: string, files: FormData) {
-        return axios.post(`${this.endpoint}/${id}/folder/${folderName}/upload`, files)
+    uploadFiles(id: string, folderName: string, files: FormData ) {
+        return axios.post(`${this.endpoint}/${id}/folder/${folderName}/upload`, files )
     }
 
-    deleteFile(id: string, fileName: string) {
-        return axios.delete(`${this.endpoint}/${id}/documents`, { params: { fileName }})
+    uploadFilesComments(id: string, folderName: string, documents: DocumentComment[] ) {
+        return axios.post(`${this.endpoint}/${id}/folder/${folderName}/files-comments`, { documents } )
+    }
+
+    updateDocument(id: string, folderName: string, documentId: string, oldDocumentId: string, comment: string) {
+        return axios.put(`${this.endpoint}/${id}/folder/${folderName}/file-edit`, { documentId, oldDocumentId, comment } )
+    }
+
+    deleteFile(documentId: string) {
+        return axios.delete(`${this.endpoint}/documentId/documents`, {data: {id: documentId} })
     }
 
     getAllFiles(id: string) {
@@ -74,8 +82,8 @@ class PatientAPI {
         return  axios.post(`${this.endpoint}/${id.split("/")[0]}/documents/send-email`,{ id, emails, text, filesIds })
     }
 
-    getMultipleFiles(id: string, folderName: string, documentIds: string[]) {
-        return  axios.post(`${this.endpoint}/${id}/documents/download`, { documentIds, folderName })
+    getMultipleFiles(id: string, documentIds: string[]) {
+        return  axios.post(`${this.endpoint}/${id}/documents/download`, { documentIds })
     }
 
 }

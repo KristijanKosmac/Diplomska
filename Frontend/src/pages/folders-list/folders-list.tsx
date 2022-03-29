@@ -85,7 +85,8 @@ const FoldersListPage = (props: FolderComponentProps) => {
     if (search === "") {
       setSearchedFolders(folders);
     } else {
-      setSearchedFolders(folders.filter((folder) => folder.includes(search)));
+      console.log(folders ,search)
+      setSearchedFolders(folders.filter((folder) => folder.toLocaleLowerCase().includes(search.toLocaleLowerCase())));
     }
   };
 
@@ -131,7 +132,7 @@ const FoldersListPage = (props: FolderComponentProps) => {
         ,
         <Search
           handleSearch={handleSearchFolders}
-          placeholder="search by first name, last name or institution"
+          placeholder="search by folder name"
         />
       </div>
       {!isLoading ? (

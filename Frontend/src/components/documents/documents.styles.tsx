@@ -74,6 +74,14 @@ const useStyles = makeStyles((theme) => ({
       border: "1px solid #0c47b3"
     }
   },
+  commentDisplay: {
+    display: "grid",
+    gridTemplateColumns: "40% 60%",
+
+    "& label": {
+      margin: "auto"
+    }
+  }
 }));
 
 export default useStyles;

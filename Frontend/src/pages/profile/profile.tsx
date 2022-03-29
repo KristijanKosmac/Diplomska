@@ -27,7 +27,7 @@ export default function Profile(props: RouteComponentProps<{}, StaticContext>) {
   const handleSubmit = async (doctor: Doctor) => {
     dispatch(updateDoctorInfo(doctor, props.history))
   };
-
+  
   return (
     <UserForm
       errorMessage={errorMessage}

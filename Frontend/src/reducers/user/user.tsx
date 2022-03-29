@@ -1,4 +1,4 @@
-import { UserState, Doctor } from "../../types";
+import { UserState } from "../../types";
 import { UserActionTypes } from "../../constants/index";
 
 const INITIAL_STATE: UserState = {
@@ -114,7 +114,7 @@ const userReducer = (state = INITIAL_STATE, action: any) => {
     case UserActionTypes.RESET_PASSWORD:
       return {
         ...state,
-        successMessage: "Successfully reset password",
+        successMessage: "Email for reseting password send",
       }
     case UserActionTypes.RESET_PASSWORD_FAIL:
       return {
@@ -135,12 +135,12 @@ const userReducer = (state = INITIAL_STATE, action: any) => {
     case UserActionTypes.DELETE_USER_FAIL:
       return { 
           ...state,
-          successMessage: action.payload.errorMessage
+          errorMessage: action.payload.errorMessage
       }
     case UserActionTypes.UPDATE_DOCTOR_INFO:
       return { 
           ...state,
-          successMessage: action.payload.errorMessage
+          successMessage: action.payload.successMessage
       }
     case UserActionTypes.UPDATE_DOCTOR_INFO_FAIL:
       return { 

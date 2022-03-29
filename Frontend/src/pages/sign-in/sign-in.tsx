@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import Authentication from "../../components/authentication/authentication.component";
 import { AuthenticationEvent } from "../../types";
-import { signInUser } from "../../actions/index";
+import { resetMessages, signInUser } from "../../actions/index";
 import { GlobalState } from "../../reducers";
 
 const SignInPage = (props: RouteComponentProps) => {
@@ -21,6 +21,12 @@ const SignInPage = (props: RouteComponentProps) => {
       dispatch(signInUser(email, password, props.history))
   };
 
+  useEffect(() => {
+    setTimeout(() => {
+      dispatch(resetMessages())
+    }, 3000);
+  }, [errorMessage, successMessage]);
+
   return (
     <>
       {successMessage && <div className="successMessage">{successMessage}</div>}
@@ -29,7 +35,7 @@ const SignInPage = (props: RouteComponentProps) => {
       <Authentication
         title={"Sign in"}
         links={[
-          { href: "/forgot-password", content: "forgot password?" },
+          { href: "/forgot-password", content: "Forgot password?" },
           { href: "/sign-up", content: "Sign up" },
         ]}
         onChange={handleChange}

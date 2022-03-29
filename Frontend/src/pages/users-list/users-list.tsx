@@ -132,10 +132,10 @@ const UsersListPage = (props: RouteComponentProps) => {
       <div className={classes.btnContainer}>
         <CustomModal
           id={"id"}
-          buttonName="Add user"
+          buttonName="Invite user"
           buttonSize="medium"
           onClick={handleSubmit}
-          title="Send Email"
+          title="Invite user"
           content={
             <TextField
               variant="outlined"

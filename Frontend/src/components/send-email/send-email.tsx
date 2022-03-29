@@ -11,7 +11,7 @@ export default function SendEmail(props: SendEmailProps) {
     props.defaultDocument.id
   );
   const [emails, setEmails] = useState<string[]>([props.email]);
-  const [text, setText] = useState("");
+  const [text, setText] = useState(props.text || "");
   const [isOpened, setIsOpened] = useState(false);
 
   useEffect(() => {
