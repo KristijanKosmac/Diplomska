@@ -28,13 +28,13 @@ export default {
                 if (!errorResponse.data && !errorResponse.status) {
                     return resetTokenAndReattemptRequest(error, store);
                 } else if( errorResponse.data ) {
-                    if (isRefreshTokenExpiredError(errorResponse.data)) {
+                    if (isRefreshTokenExpiredError(errorResponse.data.message || errorResponse.data )) {
                         store.dispatch(signOutUser());
                     }
-                    if (isTokenExpiredError(errorResponse.data)) {
+                    if (isTokenExpiredError(errorResponse.data.message || errorResponse.data)) {
                         return resetTokenAndReattemptRequest(error, store);
                     }
-                    if (isTokenInvalidError(errorResponse.data)) {
+                    if (isTokenInvalidError(errorResponse.data.message || errorResponse.data)) {
                         store.dispatch(signOutUser());
                     }
                 }  

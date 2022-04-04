@@ -33,6 +33,7 @@ const FoldersListPage = (props: FolderComponentProps) => {
       setFolders(data);
     } catch (error: any) {
       setIsLoading(false);
+      error.response.data.code === 404 &&  setFolders([]);
       error.response.data.code !== 404 && setErrorMessage("Something went wrong while getting folders");
     }
     setIsLoading(false);

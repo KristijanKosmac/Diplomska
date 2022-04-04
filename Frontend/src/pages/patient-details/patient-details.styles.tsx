@@ -61,10 +61,11 @@ const useStyles = makeStyles((theme) => ({
    
   },
   documentWrapper: {
+    textAlign: "center",
     width: "80%",
     "& > div:nth-of-type(1)": {
       display: "grid",
-      gridTemplateColumns: "40% auto",
+      gridTemplateColumns: "10% 80%",
       
       "& > button": {
         width: "100px",

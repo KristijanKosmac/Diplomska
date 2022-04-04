@@ -138,6 +138,9 @@ const Documents = (props: DocumentComponentProps) => {
             document.comment,
             currentDocumentComment || document.comment
           );
+
+          setCurrentDocumentComment("")
+          setCurrentDocumentName("")
         }}
         title="Edit Document"
         content={
@@ -234,13 +237,13 @@ const Documents = (props: DocumentComponentProps) => {
             <CustomModal
               id="FileUpload"
               buttonName={props.isBusy ? "uploading..." : "Upload"}
-              title="Files redy to upload"
+              title="Files ready to upload"
               onClick={() => props.handleSubmit(files!, documentsComments)}
               disabled={props.isBusy || (files && !files.getAll("file").length)}
               content={documentsComments.map((doc, index) => {
                 return (
                   <div className={classes.commentDisplay}>
-                    <label>{doc.fileName}</label>
+                    <label>{ doc.fileName }</label>
                     <TextField
                       variant="outlined"
                       margin="normal"
@@ -260,6 +263,7 @@ const Documents = (props: DocumentComponentProps) => {
                           fileName: doc.fileName,
                           comment: value.target.value,
                         };
+
                         setDocumentsComments(updatedDocumentComments);
                       }}
                     />

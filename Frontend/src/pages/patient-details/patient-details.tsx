@@ -48,8 +48,6 @@ const PatientDetails = (props: RouteComponentProps<{}, StaticContext, {}>) => {
 
   const classes = useStyles();
 
-  console.log(documents)
-
   const fetchPatient = async () => {
     try {
       const { data } = await patientAPI.getPatient(patientId);
@@ -112,7 +110,6 @@ const PatientDetails = (props: RouteComponentProps<{}, StaticContext, {}>) => {
   }, [errorMessage, successMessage]);
 
   const handleDeleteDocument = async (documentId: string) => {
-    console.log(documentId, "TUKAAA")
     try {
       await patientAPI.deleteFile(documentId);
       setSuccessMessage("Document is successfully deleted");
