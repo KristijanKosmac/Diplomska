@@ -16,7 +16,7 @@ import useStyles from "./add-edit-patient.styles";
 import CustomSelect from "../../components/select/select";
 import DatePicker from "../../components/date-picker/date-picker.component";
 import patientValidation from "../../utils/validations/patient-validation";
-import { patientAPI, doctorAPI } from "../../api";
+import { doctorAPI } from "../../api";
 import { Doctor, Patient } from "../../types";
 import { citizenships } from "../../constants/citizenship";
 import { useDispatch, useSelector } from "react-redux";
@@ -37,13 +37,9 @@ export default function AddEditPatient(
 ) {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const {
-    errorMessage
-  } = useSelector((state: GlobalState) => state.patients);
-  
-  const { profile } = useSelector(
-    (state: GlobalState) => state.user
-  );
+  const { errorMessage } = useSelector((state: GlobalState) => state.patients);
+
+  const { profile } = useSelector((state: GlobalState) => state.user);
 
   const [patient, setPatient] = useState<Patient>({
     EMBG: 0,
@@ -60,15 +56,14 @@ export default function AddEditPatient(
     EMBG: "",
     dateOfBirth: "",
     email: "",
-    familyDoctor: ""
+    familyDoctor: "",
   });
-  // const [errorMessage, setErrorMessage] = useState("");
 
   const [isUpdate] = useState(
     window.location.href.split("/").reverse()[0] === "edit" ? true : false
   );
 
-  const [doctors, setDoctors] = useState<Doctor[]>([])
+  const [doctors, setDoctors] = useState<Doctor[]>([]);
 
   useEffect(() => {
     if (props.location.state) {
@@ -76,18 +71,18 @@ export default function AddEditPatient(
       setPatient(patient);
     }
     dispatch(getUser());
-    fetchDoctors()
+    fetchDoctors();
   }, []);
 
   const fetchDoctors = async () => {
     try {
       const { data } = await doctorAPI.getAllDoctors();
 
-      setDoctors(data as Doctor[])
+      setDoctors(data as Doctor[]);
     } catch (err: any) {
-      console.log(err)
+      console.log(err);
     }
-  }
+  };
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -96,21 +91,11 @@ export default function AddEditPatient(
     if (valid) {
       if (isUpdate) {
         // await patientAPI.updatePatient(props.location.state.patient.id!, patient ).catch(err => {throw err})
-        dispatch(updatePatient(patient))
+        dispatch(updatePatient(patient, props.history));
       } else {
-        dispatch(addPatient(patient))
+        dispatch(addPatient(patient, props.history));
         // await patientAPI.createPatient(patient).catch(err => {throw err})
       }
-
-      props.history.push({
-        pathname: "/patients",
-        state: {
-          successMessage: `Successfully ${
-            isUpdate ? "edited" : "added"
-          } patient!`,
-          patient
-        },
-      });
     } else {
       setErrors(errors);
     }
@@ -211,6 +196,7 @@ export default function AddEditPatient(
                 items={doctors}
                 errorMessage=""
                 required
+                disabled
                 objectParametars={["firstName", "lastName"]}
                 name="Family Doctor"
                 onChange={(familyDoctor) => {
@@ -229,17 +215,6 @@ export default function AddEditPatient(
                 value={patient.telephoneNumber}
                 onChange={handleChange}
               />
-              <CustomSelect
-                value={patient.sex || ""}
-                items={["Male", "Female"]}
-                errorMessage=""
-                name="Sex"
-                onChange={(sex) => {
-                  setPatient({ ...patient, sex });
-                }}
-              />
-            </Grid>
-            <Grid item xs={6}>
               <TextField
                 variant="outlined"
                 margin="normal"
@@ -252,6 +227,8 @@ export default function AddEditPatient(
                 value={patient.address}
                 onChange={handleChange}
               />
+            </Grid>
+            <Grid item xs={6}>
               <TextField
                 variant="outlined"
                 margin="normal"
@@ -276,7 +253,7 @@ export default function AddEditPatient(
                 value={patient.city}
                 onChange={handleChange}
               />
-               <CustomSelect
+              <CustomSelect
                 value={patient.nationality || ""}
                 items={citizenships}
                 errorMessage=""
@@ -309,14 +286,22 @@ export default function AddEditPatient(
                 value={patient.weight}
                 onChange={handleChange}
               />
-              
-               <CustomSelect
+              <CustomSelect
                 value={patient.bloodType || ""}
                 items={bloodTypes}
                 errorMessage=""
                 name="Blood Type"
                 onChange={(bloodType) => {
                   setPatient({ ...patient, bloodType });
+                }}
+              />
+              <CustomSelect
+                value={patient.sex || ""}
+                items={["Male", "Female"]}
+                errorMessage=""
+                name="Sex"
+                onChange={(sex) => {
+                  setPatient({ ...patient, sex });
                 }}
               />
             </Grid>

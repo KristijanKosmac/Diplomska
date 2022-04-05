@@ -180,6 +180,7 @@ function MiniDrawer({ history }: RouteComponentProps) {
                 key={text}
                 onClick={onClick}
                 divider
+                disabled={profile.role === "Patient" && text === "Users"}
                 style={{ paddingLeft: "23px" }}
               >
                 <ListItemIcon title={text}>{icon}</ListItemIcon>

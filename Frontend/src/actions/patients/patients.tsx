@@ -1,7 +1,8 @@
+import { useSelector } from "react-redux";
+import { History } from "history";
 import { PatientsActionTypes } from "../../constants/index";
 import { Patient, PatientPayload } from "../../types";
 import { patientAPI } from "../../api";
-import { useSelector } from "react-redux";
 import { GlobalState } from "../../reducers";
 
 export const getAllPatients =
@@ -21,7 +22,7 @@ export const getAllPatients =
       dispatch({
         type: PatientsActionTypes.FETCH_PATIENTS_SUCCESS,
         payload: {
-          successMessage: "",
+          // successMessage: "",
           patients,
         },
       });
@@ -36,7 +37,7 @@ export const getAllPatients =
   };
 
 export const addPatient =
-  ( patient: Patient) =>
+  ( patient: Patient, history: History) =>
   async (
     dispatch: (arg0: { type: string; payload: PatientPayload }) => void
   ) => {
@@ -61,10 +62,12 @@ export const addPatient =
         },
       });
     }
+
+    history.push( "/patients" );
   };
 
 export const updatePatient =
-  (patient : Patient) =>
+  (patient : Patient, history: History) =>
   async (
     dispatch: (arg0: { type: string; payload: PatientPayload }) => void
   ) => {
@@ -89,6 +92,8 @@ export const updatePatient =
         },
       });
     }
+    
+    history.push( "/patients" );
   };
 
 export const deletePatinet =

@@ -125,10 +125,10 @@ const Documents = (props: DocumentComponentProps) => {
       </TableCell>
     );
 
-    
     const dropDownItems = [
       <CustomModal
         buttonName="Edit"
+        disabled={props.disableButtons}
         onClick={() => {
           props.handleEditDocument(
             `${document.id.split("/").slice(0, -1).join("/")}/${
@@ -139,8 +139,8 @@ const Documents = (props: DocumentComponentProps) => {
             currentDocumentComment || document.comment
           );
 
-          setCurrentDocumentComment("")
-          setCurrentDocumentName("")
+          setCurrentDocumentComment("");
+          setCurrentDocumentName("");
         }}
         title="Edit Document"
         content={
@@ -194,6 +194,7 @@ const Documents = (props: DocumentComponentProps) => {
         Download
       </Button>,
       <CustomModal
+        disabled={props.disableButtons}
         buttonName="Delete"
         onClick={() => {
           props.handleDelete(document.id);
@@ -239,11 +240,15 @@ const Documents = (props: DocumentComponentProps) => {
               buttonName={props.isBusy ? "uploading..." : "Upload"}
               title="Files ready to upload"
               onClick={() => props.handleSubmit(files!, documentsComments)}
-              disabled={props.isBusy || (files && !files.getAll("file").length)}
+              disabled={
+                props.isBusy ||
+                (files && !files.getAll("file").length) ||
+                props.disableButtons
+              }
               content={documentsComments.map((doc, index) => {
                 return (
                   <div className={classes.commentDisplay}>
-                    <label>{ doc.fileName }</label>
+                    <label>{doc.fileName}</label>
                     <TextField
                       variant="outlined"
                       margin="normal"
@@ -307,7 +312,7 @@ const Documents = (props: DocumentComponentProps) => {
               );
               setFiles(formdata);
             }}
-            maxFileSize={100000000}
+            maxFileSize={props.disableButtons ? 0 : 100000000}
           />
           <br />
           <div>

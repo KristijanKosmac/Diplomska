@@ -6,25 +6,32 @@ import { DoneResult, File } from "../types";
 import { Patient, PatientInteface, Document } from "../database/entities";
 import { codedError } from "../lib/coded-error";
 import rimraf from "rimraf"
+import { userManager } from "./user-manager";
+import { doctorManager } from "./doctor-manager"
 const { EMAIL_PASSWORD, EMAIL_USERNAME } = require("../config")
 class PatientManager {
 
     async addPatient(data: PatientInteface): Promise<DoneResult & { id: string }> {
-        const patient = new Patient(data);
-
+        let id = data.id!
         try {
+            const res = await userManager.createUser(data.email)
+            id = res.id
+
+            const patient = new Patient({id: res.id, ...data});
             await patient.save()
+            await doctorManager.addDoctor({...data, id: res.id, role: "Patient"})
+
+            // TODO CHECK IF patient.id work if it doenst change it with patient._id
+            return { done: true, id: patient.id };
         } catch (e) {
+            await userManager.deleteUser(id)
             throw e
         }
-
-        // TODO CHECK IF patient.id work if it doenst change it with patient._id
-        return { done: true, id: patient.id };
     }
 
     async updatePatient(id: string, updatedData: PatientInteface): Promise<DoneResult> {
         try {
-            await Patient.findByIdAndUpdate(id, updatedData, { new: true, runValidators: true })
+            await Patient.findOneAndUpdate({ id }, updatedData, { new: true, runValidators: true })
         } catch (e) {
             throw e
         }
@@ -34,8 +41,9 @@ class PatientManager {
 
     async deletePatient(id: string): Promise<DoneResult> {
         try {
-            await Patient.findByIdAndRemove(id)
+            await Patient.findOneAndRemove({id})
             await this.deleteFolder(id, "")
+            await userManager.deleteUser(id)
         } catch (e) {
             throw codedError(HTTP.BAD_REQUEST, "Can't be deleted patient that doesn't exists!")
         }
@@ -44,7 +52,8 @@ class PatientManager {
     }
 
     async getPatient(id: string): Promise<PatientInteface> {
-        const patient = await Patient.findById(id)
+        // const patient = await Patient.findById(id)
+        const patient = await Patient.findOne({id})
 
         if (!patient || !id) {
             throw codedError(HTTP.NOT_FOUND, `Patient does not exist`);

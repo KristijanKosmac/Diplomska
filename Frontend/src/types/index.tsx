@@ -106,8 +106,8 @@ export interface ModalProps {
   title: string;
   content: string | any;
   id: string;
-  disabled?: boolean;
   buttonSize?: "small" | "medium" | "large";
+  disabled?: boolean;
   isOpened?: (value: boolean) => void;
 }
 
@@ -165,17 +165,19 @@ export interface DocumentComponentProps extends RouteComponentProps {
   documents: Document[];
   handleDelete: (documentId: string) => void;
   handleSubmit: (files: FormData, documentsComments: DocumentComment[]) => void;
-  patient?: Patient;
-  sendToEmail?: string;
   isBusy: boolean;
-  handleSendEmail?: (emails: string[], selectedDocumentId: string, text: string) => void;
+  sendToEmail?: string;
+  patient?: Patient;
+  disableButtons?: boolean;
   handleMultipleDownload: (fileKeys: string[]) => void
   handleEditDocument: (documentId: string, oldDocumentId: string, comment: string, newComment: string) => void
+  handleSendEmail?: (emails: string[], selectedDocumentId: string, text: string) => void;
 }
 
 export interface FolderComponentProps extends RouteComponentProps {
   patientId: string;
   onClick: (folderName: string) => void;
+  disableButtons?: boolean;
 }
 
 export interface RadioButtonProps {
@@ -218,7 +220,7 @@ export interface DocumentColumn {
 }
 
 export interface UserColumn {
-  id: "firstName" | "lastName" | "email" | "institution" | "dateOfBirth" | "city";
+  id: "firstName" | "lastName" | "email" | "institution" | "dateOfBirth" | "city" | "role";
   label: string;
   minWidth?: string;
   width?: string;
@@ -268,6 +270,7 @@ export interface Doctor {
   EMBG: number;
   dateOfBirth: string;
   email: string;
+  role: "Doctor" | "Patient";
   address?: string;
   telephoneNumber?: number
   institution?: string

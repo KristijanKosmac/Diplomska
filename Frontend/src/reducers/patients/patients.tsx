@@ -19,7 +19,7 @@ const patientsReducer = (state = INITIAL_STATE, action: any) => {
       return {
         ...state,
         patients: action.payload.patients,
-        successMessage: action.payload.successMessage,
+        // successMessage: action.payload.successMessage,
         isLoading: false
       };
     case PatientsActionTypes.FETCH_PATIENTS_FAIL:
@@ -42,7 +42,7 @@ const patientsReducer = (state = INITIAL_STATE, action: any) => {
     case PatientsActionTypes.UPDATE_PATIENT_SUCCESS:
       return {
         ...state,
-        successMessage: action.payload.successMessage,
+        successMessage: action.payload.successMessage || "Successfully updated patient",
         patients: action.payload.patients,
       }
     case PatientsActionTypes.UPDATE_PATIENT_FAIL:

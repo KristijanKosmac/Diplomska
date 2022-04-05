@@ -2,6 +2,7 @@ import mongoose from "mongoose"
 import validator from "validator"
 
 export interface PatientInteface {
+    id?: string;
     firstName: string;
     lastName: string;
     EMBG: number;
@@ -12,14 +13,19 @@ export interface PatientInteface {
     height?: number;
     weight?: number;
     sex?: "Male" | "Female";
-    bloodType?: "A+" | "A-" | "B+" | "B-" | "AB+" | "AB-" | "O-" | "O+"
     country?: string;
     city?: string;
     nationality?: string;
+    bloodType?: "A+" | "A-" | "B+" | "B-" | "AB+" | "AB-" | "O-" | "O+"
     familyDoctor: string
 }
 
 const patientSchema = new mongoose.Schema({
+    id: {
+        type: String,
+        required: true,
+        unique: true
+    },
     firstName: {
         type: String,
         trim: true,
@@ -85,9 +91,9 @@ const patientSchema = new mongoose.Schema({
     timestamps: true
 })
 
-patientSchema.virtual('id').get(function(){
-    return this._id.toHexString();
-});
+// patientSchema.virtual('id').get(function(){
+//     return this._id.toHexString();
+// });
 
 // Ensure virtual fields are serialised.
 patientSchema.set('toJSON', {

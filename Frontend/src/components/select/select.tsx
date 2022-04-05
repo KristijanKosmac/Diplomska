@@ -12,7 +12,7 @@ import useStyles from "./select.styles";
 const CustomSelect = (props: SelectProps) => {
   const classes = useStyles();
   const [value, setValue] = useState(props.value);
-
+  
   useEffect(() => {
     props.onChange && props.onChange(value);
   }, [value]);

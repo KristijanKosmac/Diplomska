@@ -64,6 +64,7 @@ export const signInUser =
       //   history.push("/profile");
       // })
     } catch (error: any) {
+      console.log(error.response.data)
       dispatch({
         type: UserActionTypes.SIGN_IN_USER_FAIL,
         payload: {
@@ -261,6 +262,7 @@ export const deleteUser =
         type: UserActionTypes.DELETE_USER,
         payload: { successMessage: "Successfully deleted user" },
       });
+      signOutUser()
     } catch (error: any) {
       dispatch({
         type: UserActionTypes.DELETE_USER_FAIL,

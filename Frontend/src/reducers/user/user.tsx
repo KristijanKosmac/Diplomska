@@ -8,7 +8,8 @@ const INITIAL_STATE: UserState = {
     firstName: "",
     lastName: "",
     EMBG: 0,
-    dateOfBirth: ""
+    dateOfBirth: "",
+    role: "Doctor"
   },
   users: [],
   accessToken: "",
@@ -130,7 +131,8 @@ const userReducer = (state = INITIAL_STATE, action: any) => {
     case UserActionTypes.DELETE_USER:
       return { 
           ...state,
-          successMessage: action.payload.successMessage
+          successMessage: action.payload.successMessage,
+          isLoggedIn: false
       }
     case UserActionTypes.DELETE_USER_FAIL:
       return { 

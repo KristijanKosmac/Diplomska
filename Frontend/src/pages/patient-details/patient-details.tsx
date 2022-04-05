@@ -24,6 +24,8 @@ import { mapPatientKeys } from "../../utils/mapPatientKeys";
 import useStyles from "./patient-details.styles";
 import { base64ToArrayBuffer } from "../../utils/base64ToArrayBuffer";
 import { saveByteArray } from "../../utils/saveByteArray";
+import { GlobalState } from "../../reducers";
+import { useSelector } from "react-redux";
 
 const PatientDetails = (props: RouteComponentProps<{}, StaticContext, {}>) => {
   const [folder, setFolder] = useState("");
@@ -31,6 +33,7 @@ const PatientDetails = (props: RouteComponentProps<{}, StaticContext, {}>) => {
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [informMessage, setInformMessage] = useState("");
+  const { profile } = useSelector((state: GlobalState) => state.user);
 
   const [patient, setPatient] = React.useState<Patient>({
     firstName: "",
@@ -45,6 +48,7 @@ const PatientDetails = (props: RouteComponentProps<{}, StaticContext, {}>) => {
   const [tab, setTab] = useState(0);
 
   const patientId = window.location.pathname.split("/").reverse()[0];
+  const disableButtons = profile.role === "Patient";
 
   const classes = useStyles();
 
@@ -266,6 +270,7 @@ const PatientDetails = (props: RouteComponentProps<{}, StaticContext, {}>) => {
               handleMultipleDownload={handleMultipleDownload}
               handleSendEmail={handleSendEmail}
               handleEditDocument={handleEditDocument}
+              disableButtons={disableButtons}
             />
           </div>
         ) : (
@@ -274,6 +279,7 @@ const PatientDetails = (props: RouteComponentProps<{}, StaticContext, {}>) => {
             onClick={(folderName) => {
               setFolder(folderName);
             }}
+            disableButtons={disableButtons}
           />
         )
       ) : (
@@ -282,6 +288,7 @@ const PatientDetails = (props: RouteComponentProps<{}, StaticContext, {}>) => {
             <Button
               variant="outlined"
               color="primary"
+              disabled={disableButtons}
               onClick={() => {
                 props.history.push({
                   pathname: "/patients/edit",

@@ -9,7 +9,9 @@ import {
   Container,
   Grid,
 } from "@material-ui/core";
-import { AccountBoxOutlined as AccountBoxOutlinedIcon } from "@material-ui/icons";
+import {
+  AccountBoxOutlined as AccountBoxOutlinedIcon
+} from "@material-ui/icons";
 
 import CustomSelect from "../../components/select/select";
 import DatePicker from "../date-picker/date-picker.component";
@@ -17,6 +19,7 @@ import useStyles from "./user-form.styles";
 import { DoctorFormProps, Doctor } from "../../types";
 import doctorValidation from "../../utils/validations/doctor.validation";
 import { institutions } from "../../constants/institutions";
+import { roles } from "../../constants/roles";
 
 export default function UserForm(props: DoctorFormProps) {
   const classes = useStyles();
@@ -28,6 +31,7 @@ export default function UserForm(props: DoctorFormProps) {
     email: "",
     firstName: "",
     lastName: "",
+    role: "Doctor",
   });
 
   const [errors, setErrors] = useState({
@@ -48,6 +52,7 @@ export default function UserForm(props: DoctorFormProps) {
     event.preventDefault();
     const { errors, valid } = doctorValidation(doctor);
     setErrors(errors);
+    console.log(doctor);
     if (valid) {
       props.onSubmit(doctor);
     }
@@ -130,7 +135,7 @@ export default function UserForm(props: DoctorFormProps) {
                 autoComplete="email"
                 autoFocus
                 value={doctor.email}
-                onChange={handleChange}
+                // onChange={handleChange}
                 error={!!errors.email}
                 helperText={errors.email}
               />
@@ -232,6 +237,15 @@ export default function UserForm(props: DoctorFormProps) {
                   setDoctor({ ...doctor, institution: value });
                 }}
                 value={doctor.institution || ""}
+              />
+              <CustomSelect
+                items={roles}
+                name="Role"
+                onChange={(role) => {
+                  console.log(role)
+                }}
+                value={doctor.role || "Doctor"}
+                disabled
               />
             </Grid>
           </Grid>

@@ -106,6 +106,7 @@ const FoldersListPage = (props: FolderComponentProps) => {
       <h1>All Folders</h1>
       <div className={classes.btnContainer}>
         <CustomModal
+          disabled={props.disableButtons}
           buttonName="Create"
           onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
             // event.stopPropagation();
@@ -160,6 +161,7 @@ const FoldersListPage = (props: FolderComponentProps) => {
                     <DropdownMenuActions
                       items={[
                         <CustomModal
+                          disabled={props.disableButtons}
                           buttonName="Edit"
                           onClick={(
                             event: React.MouseEvent<
@@ -192,6 +194,7 @@ const FoldersListPage = (props: FolderComponentProps) => {
                           id={folder}
                         />,
                         <CustomModal
+                          disabled={props.disableButtons}
                           buttonName="Delete"
                           onClick={(
                             event: React.MouseEvent<

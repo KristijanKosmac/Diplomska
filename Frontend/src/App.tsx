@@ -32,18 +32,24 @@ export const theme = createTheme({
 });
 
 const App = () => {
-  const { isLoggedIn, profile } = useSelector((state: GlobalState) => state.user);
+  const { isLoggedIn, profile } = useSelector(
+    (state: GlobalState) => state.user
+  );
 
   const notLoggedInRoutes = (
     <div>
-      <Header/>
+      <Header />
       <Switch>
         <Route path="/" component={SignInPage} exact />
         <Route path="/sign-in" component={SignInPage} />
         <Route path="/sign-up" component={SignUpPage} />
         <Route path="/forgot-password" component={ForgotPasswordPage} />
-        <Route path="/reset-forgotten-password" component={ResetForgottenPasswordPage} />
-        <Redirect to="/sign-in" />
+        <Route
+          path="/reset-forgotten-password"
+          component={ResetForgottenPasswordPage}
+        />
+        {/* <Redirect to="/sign-in" /> */}
+        <Route path="*" component={SignInPage} />
       </Switch>
     </div>
   );
@@ -56,15 +62,18 @@ const App = () => {
         <Redirect to="/profile" />
       </Switch>
     </>
-  )
+  );
 
   const loggedInRoutes = (
     <div style={{ display: "flex", flexDirection: "row" }}>
       <MiniDrawer />
-      <div style={{marginTop: "2%", width: "100%"}}>
+      <div style={{ marginTop: "2%", width: "100%" }}>
         <Switch>
           <Route exact path="/profile" component={Profile} />
-          <Route path="/profile/change-password" component={ChangePasswordPage} />
+          <Route
+            path="/profile/change-password"
+            component={ChangePasswordPage}
+          />
 
           <Route exact path="/" component={PatientsListPage} />
           <Route exact path="/patients" component={PatientsListPage} />
@@ -82,6 +91,35 @@ const App = () => {
     </div>
   );
 
+  const patientRoutes = (
+    <div style={{ display: "flex", flexDirection: "row" }}>
+    <MiniDrawer />
+    <div style={{ marginTop: "2%", width: "100%" }}>
+      <Switch>
+        <Route exact path="/profile" component={Profile} />
+        <Route path="/profile/change-password" component={ChangePasswordPage} />
+
+        {/* <Route path="/patients/:id" component={PatientDetails} /> */}
+
+        <Route path={`/patients/${profile.id}`} component={PatientDetails} />
+
+        {/* <Route path="*" component={ErrorPage} /> */}
+        <Redirect to={`/patients/${profile.id}`} />
+      </Switch>
+    </div>
+    </div>  
+  );
+
+  const routeCondition = () => {
+    return isLoggedIn
+      ? Object.keys(profile).length < 5
+        ? notFilledProfileInfo
+        : profile.role === "Patient"
+        ? patientRoutes
+        : loggedInRoutes
+      : notLoggedInRoutes;
+  };
+
   return (
     <ThemeProvider theme={theme}>
       <div
@@ -91,8 +129,8 @@ const App = () => {
           flexDirection: "column",
         }}
       >
-         {/* {isLoggedIn ? loggedInRoutes : notLoggedInRoutes} */}
-        {isLoggedIn ? Object.keys(profile).length < 5 ? notFilledProfileInfo : loggedInRoutes : notLoggedInRoutes}
+        {/* {isLoggedIn ? loggedInRoutes : notLoggedInRoutes} */}
+        {routeCondition()}
       </div>
     </ThemeProvider>
   );

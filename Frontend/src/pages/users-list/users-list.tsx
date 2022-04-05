@@ -39,6 +39,7 @@ const UsersListPage = (props: RouteComponentProps) => {
     { id: "lastName", label: "Last Name" },
     { id: "email", label: "Email" },
     { id: "institution", label: "Institution" },
+    { id: "role", label: "Role" },
     { id: "dateOfBirth", label: "Date of Birth" },
     { id: "city", label: "City" }   
   ];
