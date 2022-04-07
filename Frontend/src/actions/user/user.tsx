@@ -154,7 +154,7 @@ export const createUser =
     } catch (error: any) {
       dispatch({
         type: UserActionTypes.CREATE_USER_FAILED,
-        payload: { errorMessage: "Failed to create user" },
+        payload: { errorMessage: error.response.data.message || "Failed to create user" },
       });
     }
   };

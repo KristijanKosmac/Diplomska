@@ -32,6 +32,10 @@ class PatientManager {
     async updatePatient(id: string, updatedData: PatientInteface): Promise<DoneResult> {
         try {
             await Patient.findOneAndUpdate({ id }, updatedData, { new: true, runValidators: true })
+            const updateDoctorData: any = {...updatedData, role: "Patient", id } 
+
+            delete updateDoctorData._id
+            await doctorManager.updateDoctor( id, updateDoctorData)
         } catch (e) {
             throw e
         }

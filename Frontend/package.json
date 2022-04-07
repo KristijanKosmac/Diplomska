@@ -38,7 +38,8 @@
     "eject": "react-scripts eject",
     "prepackage": "rm -rf package.zip && npm i && npm run build",
     "package": "cd build && zip -r ../package.zip * && cd .. && rm -rf node_modules public src",
-    "postpackage": "echo File size: $(ls -lah package.zip | awk '{print $5}')"
+    "postpackage": "echo File size: $(ls -lah package.zip | awk '{print $5}')",
+    "deploy": "react-scripts build && aws s3 rm s3://diplomska-kk.com/ --recursive && aws s3 cp ./build s3://diplomska-kk.com/ --recursive --acl public-read"
   },
   "eslintConfig": {
     "extends": [
