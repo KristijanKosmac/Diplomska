@@ -68,7 +68,7 @@ export const signInUser =
       dispatch({
         type: UserActionTypes.SIGN_IN_USER_FAIL,
         payload: {
-          errorMessage: error.response.data.message || error.response.data || error ,
+          errorMessage: "Invalid email or password"|| error.response.data.message || error.response.data || error ,
         },
       });
     }

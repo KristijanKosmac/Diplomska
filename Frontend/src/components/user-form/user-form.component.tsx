@@ -9,9 +9,7 @@ import {
   Container,
   Grid,
 } from "@material-ui/core";
-import {
-  AccountBoxOutlined as AccountBoxOutlinedIcon
-} from "@material-ui/icons";
+import { AccountBoxOutlined as AccountBoxOutlinedIcon } from "@material-ui/icons";
 
 import CustomSelect from "../../components/select/select";
 import DatePicker from "../date-picker/date-picker.component";
@@ -230,19 +228,21 @@ export default function UserForm(props: DoctorFormProps) {
                 value={doctor.city}
                 onChange={handleChange}
               />
-              <CustomSelect
-                items={institutions}
-                name="Institutions"
-                onChange={(value) => {
-                  setDoctor({ ...doctor, institution: value });
-                }}
-                value={doctor.institution || ""}
-              />
+              {doctor.role !== "Doctor" && (
+                <CustomSelect
+                  items={institutions}
+                  name="Institutions"
+                  onChange={(value) => {
+                    setDoctor({ ...doctor, institution: value });
+                  }}
+                  value={doctor.institution || ""}
+                />
+              )}
               <CustomSelect
                 items={roles}
                 name="Role"
                 onChange={(role) => {
-                  console.log(role)
+                  console.log(role);
                 }}
                 value={doctor.role || "Doctor"}
                 disabled
